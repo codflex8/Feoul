@@ -1,0 +1,18 @@
+{
+  "this_email_signed_up_already": "تم تسجيل هذا البريد الإلكتروني مسبقًا.",
+  "sign_up_success": "تم التسجيل بنجاح.",
+  "emailNotExist": "هذا البريد الإلكتروني غير موجود.",
+  "email sent success": "تم إرسال البريد الإلكتروني بنجاح.",
+  "email verified": "تم التحقق من البريد الإلكتروني بنجاح.",
+  "IncorrectEmailPasswod": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  "emailNotVerified": "البريد الإلكتروني الخاص بك غير مُفعَّل.",
+  "unauthorized": "دخول غير مصرح به.",
+  "passwordChanged": "تم تغيير كلمة المرور.",
+  "expired_code_please_try_again": "انتهت صلاحية الكود. يرجى المحاولة مرة أخرى.",
+  "invalid_reset_code_please_login_again": "كود إعادة التعيين غير صالح. يرجى تسجيل الدخول مرة أخرى.",
+  "google_signup_success": "تم التسجيل باستخدام Google بنجاح.",
+  "user_email_not_exist": "البريد الإلكتروني للمستخدم غير موجود.",
+  "facebook_signup_success": "تم التسجيل باستخدام Facebook بنجاح.",
+  "user_not_signed_up": "المستخدم غير مسجل.",
+  "twitter_signup_success": "تم التسجيل باستخدام Twitter بنجاح."
+}

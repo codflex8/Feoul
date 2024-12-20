@@ -1,0 +1,19 @@
+{ 
+  "this_email_signed_up_already": "This email has already been signed up.",
+  "sign_up_success": "Sign up successful.",
+  "emailNotExist": "This email does not exist.",
+  "email sent success": "Email sent successfully.",
+  "email verified": "Email verified successfully.",
+  "IncorrectEmailPasswod": "Incorrect email or password.",
+  "emailNotVerified": "Your email is not verified.",
+  "unauthorized": "Unauthorized access.",
+  "passwordChanged": "Password has been changed.",
+  "expired_code_please_try_again": "Code expired. Please try again.",
+  "invalid_reset_code_please_login_again": "Invalid reset code. Please try logging in again.",
+  "google_signup_success": "Google sign up successful.",
+  "user_email_not_exist": "User email does not exist.",
+  "facebook_signup_success": "Facebook sign up successful.",
+  "user_not_signed_up": "User is not signed up.",
+  "twitter_signup_success": "Twitter sign up successful."
+  }
+  

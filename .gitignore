@@ -1,0 +1,22 @@
+# npm
+node_modules
+package-lock.json
+npm-shrinkwrap.json
+*.log
+*.gz
+*.env
+# Coveralls
+.nyc_output
+coverage
+
+/src/public/images/*
+/src/public/audio/*
+/src/public/documents/*
+
+# Benchmarking
+benchmarks/graphs
+
+firebaseAccountKey.json
+
+# ignore additional files using core.excludesFile
+# https://git-scm.com/docs/gitignore
