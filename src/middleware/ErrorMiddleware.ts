@@ -29,6 +29,7 @@ export const globalError = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log("ddddddd", err);
   err.statusCode = err.statusCode || 500;
   httpLogger.error(err.message, { error: err.stack });
   if (process.env.NODE_ENV === "development") {

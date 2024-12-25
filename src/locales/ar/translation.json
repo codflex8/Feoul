@@ -1,10 +1,15 @@
 {
-  "this_email_signed_up_already": "تم تسجيل هذا البريد الإلكتروني مسبقًا.",
-  "sign_up_success": "تم التسجيل بنجاح.",
+  "delete-success":"تم الحذف بنجاح",
+  "not-found":"غير موجود",
+  "unit-not-found":"الوحدة غير موجودة",
+  "map-location-not-found":"لا يمكن ايجاد هذا الموقع",
+  "project-not-found":"لا يمكن ايجاد هذا المشروع",
+  "this_employee_signed_up_already": "تم تسجيل اسم المستخدم مسبقًا.",
+  "add_employee_success": "تمت إضافة الموظف بنجاح.",
   "emailNotExist": "هذا البريد الإلكتروني غير موجود.",
   "email sent success": "تم إرسال البريد الإلكتروني بنجاح.",
   "email verified": "تم التحقق من البريد الإلكتروني بنجاح.",
-  "IncorrectEmailPasswod": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  "IncorrectUsernamePasswod": "اسم المستخدم أو كلمة المرور غير صحيحة.",
   "emailNotVerified": "البريد الإلكتروني الخاص بك غير مُفعَّل.",
   "unauthorized": "دخول غير مصرح به.",
   "passwordChanged": "تم تغيير كلمة المرور.",
@@ -14,5 +19,7 @@
   "user_email_not_exist": "البريد الإلكتروني للمستخدم غير موجود.",
   "facebook_signup_success": "تم التسجيل باستخدام Facebook بنجاح.",
   "user_not_signed_up": "المستخدم غير مسجل.",
-  "twitter_signup_success": "تم التسجيل باستخدام Twitter بنجاح."
+  "twitter_signup_success": "تم التسجيل باستخدام Twitter بنجاح.",
+  "forbidden": "لا تملك الصلاحيات اللازمة.",
+  "project_not_found":"المشروع غير موجود."
 }

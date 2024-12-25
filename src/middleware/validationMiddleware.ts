@@ -10,9 +10,13 @@ export function validateData(schema: z.ZodObject<any, any> | ZodType<any>) {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const errorMessages = error.errors
-          .map((issue: any) => `${issue.path.join(".")} is ${issue.message}`)
-          .join(", ");
+        const errorMessages = error.errors.map((err) => {
+          return {
+            field: err.path.join("."),
+            message: err.message,
+          };
+        });
+
         res.status(StatusCodes.BAD_REQUEST).json({ message: errorMessages });
       } else {
         res

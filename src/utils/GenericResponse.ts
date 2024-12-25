@@ -6,10 +6,11 @@ export class GenericResponse<T extends object> {
     private count: number,
     private items: T[]
   ) {
+    const size = pageSize ?? 10;
     this.page = page ? page : 1;
-    this.pageSize = Number(pageSize);
+    this.pageSize = Number(size);
     this.count = count;
-    this.pages = Math.ceil(count / pageSize);
+    this.pages = Math.ceil(count / size);
     this.items = items;
   }
 }

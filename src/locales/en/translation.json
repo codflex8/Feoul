@@ -1,10 +1,15 @@
 { 
-  "this_email_signed_up_already": "This email has already been signed up.",
-  "sign_up_success": "Sign up successful.",
+  "not-found":"not found",
+  "delete-success":"delete success",
+  "project-not-found":"project not found",
+  "unit-not-found":"unit not found",
+  "map-location-not-found":"MapLocation not found",
+  "this_employee_signed_up_already": "This employee has already been added.",
+  "add_employee_success": "add employee success.",
   "emailNotExist": "This email does not exist.",
   "email sent success": "Email sent successfully.",
   "email verified": "Email verified successfully.",
-  "IncorrectEmailPasswod": "Incorrect email or password.",
+  "IncorrectUsernamePasswod": "Incorrect username or password.",
   "emailNotVerified": "Your email is not verified.",
   "unauthorized": "Unauthorized access.",
   "passwordChanged": "Password has been changed.",
@@ -14,6 +19,8 @@
   "user_email_not_exist": "User email does not exist.",
   "facebook_signup_success": "Facebook sign up successful.",
   "user_not_signed_up": "User is not signed up.",
-  "twitter_signup_success": "Twitter sign up successful."
+  "twitter_signup_success": "Twitter sign up successful.",
+  "forbidden": "Forbidden access.",
+  "project_not_found":"Project not found."
   }
   

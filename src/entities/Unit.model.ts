@@ -1,0 +1,71 @@
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { BaseModel } from "./BaseModel";
+import { Project } from "./Project.model";
+import { UnitCategories } from "./UnitCategories.model";
+import { UnitFloor } from "./UnitFloor.model";
+import { UnitIntreset } from "./UnitIntreset.model";
+
+@Entity()
+export class Unit extends BaseModel {
+  @Column()
+  name!: string;
+
+  @Column()
+  number!: number;
+
+  @Column()
+  color!: string;
+
+  @Column()
+  price!: number;
+
+  @Column()
+  landSpace!: number;
+
+  @Column()
+  buildSpace!: number;
+
+  @Column({ nullable: true })
+  status?: string;
+
+  @Column()
+  bedroomNumber!: number;
+
+  @Column()
+  bathroomNumber!: number;
+
+  @Column({ nullable: true })
+  videoUrl?: string;
+
+  @Column()
+  floorsNumber!: number;
+
+  @Column({ nullable: true })
+  advantages?: string;
+
+  @ManyToOne(() => Project, (project) => project.units, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  project!: Project;
+
+  @ManyToOne(() => UnitCategories, (unitCategory) => unitCategory.units, {
+    onDelete: "SET NULL",
+    onUpdate: "SET NULL",
+  })
+  category!: UnitCategories;
+
+  @OneToMany(() => UnitFloor, (floor) => floor.unit, {
+    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  floors!: UnitFloor[];
+
+  @OneToMany(() => UnitIntreset, (interest) => interest.unit, {
+    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  interests!: UnitIntreset[];
+}

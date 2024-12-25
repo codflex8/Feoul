@@ -59,6 +59,19 @@ const documentsExtensions = [
   ".pptx",
 ];
 
+const videoExtensions = [
+  ".mp4",
+  ".avi",
+  ".mov",
+  ".wmv",
+  ".flv",
+  ".mkv",
+  ".webm",
+  ".mpeg",
+  ".mpg",
+  ".m4v",
+];
+
 // Define the storage configuration
 const localStorage = multer.diskStorage({
   destination: function (req: Request, file: any, cb: Function) {
@@ -66,6 +79,7 @@ const localStorage = multer.diskStorage({
     const isImage = imagesExtensions.includes(extension);
     const isAudio = audioExtensions.includes(extension);
     const isDocument = documentsExtensions.includes(extension);
+    const isVideo = videoExtensions.includes(extension);
 
     let uploadDirectory = "";
     if (isImage) {
@@ -74,6 +88,8 @@ const localStorage = multer.diskStorage({
       uploadDirectory = path.join(__dirname, "../public/audio");
     } else if (isDocument) {
       uploadDirectory = path.join(__dirname, "../public/documents");
+    } else if (isVideo) {
+      uploadDirectory = path.join(__dirname, "../public/videos");
     } else {
       return cb(new Error("Unsupported file type"), null);
     }
@@ -98,11 +114,14 @@ const localStorage = multer.diskStorage({
     const isImage = imagesExtensions.includes(extension);
     const isAudio = audioExtensions.includes(extension);
     const isDocument = documentsExtensions.includes(extension);
+    const isVideo = videoExtensions.includes(extension);
 
     let relativePath: string = "";
     if (isImage) relativePath = `/public/images/${filename}`;
     if (isAudio) relativePath = `/public/audio/${filename}`;
     if (isDocument) relativePath = `/public/documents/${filename}`;
+    if (isDocument) relativePath = `/public/videos/${filename}`;
+
     // Add the path to req.body using the field name
     req.body[file.fieldname] = relativePath;
     cb(null, filename);
@@ -115,6 +134,7 @@ const fileFilter = (req: Request, file: any, cb: Function) => {
     ...imagesExtensions,
     ...audioExtensions,
     ...documentsExtensions,
+    ...videoExtensions,
   ];
   const extension = path.extname(file.originalname);
 
@@ -123,7 +143,7 @@ const fileFilter = (req: Request, file: any, cb: Function) => {
   } else {
     cb(
       new ApiError(
-        "Invalid file type. Only images , audio and documents files are allowed",
+        "Invalid file type. Only images , audio, documents and videos files are allowed",
         400
       ),
       false
