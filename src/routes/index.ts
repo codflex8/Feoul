@@ -1,4 +1,4 @@
-import { Router, Express } from "express";
+import { Express } from "express";
 import authRouter from "./auth.route";
 import empolyeeRouter from "./employee.route";
 import projectRouter from "./project.route";
