@@ -22,9 +22,8 @@ export class ProjectTemplateController {
         number,
         link,
         status,
-        project,
       });
-      await projectTemplate.save();
+      // await projectTemplate.save();
       res.status(201).json(projectTemplate);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -110,7 +109,7 @@ export class ProjectTemplateController {
         return;
       }
       Object.assign(projectTemplate, req.body);
-      projectTemplate.project = project;
+      // projectTemplate.project = project;
       await projectTemplate.save();
       res.status(200).json(projectTemplate);
     } catch (error: any) {

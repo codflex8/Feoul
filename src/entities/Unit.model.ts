@@ -4,6 +4,7 @@ import { Project } from "./Project.model";
 import { UnitCategories } from "./UnitCategories.model";
 import { UnitFloor } from "./UnitFloor.model";
 import { UnitIntreset } from "./UnitIntreset.model";
+import { UnitStatus } from "../utils/validators/UnitValidator";
 
 @Entity()
 export class Unit extends BaseModel {
@@ -25,8 +26,8 @@ export class Unit extends BaseModel {
   @Column()
   buildSpace!: number;
 
-  @Column({ nullable: true })
-  status?: string;
+  @Column({ enum: UnitStatus, nullable: true })
+  status?: UnitStatus;
 
   @Column()
   bedroomNumber!: number;

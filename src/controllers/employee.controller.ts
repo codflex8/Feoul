@@ -30,7 +30,7 @@ export class EmployeeController {
     });
     await user.save();
 
-    res.status(201).json({ message: req.t("add_employee_success") });
+    res.status(201).json({ message: req.t("add_employee_success"), user });
   }
 
   public static async getEmployees(req: Request, res: Response) {

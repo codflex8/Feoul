@@ -1,4 +1,6 @@
 {
+  "template-not-found":"نموذج المشروع غير موجود",
+  "category-not-found":"نموذج الوحدة غير موجود",
   "delete-success":"تم الحذف بنجاح",
   "not-found":"غير موجود",
   "unit-not-found":"الوحدة غير موجودة",

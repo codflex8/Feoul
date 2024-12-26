@@ -13,7 +13,6 @@ export class UnitCategoryController {
     res: Response
   ): Promise<void> {
     try {
-      // ToDo: check units
       const unit = await Unit.findOneBy({ id: req.body.unitId });
       if (!unit) {
         throw new ApiError(req.t("unit-not-found"), 404);

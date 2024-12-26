@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { BaseModel } from "./BaseModel";
 import { Unit } from "./Unit.model";
 import { CommonStatus } from "../utils/types/enums";
@@ -35,12 +35,11 @@ export class Project extends BaseModel {
   })
   units!: Unit[];
 
-  @OneToMany(() => ProjectTemplate, (template) => template.project, {
-    cascade: true,
+  @ManyToOne(() => ProjectTemplate, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  templates!: ProjectTemplate[];
+  template!: ProjectTemplate;
 
   @OneToMany(() => ProjectFacilities, (fac) => fac.project, {
     cascade: true,

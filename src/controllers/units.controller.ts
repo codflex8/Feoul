@@ -5,6 +5,7 @@ import { GenericResponse } from "../utils/GenericResponse";
 import { UnitType } from "../utils/validators/UnitValidator";
 import { Project } from "../entities/Project.model";
 import ApiError from "../utils/ApiError";
+import { UnitCategories } from "../entities/UnitCategories.model";
 
 export class UnitController {
   // Create a new unit
@@ -13,15 +14,20 @@ export class UnitController {
     res: Response
   ): Promise<void> {
     try {
-      const { video, projectId } = req.body;
+      const { video, projectId, categoryId } = req.body;
       const project = await Project.findOneBy({ id: projectId });
       if (!project) {
         throw new ApiError(req.t("project_not_found"), 400);
+      }
+      const category = await UnitCategories.findOneBy({ id: categoryId });
+      if (!category) {
+        throw new ApiError(req.t("category_not_found"), 400);
       }
       const unit = Unit.create({
         ...req.body,
         videoUrl: video,
         project,
+        category,
       });
       await unit.save();
       res.status(201).json(unit);
@@ -65,9 +71,13 @@ export class UnitController {
           status,
         });
       }
-      if (priceFrom && priceTo) {
-        querable.where("unit.price >= :priceFrom AND unit.price <= :priceTo", {
+      if (priceFrom) {
+        querable.where("unit.price >= :priceFrom", {
           priceFrom,
+        });
+      }
+      if (priceTo) {
+        querable.where("unit.price <= :priceTo", {
           priceTo,
         });
       }
@@ -110,7 +120,15 @@ export class UnitController {
       if (!project) {
         throw new ApiError(req.t("project_not_found"), 400);
       }
+      const category = await UnitCategories.findOneBy({
+        id: req.body.categoryId,
+      });
+      if (!category) {
+        throw new ApiError(req.t("category_not_found"), 400);
+      }
       Object.assign(unit, req.body);
+      unit.category = category;
+      unit.project = project;
       await unit.save();
       res.status(200).json(unit);
     } catch (error: any) {

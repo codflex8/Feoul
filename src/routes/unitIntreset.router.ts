@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { UsersRoles } from "../utils/types/enums";
 import { AuthController } from "../controllers/auth.controller";
-import { upload } from "../middleware/uploadFiles";
 import { validateData } from "../middleware/validationMiddleware";
 import { unitIntresetValidation } from "../utils/validators/UnitValidator";
 import { UnitIntresetController } from "../controllers/unitIntreset.controller";
@@ -21,9 +20,6 @@ router.get(
 // Create a new unit
 router.post(
   "/",
-  AuthController.protect,
-  AuthController.allowedto([UsersRoles.Admin]),
-  upload.single("image"),
   validateData(unitIntresetValidation),
   UnitIntresetController.createUnitIntreset
 );
@@ -31,9 +27,6 @@ router.post(
 // Update an existing unit
 router.put(
   "/:id",
-  AuthController.protect,
-  AuthController.allowedto([UsersRoles.Admin]),
-  upload.single("image"),
   validateData(unitIntresetValidation),
   UnitIntresetController.updateUnitIntreset
 );
