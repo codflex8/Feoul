@@ -11,9 +11,12 @@ function validateData(schema) {
         }
         catch (error) {
             if (error instanceof zod_1.ZodError) {
-                const errorMessages = error.errors
-                    .map((issue) => `${issue.path.join(".")} is ${issue.message}`)
-                    .join(", ");
+                const errorMessages = error.errors.map((err) => {
+                    return {
+                        field: err.path.join("."),
+                        message: err.message,
+                    };
+                });
                 res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: errorMessages });
             }
             else {

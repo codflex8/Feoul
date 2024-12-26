@@ -9,24 +9,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseModel = void 0;
+exports.UnitFloor = void 0;
 const typeorm_1 = require("typeorm");
-class BaseModel extends typeorm_1.BaseEntity {
-}
-exports.BaseModel = BaseModel;
+const BaseModel_1 = require("./BaseModel");
+const Unit_model_1 = require("./Unit.model");
+let UnitFloor = class UnitFloor extends BaseModel_1.BaseModel {
+};
+exports.UnitFloor = UnitFloor;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], BaseModel.prototype, "id", void 0);
+], UnitFloor.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], BaseModel.prototype, "createdAt", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], UnitFloor.prototype, "index", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], BaseModel.prototype, "updatedAt", void 0);
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], UnitFloor.prototype, "imageUrl", void 0);
 __decorate([
-    (0, typeorm_1.DeleteDateColumn)(),
-    __metadata("design:type", Date)
-], BaseModel.prototype, "deletedAt", void 0);
+    (0, typeorm_1.ManyToOne)(() => Unit_model_1.Unit, (unit) => unit.floors, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    }),
+    __metadata("design:type", Unit_model_1.Unit)
+], UnitFloor.prototype, "unit", void 0);
+exports.UnitFloor = UnitFloor = __decorate([
+    (0, typeorm_1.Entity)()
+], UnitFloor);

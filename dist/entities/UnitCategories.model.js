@@ -9,39 +9,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.UnitCategories = void 0;
 const typeorm_1 = require("typeorm");
 const BaseModel_1 = require("./BaseModel");
 const enums_1 = require("../utils/types/enums");
-let User = class User extends BaseModel_1.BaseModel {
-    static getPublicUserDataByEmail(query) {
-        return this.findOne({
-            where: query,
-            select: ["username", "imageUrl", "id", "role"],
-        });
-    }
+const Unit_model_1 = require("./Unit.model");
+let UnitCategories = class UnitCategories extends BaseModel_1.BaseModel {
 };
-exports.User = User;
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "username", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "phoneNumber", void 0);
+exports.UnitCategories = UnitCategories;
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "password", void 0);
+], UnitCategories.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "imageUrl", void 0);
+], UnitCategories.prototype, "color", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "enum", enum: enums_1.UsersRoles }),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], UnitCategories.prototype, "number", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "enum", enum: enums_1.CommonStatus, default: enums_1.CommonStatus.archived }),
     __metadata("design:type", String)
-], User.prototype, "role", void 0);
-exports.User = User = __decorate([
-    (0, typeorm_1.Entity)("users")
-], User);
+], UnitCategories.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Unit_model_1.Unit, (unit) => unit.category, {
+        onDelete: "SET NULL",
+        onUpdate: "SET NULL",
+    }),
+    __metadata("design:type", Array)
+], UnitCategories.prototype, "units", void 0);
+exports.UnitCategories = UnitCategories = __decorate([
+    (0, typeorm_1.Entity)()
+], UnitCategories);

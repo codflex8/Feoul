@@ -57,6 +57,18 @@ const documentsExtensions = [
     ".ppt",
     ".pptx",
 ];
+const videoExtensions = [
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".wmv",
+    ".flv",
+    ".mkv",
+    ".webm",
+    ".mpeg",
+    ".mpg",
+    ".m4v",
+];
 // Define the storage configuration
 const localStorage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
@@ -64,6 +76,7 @@ const localStorage = multer_1.default.diskStorage({
         const isImage = imagesExtensions.includes(extension);
         const isAudio = audioExtensions.includes(extension);
         const isDocument = documentsExtensions.includes(extension);
+        const isVideo = videoExtensions.includes(extension);
         let uploadDirectory = "";
         if (isImage) {
             uploadDirectory = path_1.default.join(__dirname, "../public/images");
@@ -73,6 +86,9 @@ const localStorage = multer_1.default.diskStorage({
         }
         else if (isDocument) {
             uploadDirectory = path_1.default.join(__dirname, "../public/documents");
+        }
+        else if (isVideo) {
+            uploadDirectory = path_1.default.join(__dirname, "../public/videos");
         }
         else {
             return cb(new Error("Unsupported file type"), null);
@@ -93,6 +109,7 @@ const localStorage = multer_1.default.diskStorage({
         const isImage = imagesExtensions.includes(extension);
         const isAudio = audioExtensions.includes(extension);
         const isDocument = documentsExtensions.includes(extension);
+        const isVideo = videoExtensions.includes(extension);
         let relativePath = "";
         if (isImage)
             relativePath = `/public/images/${filename}`;
@@ -100,6 +117,8 @@ const localStorage = multer_1.default.diskStorage({
             relativePath = `/public/audio/${filename}`;
         if (isDocument)
             relativePath = `/public/documents/${filename}`;
+        if (isDocument)
+            relativePath = `/public/videos/${filename}`;
         // Add the path to req.body using the field name
         req.body[file.fieldname] = relativePath;
         cb(null, filename);
@@ -111,13 +130,14 @@ const fileFilter = (req, file, cb) => {
         ...imagesExtensions,
         ...audioExtensions,
         ...documentsExtensions,
+        ...videoExtensions,
     ];
     const extension = path_1.default.extname(file.originalname);
     if (allowedTypes.includes(extension)) {
         cb(null, true);
     }
     else {
-        cb(new ApiError_1.default("Invalid file type. Only images , audio and documents files are allowed", 400), false);
+        cb(new ApiError_1.default("Invalid file type. Only images , audio, documents and videos files are allowed", 400), false);
     }
 };
 // const s3Storage = multerS3({

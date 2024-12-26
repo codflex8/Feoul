@@ -9,39 +9,38 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.ProjectTemplate = void 0;
 const typeorm_1 = require("typeorm");
 const BaseModel_1 = require("./BaseModel");
 const enums_1 = require("../utils/types/enums");
-let User = class User extends BaseModel_1.BaseModel {
-    static getPublicUserDataByEmail(query) {
-        return this.findOne({
-            where: query,
-            select: ["username", "imageUrl", "id", "role"],
-        });
-    }
+const Project_model_1 = require("./Project.model");
+let ProjectTemplate = class ProjectTemplate extends BaseModel_1.BaseModel {
 };
-exports.User = User;
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "username", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "phoneNumber", void 0);
+exports.ProjectTemplate = ProjectTemplate;
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "password", void 0);
+], ProjectTemplate.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], ProjectTemplate.prototype, "number", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], User.prototype, "imageUrl", void 0);
+], ProjectTemplate.prototype, "link", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "enum", enum: enums_1.UsersRoles }),
+    (0, typeorm_1.Column)({ type: "enum", enum: enums_1.CommonStatus, default: enums_1.CommonStatus.archived }),
     __metadata("design:type", String)
-], User.prototype, "role", void 0);
-exports.User = User = __decorate([
-    (0, typeorm_1.Entity)("users")
-], User);
+], ProjectTemplate.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Project_model_1.Project, (proj) => proj.template, {
+        cascade: true,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    }),
+    __metadata("design:type", Array)
+], ProjectTemplate.prototype, "projects", void 0);
+exports.ProjectTemplate = ProjectTemplate = __decorate([
+    (0, typeorm_1.Entity)()
+], ProjectTemplate);

@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const project_controller_1 = require("../controllers/project.controller");
+const validationMiddleware_1 = require("../middleware/validationMiddleware");
+const ProjectValidator_1 = require("../utils/validators/ProjectValidator");
+const auth_controller_1 = require("../controllers/auth.controller");
+const enums_1 = require("../utils/types/enums");
+const uploadFiles_1 = require("../middleware/uploadFiles");
+const router = (0, express_1.Router)();
+router.get("/", project_controller_1.ProjectController.getProjects);
+router.get("/:id", project_controller_1.ProjectController.getProjectById);
+router.post("/", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("document"), (0, validationMiddleware_1.validateData)(ProjectValidator_1.ProjectValidator), project_controller_1.ProjectController.createProject);
+router.put("/:id", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("document"), (0, validationMiddleware_1.validateData)(ProjectValidator_1.ProjectValidator), project_controller_1.ProjectController.updateProject);
+router.delete("/:id", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), project_controller_1.ProjectController.deleteProject);
+exports.default = router;

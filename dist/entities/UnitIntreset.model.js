@@ -9,39 +9,44 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.UnitIntreset = void 0;
 const typeorm_1 = require("typeorm");
 const BaseModel_1 = require("./BaseModel");
-const enums_1 = require("../utils/types/enums");
-let User = class User extends BaseModel_1.BaseModel {
-    static getPublicUserDataByEmail(query) {
-        return this.findOne({
-            where: query,
-            select: ["username", "imageUrl", "id", "role"],
-        });
-    }
+const Unit_model_1 = require("./Unit.model");
+let UnitIntreset = class UnitIntreset extends BaseModel_1.BaseModel {
 };
-exports.User = User;
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "username", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "phoneNumber", void 0);
+exports.UnitIntreset = UnitIntreset;
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "password", void 0);
+], UnitIntreset.prototype, "firstName", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UnitIntreset.prototype, "lastName", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UnitIntreset.prototype, "phoneNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UnitIntreset.prototype, "area", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], User.prototype, "imageUrl", void 0);
+], UnitIntreset.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "enum", enum: enums_1.UsersRoles }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], User.prototype, "role", void 0);
-exports.User = User = __decorate([
-    (0, typeorm_1.Entity)("users")
-], User);
+], UnitIntreset.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => Unit_model_1.Unit, (unit) => unit.interests, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    }),
+    __metadata("design:type", Unit_model_1.Unit)
+], UnitIntreset.prototype, "unit", void 0);
+exports.UnitIntreset = UnitIntreset = __decorate([
+    (0, typeorm_1.Entity)()
+], UnitIntreset);

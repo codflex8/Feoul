@@ -9,24 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseModel = void 0;
+exports.MapLocations = void 0;
 const typeorm_1 = require("typeorm");
-class BaseModel extends typeorm_1.BaseEntity {
-}
-exports.BaseModel = BaseModel;
+const BaseModel_1 = require("./BaseModel");
+let MapLocations = class MapLocations extends BaseModel_1.BaseModel {
+};
+exports.MapLocations = MapLocations;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], BaseModel.prototype, "id", void 0);
+], MapLocations.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], BaseModel.prototype, "createdAt", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], MapLocations.prototype, "type", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], BaseModel.prototype, "updatedAt", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], MapLocations.prototype, "lat", void 0);
 __decorate([
-    (0, typeorm_1.DeleteDateColumn)(),
-    __metadata("design:type", Date)
-], BaseModel.prototype, "deletedAt", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], MapLocations.prototype, "lng", void 0);
+exports.MapLocations = MapLocations = __decorate([
+    (0, typeorm_1.Entity)()
+], MapLocations);

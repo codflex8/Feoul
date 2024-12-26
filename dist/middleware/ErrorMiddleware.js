@@ -19,6 +19,7 @@ const sendErrorForProd = (err, res) => res.status(err.statusCode).json({
 const handleJwtInvalidSignature = () => new ApiError_1.default("Invalid token, please login again..", 401);
 const handleJwtExpired = () => new ApiError_1.default("Expired token, please login again..", 401);
 const globalError = (err, req, res, next) => {
+    console.log("ddddddd", err);
     err.statusCode = err.statusCode || 500;
     logger_1.httpLogger.error(err.message, { error: err.stack });
     if (process.env.NODE_ENV === "development") {
