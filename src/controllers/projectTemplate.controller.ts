@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { ProjectTemplate } from "../entities/ProjectTemplate.model";
-import { Project } from "../entities/Project.model";
-import ApiError from "../utils/ApiError";
 import { getPaginationData } from "../utils/getPaginationData";
 import { GenericResponse } from "../utils/GenericResponse";
 import { ProjectTemplateType } from "../utils/validators/ProjectTemplateValidator";
@@ -12,18 +10,18 @@ export class ProjectTemplateController {
     res: Response
   ): Promise<void> {
     try {
-      const { name, number, link, status, projectId } = req.body;
-      const project = await Project.findOneBy({ id: projectId });
-      if (!project) {
-        throw new ApiError(req.t("project-not-found"), 400);
-      }
+      const { name, number, link, status } = req.body;
+      // const project = await Project.findOneBy({ id: projectId });
+      // if (!project) {
+      //   throw new ApiError(req.t("project-not-found"), 400);
+      // }
       const projectTemplate = ProjectTemplate.create({
         name,
         number,
         link,
         status,
       });
-      // await projectTemplate.save();
+      await projectTemplate.save();
       res.status(201).json(projectTemplate);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -100,10 +98,10 @@ export class ProjectTemplateController {
       const projectTemplate = await ProjectTemplate.findOneBy({
         id: req.params.id,
       });
-      const project = await Project.findOneBy({ id: req.body.projectId });
-      if (!project) {
-        throw new ApiError(req.t("project-not-found"), 400);
-      }
+      // const project = await Project.findOneBy({ id: req.body.projectId });
+      // if (!project) {
+      //   throw new ApiError(req.t("project-not-found"), 400);
+      // }
       if (!projectTemplate) {
         res.status(404).json({ message: req.t("not-found") });
         return;

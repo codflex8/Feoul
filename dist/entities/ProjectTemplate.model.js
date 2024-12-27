@@ -35,9 +35,9 @@ __decorate([
 ], ProjectTemplate.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => Project_model_1.Project, (proj) => proj.template, {
-        cascade: true,
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
+        // cascade: true,
+        onDelete: "SET NULL",
+        onUpdate: "SET NULL",
     }),
     __metadata("design:type", Array)
 ], ProjectTemplate.prototype, "projects", void 0);

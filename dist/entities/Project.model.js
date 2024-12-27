@@ -57,8 +57,8 @@ __decorate([
 ], Project.prototype, "units", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => ProjectTemplate_model_1.ProjectTemplate, {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+        onUpdate: "SET NULL",
     }),
     __metadata("design:type", ProjectTemplate_model_1.ProjectTemplate)
 ], Project.prototype, "template", void 0);

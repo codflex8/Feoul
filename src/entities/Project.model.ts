@@ -36,8 +36,8 @@ export class Project extends BaseModel {
   units!: Unit[];
 
   @ManyToOne(() => ProjectTemplate, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: "SET NULL",
+    onUpdate: "SET NULL",
   })
   template!: ProjectTemplate;
 

@@ -19,9 +19,9 @@ export class ProjectTemplate extends BaseModel {
   status!: CommonStatus;
 
   @OneToMany(() => Project, (proj) => proj.template, {
-    cascade: true,
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    // cascade: true,
+    onDelete: "SET NULL",
+    onUpdate: "SET NULL",
   })
   projects!: Project[];
 }
