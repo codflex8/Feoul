@@ -36,32 +36,32 @@ class UnitIntresetController {
             });
             const querable = UnitIntreset_model_1.UnitIntreset.createQueryBuilder("unitIntreset").leftJoin("unitIntreset.unit", "unit");
             if (firstName) {
-                querable.where("LOWER(unitIntreset.firstName) LIKE LOWER(:firstName)", {
+                querable.andWhere("LOWER(unitIntreset.firstName) LIKE LOWER(:firstName)", {
                     firstName: `%${firstName}%`,
                 });
             }
             if (lastName) {
-                querable.where("LOWER(unitIntreset.lastName) LIKE LOWER(:lastName)", {
+                querable.andWhere("LOWER(unitIntreset.lastName) LIKE LOWER(:lastName)", {
                     lastName: `%${lastName}%`,
                 });
             }
             if (area) {
-                querable.where("unitIntreset.area = :area", {
+                querable.andWhere("unitIntreset.area = :area", {
                     area,
                 });
             }
             if (phoneNumber) {
-                querable.where("unitIntreset.phoneNumber = :phoneNumber", {
+                querable.andWhere("unitIntreset.phoneNumber = :phoneNumber", {
                     phoneNumber,
                 });
             }
             if (email) {
-                querable.where("unitIntreset.email = :email", {
+                querable.andWhere("unitIntreset.email = :email", {
                     email,
                 });
             }
             if (status) {
-                querable.where("LOWER(unitIntreset.status) = LOWER(:status)", {
+                querable.andWhere("LOWER(unitIntreset.status) = LOWER(:status)", {
                     status,
                 });
             }

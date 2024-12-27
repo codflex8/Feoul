@@ -31,15 +31,15 @@ class ProjectTemplateController {
             const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
             const querable = ProjectTemplate_model_1.ProjectTemplate.createQueryBuilder("projectTemplate");
             if (name) {
-                querable.where("LOWER(projectTemplate.name) LIKE LOWER(:name)", {
+                querable.andWhere("LOWER(projectTemplate.name) LIKE LOWER(:name)", {
                     name: `%${name}%`,
                 });
             }
             if (number) {
-                querable.where("projectTemplate.number = :number", { number });
+                querable.andWhere("projectTemplate.number = :number", { number });
             }
             if (status) {
-                querable.where("LOWER(projectTemplate.status) = LOWER(:status)", {
+                querable.andWhere("LOWER(projectTemplate.status) = LOWER(:status)", {
                     status,
                 });
             }

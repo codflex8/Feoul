@@ -49,7 +49,7 @@ export class UnitFloorController {
         "unit"
       );
       if (name) {
-        querable.where("LOWER(unitFloor.name) LIKE LOWER(:name)", {
+        querable.andWhere("LOWER(unitFloor.name) LIKE LOWER(:name)", {
           name: `%${name}%`,
         });
       }

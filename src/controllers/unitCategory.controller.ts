@@ -45,12 +45,12 @@ export class UnitCategoryController {
       const { skip, take } = getPaginationData({ page, pageSize });
       const querable = UnitCategories.createQueryBuilder("unitCategory");
       if (name) {
-        querable.where("LOWER(unitCategory.name) LIKE LOWER(:name)", {
+        querable.andWhere("LOWER(unitCategory.name) LIKE LOWER(:name)", {
           name: `%${name}%`,
         });
       }
       if (status) {
-        querable.where("LOWER(unitCategory.status) = LOWER(:status)", {
+        querable.andWhere("LOWER(unitCategory.status) = LOWER(:status)", {
           status,
         });
       }

@@ -36,12 +36,12 @@ class ProjectFacilitiesController {
             const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
             const querable = ProjectFacilities_model_1.ProjectFacilities.createQueryBuilder("projectFacilities").leftJoin("projectFacilities.project", "project");
             if (name) {
-                querable.where("LOWER(projectFacilities.name) LIKE LOWER(:name)", {
+                querable.andWhere("LOWER(projectFacilities.name) LIKE LOWER(:name)", {
                     name: `%${name}%`,
                 });
             }
             if (projectId) {
-                querable.where("project.id = :projectId", { projectId });
+                querable.andWhere("project.id = :projectId", { projectId });
             }
             const [projectFacilitiess, count] = await querable
                 .skip(skip)

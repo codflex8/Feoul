@@ -25,12 +25,12 @@ class MapLocationController {
             const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
             const querable = MapLocations_model_1.MapLocations.createQueryBuilder("mapLocation");
             if (name) {
-                querable.where("LOWER(mapLocation.name) LIKE LOWER(:name)", {
+                querable.andWhere("LOWER(mapLocation.name) LIKE LOWER(:name)", {
                     name: `%${name}%`,
                 });
             }
             if (type) {
-                querable.where("LOWER(mapLocation.type) LIKE LOWER(:type)", {
+                querable.andWhere("LOWER(mapLocation.type) LIKE LOWER(:type)", {
                     type: `%${type}%`,
                 });
             }

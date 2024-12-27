@@ -45,22 +45,22 @@ export class ProjectController {
         "units"
       );
       if (name) {
-        querable.where("LOWER(project.name) LIKE LOWER(:name)", {
+        querable.andWhere("LOWER(project.name) LIKE LOWER(:name)", {
           name: `%${name}%`,
         });
       }
       if (city) {
-        querable.where("LOWER(project.city) LIKE LOWER(:city)", {
+        querable.andWhere("LOWER(project.city) LIKE LOWER(:city)", {
           city: `%${city}%`,
         });
       }
       if (number) {
-        querable.where("project.number = :number", {
+        querable.andWhere("project.number = :number", {
           number,
         });
       }
       if (status) {
-        querable.where("LOWER(project.status) = :LOWER(status)", {
+        querable.andWhere("LOWER(project.status) = :LOWER(status)", {
           status,
         });
       }

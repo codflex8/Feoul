@@ -32,7 +32,7 @@ class UnitFloorController {
             const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
             const querable = UnitFloor_model_1.UnitFloor.createQueryBuilder("unitFloor").leftJoin("unitFloor.unit", "unit");
             if (name) {
-                querable.where("LOWER(unitFloor.name) LIKE LOWER(:name)", {
+                querable.andWhere("LOWER(unitFloor.name) LIKE LOWER(:name)", {
                     name: `%${name}%`,
                 });
             }
