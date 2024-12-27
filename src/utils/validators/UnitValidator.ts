@@ -44,7 +44,7 @@ export const unitIntresetValidation = z.object({
   phoneNumber: z.string(),
   area: z.string(),
   email: z.string().optional(),
-  status: z.string(),
+  // status: z.string(),
   unitId: z.string(),
 });
 

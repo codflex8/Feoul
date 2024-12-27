@@ -44,7 +44,7 @@ exports.unitIntresetValidation = zod_1.z.object({
     phoneNumber: zod_1.z.string(),
     area: zod_1.z.string(),
     email: zod_1.z.string().optional(),
-    status: zod_1.z.string(),
+    // status: z.string(),
     unitId: zod_1.z.string(),
 });
 exports.default = UnitValidator;
