@@ -5,5 +5,5 @@ export const addEmpolyeeValidator = z.object({
   username: z.string().trim().min(3),
   password: z.string().min(6),
   imageUrl: z.string().optional().nullable(),
-  role: z.nativeEnum(UsersRoles).optional().default(UsersRoles.Employee),
+  role: z.nativeEnum(UsersRoles).default(UsersRoles.Employee),
 });

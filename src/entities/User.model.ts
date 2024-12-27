@@ -16,7 +16,7 @@ export class User extends BaseModel {
   @Column({ nullable: true })
   imageUrl?: string;
 
-  @Column({ type: "enum", enum: UsersRoles })
+  @Column({ type: "enum", enum: UsersRoles, default: UsersRoles.Employee })
   role!: UsersRoles;
 
   static getPublicUserDataByEmail(query: FindOptionsWhere<User>) {

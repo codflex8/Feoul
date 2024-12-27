@@ -12,6 +12,7 @@ export class EmployeeController {
     next: NextFunction
   ) {
     const { username, password, image, role } = req.body;
+    console.log("roleeeeee", role);
     const isUserExist = await User.findOne({
       where: {
         username: Equal(req.body.username),
@@ -35,8 +36,8 @@ export class EmployeeController {
 
   public static async getEmployees(req: Request, res: Response) {
     const employees = await User.find({
-      where: { role: UsersRoles.Employee },
-      select: ["id", "username", "imageUrl"],
+      // where: { role: UsersRoles.Employee },
+      // select: ["id", "username", "imageUrl"],
     });
     res.status(200).json({ employees });
   }

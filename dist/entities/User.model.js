@@ -39,7 +39,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "imageUrl", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "enum", enum: enums_1.UsersRoles }),
+    (0, typeorm_1.Column)({ type: "enum", enum: enums_1.UsersRoles, default: enums_1.UsersRoles.Employee }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 exports.User = User = __decorate([

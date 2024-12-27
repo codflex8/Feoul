@@ -12,6 +12,7 @@ const enums_1 = require("../utils/types/enums");
 class EmployeeController {
     static async addEmployee(req, res, next) {
         const { username, password, image, role } = req.body;
+        console.log("roleeeeee", role);
         const isUserExist = await User_model_1.User.findOne({
             where: {
                 username: (0, typeorm_1.Equal)(req.body.username),
@@ -33,8 +34,8 @@ class EmployeeController {
     }
     static async getEmployees(req, res) {
         const employees = await User_model_1.User.find({
-            where: { role: enums_1.UsersRoles.Employee },
-            select: ["id", "username", "imageUrl"],
+        // where: { role: UsersRoles.Employee },
+        // select: ["id", "username", "imageUrl"],
         });
         res.status(200).json({ employees });
     }
