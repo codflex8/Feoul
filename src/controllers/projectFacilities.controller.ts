@@ -47,7 +47,7 @@ export class ProjectFacilitiesController {
         });
       }
       if (projectId) {
-        querable.where("project = :projectId", { projectId });
+        querable.where("project.id = :projectId", { projectId });
       }
       const [projectFacilitiess, count] = await querable
         .skip(skip)
