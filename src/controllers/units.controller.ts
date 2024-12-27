@@ -67,38 +67,38 @@ export class UnitController {
       const querable = Unit.createQueryBuilder("unit")
         .leftJoin("unit.project", "project")
         .leftJoinAndSelect("unit.category", "category");
-      if (projectId) {
-        querable.where("category.id = :categoryId", {
+      if (categoryId) {
+        querable.andWhere("category.id = :categoryId", {
           categoryId,
         });
       }
       if (projectId) {
-        querable.where("project.id = :projectId", {
+        querable.andWhere("project.id = :projectId", {
           projectId,
         });
       }
       if (name) {
-        querable.where("LOWER(unit.name) LIKE LOWER(:name)", {
+        querable.andWhere("LOWER(unit.name) LIKE LOWER(:name)", {
           name: `%${name}%`,
         });
       }
       if (number) {
-        querable.where("unit.number = :number", {
+        querable.andWhere("unit.number = :number", {
           number,
         });
       }
       if (status) {
-        querable.where("LOWER(unit.status) = :LOWER(status)", {
+        querable.andWhere("LOWER(unit.status) = :LOWER(status)", {
           status,
         });
       }
       if (priceFrom) {
-        querable.where("unit.price >= :priceFrom", {
+        querable.andWhere("unit.price >= :priceFrom", {
           priceFrom,
         });
       }
       if (priceTo) {
-        querable.where("unit.price <= :priceTo", {
+        querable.andWhere("unit.price <= :priceTo", {
           priceTo,
         });
       }
