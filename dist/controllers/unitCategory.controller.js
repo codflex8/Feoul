@@ -1,23 +1,18 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnitCategoryController = void 0;
 const UnitCategories_model_1 = require("../entities/UnitCategories.model");
 const getPaginationData_1 = require("../utils/getPaginationData");
 const GenericResponse_1 = require("../utils/GenericResponse");
-const ApiError_1 = __importDefault(require("../utils/ApiError"));
-const Unit_model_1 = require("../entities/Unit.model");
 class UnitCategoryController {
     // Create a new unit category
     static async createUnitCategory(req, res) {
         try {
-            const unit = await Unit_model_1.Unit.findOneBy({ id: req.body.unitId });
-            if (!unit) {
-                throw new ApiError_1.default(req.t("unit-not-found"), 404);
-            }
-            const newUnitCategory = UnitCategories_model_1.UnitCategories.create(req.body);
+            // const unit = await Unit.findOneBy({ id: req.body.unitId });
+            // if (!unit) {
+            //   throw new ApiError(req.t("unit-not-found"), 404);
+            // }
+            const newUnitCategory = UnitCategories_model_1.UnitCategories.create({ ...req.body });
             await newUnitCategory.save();
             res.status(201).json(newUnitCategory);
         }
@@ -79,10 +74,10 @@ class UnitCategoryController {
                 res.status(404).json({ message: req.t("not-found") });
                 return;
             }
-            const unit = await Unit_model_1.Unit.findOneBy({ id: req.body.unitId });
-            if (!unit) {
-                throw new ApiError_1.default(req.t("unit-not-found"), 404);
-            }
+            // const unit = await Unit.findOneBy({ id: req.body.unitId });
+            // if (!unit) {
+            //   throw new ApiError(req.t("unit-not-found"), 404);
+            // }
             Object.assign(unitCategory, req.body);
             await unitCategory.save();
             res.status(200).json(unitCategory);

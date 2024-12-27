@@ -30,7 +30,7 @@ exports.unitCategoryValidation = zod_1.z.object({
     color: zod_1.z.string(),
     number: zod_1.z.string().transform((val) => Number(val)),
     status: zod_1.z.nativeEnum(enums_1.CommonStatus).default(enums_1.CommonStatus.archived),
-    unitId: zod_1.z.string(),
+    // unitId: z.string(),
 });
 exports.unitFloorValidation = zod_1.z.object({
     name: zod_1.z.string(),

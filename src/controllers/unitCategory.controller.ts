@@ -13,11 +13,11 @@ export class UnitCategoryController {
     res: Response
   ): Promise<void> {
     try {
-      const unit = await Unit.findOneBy({ id: req.body.unitId });
-      if (!unit) {
-        throw new ApiError(req.t("unit-not-found"), 404);
-      }
-      const newUnitCategory = UnitCategories.create(req.body);
+      // const unit = await Unit.findOneBy({ id: req.body.unitId });
+      // if (!unit) {
+      //   throw new ApiError(req.t("unit-not-found"), 404);
+      // }
+      const newUnitCategory = UnitCategories.create({ ...req.body });
       await newUnitCategory.save();
       res.status(201).json(newUnitCategory);
     } catch (error: any) {
@@ -95,10 +95,10 @@ export class UnitCategoryController {
         res.status(404).json({ message: req.t("not-found") });
         return;
       }
-      const unit = await Unit.findOneBy({ id: req.body.unitId });
-      if (!unit) {
-        throw new ApiError(req.t("unit-not-found"), 404);
-      }
+      // const unit = await Unit.findOneBy({ id: req.body.unitId });
+      // if (!unit) {
+      //   throw new ApiError(req.t("unit-not-found"), 404);
+      // }
       Object.assign(unitCategory, req.body);
 
       await unitCategory.save();

@@ -28,7 +28,7 @@ export const unitCategoryValidation = z.object({
   color: z.string(),
   number: z.string().transform((val) => Number(val)),
   status: z.nativeEnum(CommonStatus).default(CommonStatus.archived),
-  unitId: z.string(),
+  // unitId: z.string(),
 });
 
 export const unitFloorValidation = z.object({
