@@ -10,7 +10,9 @@
     "migration:generate": "npx typeorm-ts-node-commonjs migration:generate",
     "migration:create": "npm run typeorm migration:create -- -n",
     "migration:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
-    "migration:revert": "npm run typeorm migration:revert"
+    "migration:revert": "npm run typeorm migration:revert",
+    "prod:apply:migrations": "typeorm migration:run -d ./dist/data-source.js"
+
   },
   "dependencies": {
     "axios": "^1.7.9",
