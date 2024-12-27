@@ -18,6 +18,7 @@ export class UnitFloorController {
         throw new ApiError("unit not found", 404);
       }
       const newUnitFloor = UnitFloor.create(req.body);
+      newUnitFloor.unit = unit;
       await newUnitFloor.save();
       res.status(201).json(newUnitFloor);
     } catch (error: any) {
@@ -44,10 +45,9 @@ export class UnitFloorController {
     try {
       const { page, pageSize, name, index, unitId } = req.query;
       const { skip, take } = getPaginationData({ page, pageSize });
-      const querable = UnitFloor.createQueryBuilder("unitFloor").leftJoin(
-        "unitFloor.unit",
-        "unit"
-      );
+      const querable = UnitFloor.createQueryBuilder(
+        "unitFloor"
+      ).leftJoinAndSelect("unitFloor.unit", "unit");
       if (name) {
         querable.andWhere("LOWER(unitFloor.name) LIKE LOWER(:name)", {
           name: `%${name}%`,
