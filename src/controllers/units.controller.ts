@@ -52,10 +52,31 @@ export class UnitController {
     res: Response
   ): Promise<void> {
     try {
-      const { page, pageSize, name, number, status, priceFrom, priceTo } =
-        req.query;
+      const {
+        page,
+        pageSize,
+        name,
+        number,
+        status,
+        priceFrom,
+        priceTo,
+        projectId,
+        categoryId,
+      } = req.query;
       const { skip, take } = getPaginationData({ page, pageSize });
-      const querable = Unit.createQueryBuilder("unit");
+      const querable = Unit.createQueryBuilder("unit")
+        .leftJoin("unit.project", "project")
+        .leftJoinAndSelect("unit.category", "category");
+      if (projectId) {
+        querable.where("category.id = :categoryId", {
+          categoryId,
+        });
+      }
+      if (projectId) {
+        querable.where("project.id = :projectId", {
+          projectId,
+        });
+      }
       if (name) {
         querable.where("LOWER(unit.name) LIKE LOWER(:name)", {
           name: `%${name}%`,

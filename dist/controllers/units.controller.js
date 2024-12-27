@@ -39,9 +39,21 @@ class UnitController {
     // Get all units with optional filters
     static async getUnits(req, res) {
         try {
-            const { page, pageSize, name, number, status, priceFrom, priceTo } = req.query;
+            const { page, pageSize, name, number, status, priceFrom, priceTo, projectId, categoryId, } = req.query;
             const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
-            const querable = Unit_model_1.Unit.createQueryBuilder("unit");
+            const querable = Unit_model_1.Unit.createQueryBuilder("unit")
+                .leftJoin("unit.project", "project")
+                .leftJoinAndSelect("unit.category", "category");
+            if (projectId) {
+                querable.where("category.id = :categoryId", {
+                    categoryId,
+                });
+            }
+            if (projectId) {
+                querable.where("project.id = :projectId", {
+                    projectId,
+                });
+            }
             if (name) {
                 querable.where("LOWER(unit.name) LIKE LOWER(:name)", {
                     name: `%${name}%`,
