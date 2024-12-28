@@ -68,3 +68,7 @@ AppDataSource.initialize()
   .catch((error) => {
     console.error("Database connection failed:", error);
   });
+
+process.on("unhandledRejection", (reason: string, p: Promise<any>) => {
+  console.error("Unhandled Rejection at:", p, "reason:", reason);
+});

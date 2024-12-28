@@ -1,4 +1,8 @@
 { 
+  "unit-category-number-used":"unit category number is used",
+  "unit-number-used":"unit number is used",
+  "template-number-used":"template number is used",
+  "project-number-used":"project number is used",
   "template-not-found":"template not found",
   "category-not-found":"category not found",
   "not-found":"not found",

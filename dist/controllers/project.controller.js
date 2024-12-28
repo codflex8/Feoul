@@ -12,13 +12,17 @@ const ApiError_1 = __importDefault(require("../utils/ApiError"));
 class ProjectController {
     // Create a new project
     static async createProject(req, res) {
-        const { document, templateId } = req.body;
+        const { document, templateId, number } = req.body;
         try {
             const projectTemplate = await ProjectTemplate_model_1.ProjectTemplate.findOneBy({
                 id: templateId,
             });
             if (!projectTemplate) {
                 throw new ApiError_1.default(req.t("template-not-found"), 400);
+            }
+            const isNumberExist = await Project_model_1.Project.getItemByNumber(number);
+            if (isNumberExist) {
+                throw new ApiError_1.default(req.t("project-number-used"), 409);
             }
             const project = Project_model_1.Project.create({
                 ...req.body,
@@ -35,7 +39,7 @@ class ProjectController {
     // Get all projects with optional filters
     static async getProjects(req, res) {
         try {
-            const { name, number, status, city, page, pageSize } = req.query;
+            const { name, number, status, city, page, pageSize, fromDate, toDate } = req.query;
             const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
             const querable = Project_model_1.Project.createQueryBuilder("project").leftJoinAndSelect("project.units", "units");
             if (name) {
@@ -56,6 +60,16 @@ class ProjectController {
             if (status) {
                 querable.andWhere("LOWER(project.status) = :LOWER(status)", {
                     status,
+                });
+            }
+            if (fromDate) {
+                querable.andWhere("project.createdAt >= :fromDate", {
+                    fromDate,
+                });
+            }
+            if (toDate) {
+                querable.andWhere("project.createdAt <= :toDate", {
+                    toDate,
                 });
             }
             const [projects, count] = await querable
@@ -87,7 +101,7 @@ class ProjectController {
     // Update a project by ID
     static async updateProject(req, res) {
         try {
-            const { document, templateId } = req.body;
+            const { document, templateId, number } = req.body;
             const projectTemplate = await ProjectTemplate_model_1.ProjectTemplate.findOneBy({
                 id: templateId,
             });
@@ -98,6 +112,10 @@ class ProjectController {
             if (!project) {
                 res.status(404).json({ message: req.t("project-not-found") });
                 return;
+            }
+            const isNumberExist = await Project_model_1.Project.getItemByNumber(number);
+            if (isNumberExist && isNumberExist.id !== project.id) {
+                throw new ApiError_1.default(req.t("project-number-used"), 409);
             }
             project.name = req.body.name;
             project.number = req.body.number;

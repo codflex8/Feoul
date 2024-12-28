@@ -2,14 +2,12 @@ import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { BaseModel } from "./BaseModel";
 import { CommonStatus } from "../utils/types/enums";
 import { Project } from "./Project.model";
+import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
-export class ProjectTemplate extends BaseModel {
+export class ProjectTemplate extends BaseNumberModel {
   @Column()
   name!: string;
-
-  @Column()
-  number!: number;
 
   // ToDo: check what is this link for
   @Column({ nullable: true })

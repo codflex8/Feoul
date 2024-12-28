@@ -12,9 +12,10 @@ import { UsersRoles } from "../utils/types/enums";
 import unitIntresetRouter from "./unitIntreset.router";
 import mapLocationsRouter from "./mapLocation.router";
 import { HomeController } from "../controllers/home.controller";
+import expressAsyncHandler from "express-async-handler";
 
 export const setRoutes = (app: Express) => {
-  app.get("/api/v1/home", HomeController.index);
+  app.get("/api/v1/home", expressAsyncHandler(HomeController.index));
   app.use("/api/v1/auth", authRouter);
   app.use(
     "/api/v1/employee",

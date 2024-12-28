@@ -5,14 +5,12 @@ import { UnitCategories } from "./UnitCategories.model";
 import { UnitFloor } from "./UnitFloor.model";
 import { UnitIntreset } from "./UnitIntreset.model";
 import { UnitStatus } from "../utils/validators/UnitValidator";
+import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
-export class Unit extends BaseModel {
+export class Unit extends BaseNumberModel {
   @Column()
   name!: string;
-
-  @Column()
-  number!: number;
 
   @Column()
   color!: string;

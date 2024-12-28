@@ -1,17 +1,21 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProjectTemplateController = void 0;
 const ProjectTemplate_model_1 = require("../entities/ProjectTemplate.model");
 const getPaginationData_1 = require("../utils/getPaginationData");
 const GenericResponse_1 = require("../utils/GenericResponse");
+const ApiError_1 = __importDefault(require("../utils/ApiError"));
 class ProjectTemplateController {
     static async createProjectTemplate(req, res) {
         try {
             const { name, number, link, status } = req.body;
-            // const project = await Project.findOneBy({ id: projectId });
-            // if (!project) {
-            //   throw new ApiError(req.t("project-not-found"), 400);
-            // }
+            const isTemplateExist = await ProjectTemplate_model_1.ProjectTemplate.getItemByNumber(number);
+            if (isTemplateExist) {
+                throw new ApiError_1.default(req.t("template-number-used"), 409);
+            }
             const projectTemplate = ProjectTemplate_model_1.ProjectTemplate.create({
                 name,
                 number,
@@ -75,10 +79,10 @@ class ProjectTemplateController {
             const projectTemplate = await ProjectTemplate_model_1.ProjectTemplate.findOneBy({
                 id: req.params.id,
             });
-            // const project = await Project.findOneBy({ id: req.body.projectId });
-            // if (!project) {
-            //   throw new ApiError(req.t("project-not-found"), 400);
-            // }
+            const isTemplateExist = await ProjectTemplate_model_1.ProjectTemplate.getItemByNumber(req.body.number);
+            if (isTemplateExist && isTemplateExist.id !== projectTemplate?.id) {
+                throw new ApiError_1.default(req.t("template-number-used"), 409);
+            }
             if (!projectTemplate) {
                 res.status(404).json({ message: req.t("not-found") });
                 return;

@@ -34,7 +34,7 @@ class UnitIntresetController {
                 page: Number(page ?? 1),
                 pageSize: Number(pageSize ?? 10),
             });
-            const querable = UnitIntreset_model_1.UnitIntreset.createQueryBuilder("unitIntreset").leftJoin("unitIntreset.unit", "unit");
+            const querable = UnitIntreset_model_1.UnitIntreset.createQueryBuilder("unitIntreset").leftJoinAndSelect("unitIntreset.unit", "unit");
             if (firstName) {
                 querable.andWhere("LOWER(unitIntreset.firstName) LIKE LOWER(:firstName)", {
                     firstName: `%${firstName}%`,

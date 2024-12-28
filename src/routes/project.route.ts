@@ -5,18 +5,19 @@ import { ProjectValidator } from "../utils/validators/ProjectValidator";
 import { AuthController } from "../controllers/auth.controller";
 import { UsersRoles } from "../utils/types/enums";
 import { upload } from "../middleware/uploadFiles";
+import expressAsyncHandler from "express-async-handler";
 
 const router = Router();
 
-router.get("/", ProjectController.getProjects);
-router.get("/:id", ProjectController.getProjectById);
+router.get("/", expressAsyncHandler(ProjectController.getProjects));
+router.get("/:id", expressAsyncHandler(ProjectController.getProjectById));
 router.post(
   "/",
   AuthController.protect,
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("document"),
   validateData(ProjectValidator),
-  ProjectController.createProject
+  expressAsyncHandler(ProjectController.createProject)
 );
 router.put(
   "/:id",
@@ -24,13 +25,13 @@ router.put(
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("document"),
   validateData(ProjectValidator),
-  ProjectController.updateProject
+  expressAsyncHandler(ProjectController.updateProject)
 );
 router.delete(
   "/:id",
   AuthController.protect,
   AuthController.allowedto([UsersRoles.Admin]),
-  ProjectController.deleteProject
+  expressAsyncHandler(ProjectController.deleteProject)
 );
 
 export default router;

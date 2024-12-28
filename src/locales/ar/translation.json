@@ -1,4 +1,8 @@
 {
+  "unit-category-number-used":"رقم الفئة مستخدم مسبقًا",
+  "unit-number-used":"رقم الوحدة مستخدم مسبقًا",
+  "project-number-used":"رقم المشروع مستخدم مسبقًا",
+  "template-number-used":"رقم النموذج مستخدم مسبقًا",
   "template-not-found":"نموذج المشروع غير موجود",
   "category-not-found":"نموذج الوحدة غير موجود",
   "delete-success":"تم الحذف بنجاح",

@@ -5,14 +5,18 @@ import { upload } from "../middleware/uploadFiles";
 import { AuthController } from "../controllers/auth.controller";
 import { UsersRoles } from "../utils/types/enums";
 import { UnitCategoryController } from "../controllers/unitCategory.controller";
+import expressAsyncHandler from "express-async-handler";
 
 const router = Router();
 
 // Get all units
-router.get("/", UnitCategoryController.getUnitCategories);
+router.get("/", expressAsyncHandler(UnitCategoryController.getUnitCategories));
 
 // Get a single unit by ID
-router.get("/:id", UnitCategoryController.getUnitCategoryById);
+router.get(
+  "/:id",
+  expressAsyncHandler(UnitCategoryController.getUnitCategoryById)
+);
 
 // Create a new unit
 router.post(
@@ -21,7 +25,7 @@ router.post(
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("video"),
   validateData(unitCategoryValidation),
-  UnitCategoryController.createUnitCategory
+  expressAsyncHandler(UnitCategoryController.createUnitCategory)
 );
 
 // Update an existing unit
@@ -31,7 +35,7 @@ router.put(
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("video"),
   validateData(unitCategoryValidation),
-  UnitCategoryController.updateUnitCategory
+  expressAsyncHandler(UnitCategoryController.updateUnitCategory)
 );
 
 // Delete a unit
@@ -39,7 +43,7 @@ router.delete(
   "/:id",
   AuthController.protect,
   AuthController.allowedto([UsersRoles.Admin]),
-  UnitCategoryController.deleteUnitCategory
+  expressAsyncHandler(UnitCategoryController.deleteUnitCategory)
 );
 
 export default router;

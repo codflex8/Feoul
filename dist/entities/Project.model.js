@@ -11,22 +11,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Project = void 0;
 const typeorm_1 = require("typeorm");
-const BaseModel_1 = require("./BaseModel");
 const Unit_model_1 = require("./Unit.model");
 const enums_1 = require("../utils/types/enums");
 const ProjectTemplate_model_1 = require("./ProjectTemplate.model");
 const ProjectFacilities_model_1 = require("./ProjectFacilities.model");
-let Project = class Project extends BaseModel_1.BaseModel {
+const BaseNumberModel_1 = require("./BaseNumberModel");
+let Project = class Project extends BaseNumberModel_1.BaseNumberModel {
+    static async getProjectByNumber(number) {
+        const project = await this.findOneBy({ number });
+        return project;
+    }
 };
 exports.Project = Project;
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Project.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Project.prototype, "number", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "enum", enum: enums_1.CommonStatus, default: enums_1.CommonStatus.archived }),
     __metadata("design:type", String)

@@ -11,23 +11,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unit = void 0;
 const typeorm_1 = require("typeorm");
-const BaseModel_1 = require("./BaseModel");
 const Project_model_1 = require("./Project.model");
 const UnitCategories_model_1 = require("./UnitCategories.model");
 const UnitFloor_model_1 = require("./UnitFloor.model");
 const UnitIntreset_model_1 = require("./UnitIntreset.model");
 const UnitValidator_1 = require("../utils/validators/UnitValidator");
-let Unit = class Unit extends BaseModel_1.BaseModel {
+const BaseNumberModel_1 = require("./BaseNumberModel");
+let Unit = class Unit extends BaseNumberModel_1.BaseNumberModel {
 };
 exports.Unit = Unit;
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Unit.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Unit.prototype, "number", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)

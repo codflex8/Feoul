@@ -12,7 +12,6 @@
     "migration:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "migration:revert": "npm run typeorm migration:revert",
     "prod:apply:migrations": "typeorm migration:run -d ./dist/data-source.js"
-
   },
   "dependencies": {
     "axios": "^1.7.9",
@@ -20,6 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
     "http-status-codes": "^2.3.0",
     "i18next": "^24.2.0",
     "i18next-fs-backend": "^2.6.0",

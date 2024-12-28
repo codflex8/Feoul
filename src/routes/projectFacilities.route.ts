@@ -5,11 +5,18 @@ import { UsersRoles } from "../utils/types/enums";
 import { upload } from "../middleware/uploadFiles";
 import { ProjectFacilitiesController } from "../controllers/projectFacilities.controller";
 import { projectFacilitesValidator } from "../utils/validators/ProjectValidator";
+import expressAsyncHandler from "express-async-handler";
 
 const router = Router();
 
-router.get("/", ProjectFacilitiesController.getProjectFacilitiess);
-router.get("/:id", ProjectFacilitiesController.getProjectFacilitiesById);
+router.get(
+  "/",
+  expressAsyncHandler(ProjectFacilitiesController.getProjectFacilitiess)
+);
+router.get(
+  "/:id",
+  expressAsyncHandler(ProjectFacilitiesController.getProjectFacilitiesById)
+);
 router.post(
   "/",
   AuthController.protect,
@@ -22,13 +29,13 @@ router.put(
   AuthController.protect,
   AuthController.allowedto([UsersRoles.Admin]),
   validateData(projectFacilitesValidator),
-  ProjectFacilitiesController.updateProjectFacilities
+  expressAsyncHandler(ProjectFacilitiesController.updateProjectFacilities)
 );
 router.delete(
   "/:id",
   AuthController.protect,
   AuthController.allowedto([UsersRoles.Admin]),
-  ProjectFacilitiesController.deleteProjectFacilities
+  expressAsyncHandler(ProjectFacilitiesController.deleteProjectFacilities)
 );
 
 export default router;

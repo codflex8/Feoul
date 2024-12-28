@@ -4,14 +4,12 @@ import { Unit } from "./Unit.model";
 import { CommonStatus } from "../utils/types/enums";
 import { ProjectTemplate } from "./ProjectTemplate.model";
 import { ProjectFacilities } from "./ProjectFacilities.model";
+import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
-export class Project extends BaseModel {
+export class Project extends BaseNumberModel {
   @Column()
   name!: string;
-
-  @Column()
-  number!: number;
 
   @Column({ type: "enum", enum: CommonStatus, default: CommonStatus.archived })
   status!: CommonStatus;
@@ -47,4 +45,9 @@ export class Project extends BaseModel {
     onUpdate: "CASCADE",
   })
   facilities!: ProjectFacilities[];
+
+  static async getProjectByNumber(number: number) {
+    const project = await this.findOneBy({ number });
+    return project;
+  }
 }

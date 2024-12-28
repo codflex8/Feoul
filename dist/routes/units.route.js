@@ -10,15 +10,16 @@ const UnitValidator_1 = __importDefault(require("../utils/validators/UnitValidat
 const uploadFiles_1 = require("../middleware/uploadFiles");
 const auth_controller_1 = require("../controllers/auth.controller");
 const enums_1 = require("../utils/types/enums");
+const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const router = (0, express_1.Router)();
 // Get all units
-router.get("/", units_controller_1.UnitController.getUnits);
+router.get("/", (0, express_async_handler_1.default)(units_controller_1.UnitController.getUnits));
 // Get a single unit by ID
-router.get("/:id", units_controller_1.UnitController.getUnitById);
+router.get("/:id", (0, express_async_handler_1.default)(units_controller_1.UnitController.getUnitById));
 // Create a new unit
-router.post("/", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), units_controller_1.UnitController.createUnit);
+router.post("/", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.createUnit));
 // Update an existing unit
-router.put("/:id", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), units_controller_1.UnitController.updateUnit);
+router.put("/:id", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.updateUnit));
 // Delete a unit
-router.delete("/:id", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), units_controller_1.UnitController.deleteUnit);
+router.delete("/:id", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, express_async_handler_1.default)(units_controller_1.UnitController.deleteUnit));
 exports.default = router;

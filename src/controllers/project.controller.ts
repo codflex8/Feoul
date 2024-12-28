@@ -5,6 +5,7 @@ import { getPaginationData } from "../utils/getPaginationData";
 import { GenericResponse } from "../utils/GenericResponse";
 import { ProjectTemplate } from "../entities/ProjectTemplate.model";
 import ApiError from "../utils/ApiError";
+import { BaseQuery } from "../utils/types/types";
 
 export class ProjectController {
   // Create a new project
@@ -12,13 +13,17 @@ export class ProjectController {
     req: Request<{}, {}, { document: string } & ProjectType>,
     res: Response
   ): Promise<void> {
-    const { document, templateId } = req.body;
+    const { document, templateId, number } = req.body;
     try {
       const projectTemplate = await ProjectTemplate.findOneBy({
         id: templateId,
       });
       if (!projectTemplate) {
         throw new ApiError(req.t("template-not-found"), 400);
+      }
+      const isNumberExist = await Project.getItemByNumber(number);
+      if (isNumberExist) {
+        throw new ApiError(req.t("project-number-used"), 409);
       }
       const project = Project.create({
         ...req.body,
@@ -34,11 +39,12 @@ export class ProjectController {
 
   // Get all projects with optional filters
   static async getProjects(
-    req: Request<{}, {}, {}, ProjectType & { page: number; pageSize: number }>,
+    req: Request<{}, {}, {}, ProjectType & BaseQuery>,
     res: Response
   ): Promise<void> {
     try {
-      const { name, number, status, city, page, pageSize } = req.query;
+      const { name, number, status, city, page, pageSize, fromDate, toDate } =
+        req.query;
       const { skip, take } = getPaginationData({ page, pageSize });
       const querable = Project.createQueryBuilder("project").leftJoinAndSelect(
         "project.units",
@@ -62,6 +68,16 @@ export class ProjectController {
       if (status) {
         querable.andWhere("LOWER(project.status) = :LOWER(status)", {
           status,
+        });
+      }
+      if (fromDate) {
+        querable.andWhere("project.createdAt >= :fromDate", {
+          fromDate,
+        });
+      }
+      if (toDate) {
+        querable.andWhere("project.createdAt <= :toDate", {
+          toDate,
         });
       }
       const [projects, count] = await querable
@@ -97,7 +113,7 @@ export class ProjectController {
     res: Response
   ): Promise<void> {
     try {
-      const { document, templateId } = req.body;
+      const { document, templateId, number } = req.body;
       const projectTemplate = await ProjectTemplate.findOneBy({
         id: templateId,
       });
@@ -108,6 +124,10 @@ export class ProjectController {
       if (!project) {
         res.status(404).json({ message: req.t("project-not-found") });
         return;
+      }
+      const isNumberExist = await Project.getItemByNumber(number);
+      if (isNumberExist && isNumberExist.id !== project.id) {
+        throw new ApiError(req.t("project-number-used"), 409);
       }
       project.name = req.body.name;
       project.number = req.body.number;

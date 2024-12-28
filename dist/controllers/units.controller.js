@@ -14,7 +14,11 @@ class UnitController {
     // Create a new unit
     static async createUnit(req, res) {
         try {
-            const { video, projectId, categoryId } = req.body;
+            const { video, projectId, categoryId, number } = req.body;
+            const isNumberExist = await Unit_model_1.Unit.getItemByNumber(number);
+            if (isNumberExist) {
+                throw new ApiError_1.default(req.t("unit-number-used"), 409);
+            }
             const project = await Project_model_1.Project.findOneBy({ id: projectId });
             if (!project) {
                 throw new ApiError_1.default(req.t("project_not_found"), 400);
@@ -65,7 +69,7 @@ class UnitController {
                 });
             }
             if (status) {
-                querable.andWhere("LOWER(unit.status) = :LOWER(status)", {
+                querable.andWhere("LOWER(unit.status) = LOWER(:status)", {
                     status,
                 });
             }
@@ -110,6 +114,10 @@ class UnitController {
             if (!unit) {
                 res.status(404).json({ message: req.t("not-found") });
                 return;
+            }
+            const isNumberExist = await Unit_model_1.Unit.getItemByNumber(req.body.number);
+            if (isNumberExist && isNumberExist.id !== unit.id) {
+                throw new ApiError_1.default(req.t("unit-number-used"), 409);
             }
             const project = await Project_model_1.Project.findOneBy({ id: req.body.projectId });
             if (!project) {

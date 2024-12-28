@@ -11,20 +11,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProjectTemplate = void 0;
 const typeorm_1 = require("typeorm");
-const BaseModel_1 = require("./BaseModel");
 const enums_1 = require("../utils/types/enums");
 const Project_model_1 = require("./Project.model");
-let ProjectTemplate = class ProjectTemplate extends BaseModel_1.BaseModel {
+const BaseNumberModel_1 = require("./BaseNumberModel");
+let ProjectTemplate = class ProjectTemplate extends BaseNumberModel_1.BaseNumberModel {
 };
 exports.ProjectTemplate = ProjectTemplate;
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], ProjectTemplate.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], ProjectTemplate.prototype, "number", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

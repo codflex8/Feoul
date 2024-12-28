@@ -4,31 +4,36 @@ import { AuthController } from "../controllers/auth.controller";
 import { validateData } from "../middleware/validationMiddleware";
 import { unitIntresetValidation } from "../utils/validators/UnitValidator";
 import { UnitIntresetController } from "../controllers/unitIntreset.controller";
+import expressAsyncHandler from "express-async-handler";
 
 const router = Router();
 
 // Get all units
-router.get("/", AuthController.protect, UnitIntresetController.getUnitIntreset);
+router.get(
+  "/",
+  AuthController.protect,
+  expressAsyncHandler(UnitIntresetController.getUnitIntreset)
+);
 
 // Get a single unit by ID
 router.get(
   "/:id",
   AuthController.protect,
-  UnitIntresetController.getUnitIntresetById
+  expressAsyncHandler(UnitIntresetController.getUnitIntresetById)
 );
 
 // Create a new unit
 router.post(
   "/",
   validateData(unitIntresetValidation),
-  UnitIntresetController.createUnitIntreset
+  expressAsyncHandler(UnitIntresetController.createUnitIntreset)
 );
 
 // Update an existing unit
 router.put(
   "/:id",
   validateData(unitIntresetValidation),
-  UnitIntresetController.updateUnitIntreset
+  expressAsyncHandler(UnitIntresetController.updateUnitIntreset)
 );
 
 // Delete a unit
@@ -36,7 +41,7 @@ router.delete(
   "/:id",
   AuthController.protect,
   AuthController.allowedto([UsersRoles.Admin]),
-  UnitIntresetController.deleteUnitIntreset
+  expressAsyncHandler(UnitIntresetController.deleteUnitIntreset)
 );
 
 export default router;

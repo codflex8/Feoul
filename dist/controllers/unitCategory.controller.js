@@ -1,17 +1,21 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnitCategoryController = void 0;
 const UnitCategories_model_1 = require("../entities/UnitCategories.model");
 const getPaginationData_1 = require("../utils/getPaginationData");
 const GenericResponse_1 = require("../utils/GenericResponse");
+const ApiError_1 = __importDefault(require("../utils/ApiError"));
 class UnitCategoryController {
     // Create a new unit category
     static async createUnitCategory(req, res) {
         try {
-            // const unit = await Unit.findOneBy({ id: req.body.unitId });
-            // if (!unit) {
-            //   throw new ApiError(req.t("unit-not-found"), 404);
-            // }
+            const isNumberExist = await UnitCategories_model_1.UnitCategories.getItemByNumber(req.body.number);
+            if (isNumberExist) {
+                throw new ApiError_1.default(req.t("unit-category-number-used"), 409);
+            }
             const newUnitCategory = UnitCategories_model_1.UnitCategories.create({ ...req.body });
             await newUnitCategory.save();
             res.status(201).json(newUnitCategory);

@@ -3,6 +3,7 @@ import { ProjectTemplate } from "../entities/ProjectTemplate.model";
 import { getPaginationData } from "../utils/getPaginationData";
 import { GenericResponse } from "../utils/GenericResponse";
 import { ProjectTemplateType } from "../utils/validators/ProjectTemplateValidator";
+import ApiError from "../utils/ApiError";
 
 export class ProjectTemplateController {
   static async createProjectTemplate(
@@ -11,10 +12,10 @@ export class ProjectTemplateController {
   ): Promise<void> {
     try {
       const { name, number, link, status } = req.body;
-      // const project = await Project.findOneBy({ id: projectId });
-      // if (!project) {
-      //   throw new ApiError(req.t("project-not-found"), 400);
-      // }
+      const isTemplateExist = await ProjectTemplate.getItemByNumber(number);
+      if (isTemplateExist) {
+        throw new ApiError(req.t("template-number-used"), 409);
+      }
       const projectTemplate = ProjectTemplate.create({
         name,
         number,
@@ -98,10 +99,12 @@ export class ProjectTemplateController {
       const projectTemplate = await ProjectTemplate.findOneBy({
         id: req.params.id,
       });
-      // const project = await Project.findOneBy({ id: req.body.projectId });
-      // if (!project) {
-      //   throw new ApiError(req.t("project-not-found"), 400);
-      // }
+      const isTemplateExist = await ProjectTemplate.getItemByNumber(
+        req.body.number
+      );
+      if (isTemplateExist && isTemplateExist.id !== projectTemplate?.id) {
+        throw new ApiError(req.t("template-number-used"), 409);
+      }
       if (!projectTemplate) {
         res.status(404).json({ message: req.t("not-found") });
         return;

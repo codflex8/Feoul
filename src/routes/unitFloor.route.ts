@@ -5,14 +5,15 @@ import { AuthController } from "../controllers/auth.controller";
 import { upload } from "../middleware/uploadFiles";
 import { validateData } from "../middleware/validationMiddleware";
 import { unitFloorValidation } from "../utils/validators/UnitValidator";
+import expressAsyncHandler from "express-async-handler";
 
 const router = Router();
 
 // Get all units
-router.get("/", UnitFloorController.getUnitFloor);
+router.get("/", expressAsyncHandler(UnitFloorController.getUnitFloor));
 
 // Get a single unit by ID
-router.get("/:id", UnitFloorController.getUnitFloorById);
+router.get("/:id", expressAsyncHandler(UnitFloorController.getUnitFloorById));
 
 // Create a new unit
 router.post(
@@ -21,7 +22,7 @@ router.post(
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("image"),
   validateData(unitFloorValidation),
-  UnitFloorController.createUnitFloor
+  expressAsyncHandler(UnitFloorController.createUnitFloor)
 );
 
 // Update an existing unit
@@ -31,7 +32,7 @@ router.put(
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("image"),
   validateData(unitFloorValidation),
-  UnitFloorController.updateUnitFloor
+  expressAsyncHandler(UnitFloorController.updateUnitFloor)
 );
 
 // Delete a unit
@@ -39,7 +40,7 @@ router.delete(
   "/:id",
   AuthController.protect,
   AuthController.allowedto([UsersRoles.Admin]),
-  UnitFloorController.deleteUnitFloor
+  expressAsyncHandler(UnitFloorController.deleteUnitFloor)
 );
 
 export default router;

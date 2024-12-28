@@ -3,7 +3,6 @@ import { UnitCategories } from "../entities/UnitCategories.model";
 import { getPaginationData } from "../utils/getPaginationData";
 import { GenericResponse } from "../utils/GenericResponse";
 import ApiError from "../utils/ApiError";
-import { Unit } from "../entities/Unit.model";
 import { UnitCategoryType } from "../utils/validators/UnitValidator";
 
 export class UnitCategoryController {
@@ -13,10 +12,12 @@ export class UnitCategoryController {
     res: Response
   ): Promise<void> {
     try {
-      // const unit = await Unit.findOneBy({ id: req.body.unitId });
-      // if (!unit) {
-      //   throw new ApiError(req.t("unit-not-found"), 404);
-      // }
+      const isNumberExist = await UnitCategories.getItemByNumber(
+        req.body.number
+      );
+      if (isNumberExist) {
+        throw new ApiError(req.t("unit-category-number-used"), 409);
+      }
       const newUnitCategory = UnitCategories.create({ ...req.body });
       await newUnitCategory.save();
       res.status(201).json(newUnitCategory);

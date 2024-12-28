@@ -2,17 +2,15 @@ import { Entity, Column, OneToMany } from "typeorm";
 import { BaseModel } from "./BaseModel";
 import { CommonStatus } from "../utils/types/enums";
 import { Unit } from "./Unit.model";
+import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
-export class UnitCategories extends BaseModel {
+export class UnitCategories extends BaseNumberModel {
   @Column()
   name!: string;
 
   @Column()
   color!: string;
-
-  @Column()
-  number!: number;
 
   @Column({ type: "enum", enum: CommonStatus, default: CommonStatus.archived })
   status!: CommonStatus;

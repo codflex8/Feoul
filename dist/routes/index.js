@@ -17,8 +17,9 @@ const enums_1 = require("../utils/types/enums");
 const unitIntreset_router_1 = __importDefault(require("./unitIntreset.router"));
 const mapLocation_router_1 = __importDefault(require("./mapLocation.router"));
 const home_controller_1 = require("../controllers/home.controller");
+const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const setRoutes = (app) => {
-    app.get("/api/v1/home", home_controller_1.HomeController.index);
+    app.get("/api/v1/home", (0, express_async_handler_1.default)(home_controller_1.HomeController.index));
     app.use("/api/v1/auth", auth_route_1.default);
     app.use("/api/v1/employee", auth_controller_1.AuthController.protect, auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), employee_route_1.default);
     app.use("/api/v1/projects", project_route_1.default);
