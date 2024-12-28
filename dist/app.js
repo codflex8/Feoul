@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const express_1 = __importDefault(require("express"));
-const index_1 = require("./routes/index");
 const data_source_1 = __importDefault(require("./data-source"));
 const path_1 = __importDefault(require("path"));
 const i18next_1 = __importDefault(require("i18next"));
@@ -16,6 +15,7 @@ const ErrorMiddleware_1 = require("./middleware/ErrorMiddleware");
 const ApiError_1 = __importDefault(require("./utils/ApiError"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const logger_1 = require("./utils/logger");
+const routes_1 = require("./routes");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 app.use(express_1.default.json());
@@ -48,7 +48,7 @@ app.use((req, res, next) => {
     });
     next();
 });
-(0, index_1.setRoutes)(app);
+(0, routes_1.setRoutes)(app);
 app.all("*", (req, res, next) => {
     next(new ApiError_1.default(`Can't find this route: ${req.originalUrl}`, 400));
 });

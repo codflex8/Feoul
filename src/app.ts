@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import express, { Request, Response, NextFunction } from "express";
-import { setRoutes } from "./routes/index";
 import AppDataSource from "./data-source";
 import path from "path";
 import i18next from "i18next";
@@ -11,6 +10,7 @@ import { globalError } from "./middleware/ErrorMiddleware";
 import ApiError from "./utils/ApiError";
 import dotenv from "dotenv";
 import { httpLogger } from "./utils/logger";
+import { setRoutes } from "./routes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

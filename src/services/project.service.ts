@@ -1,0 +1,116 @@
+import { TFunction } from "i18next";
+import { Project } from "../entities/Project.model";
+import { ProjectType } from "../utils/validators/ProjectValidator";
+import { BaseQuery } from "../utils/types/types";
+import { ProjectTemplate } from "../entities/ProjectTemplate.model";
+import ApiError from "../utils/ApiError";
+import { getPaginationData } from "../utils/getPaginationData";
+
+export class ProjectService {
+  static async createProject(
+    data: { document: string } & ProjectType,
+    translate: TFunction
+  ) {
+    const { document, templateId, number } = data;
+
+    const projectTemplate = await ProjectTemplate.findOneBy({ id: templateId });
+    if (!projectTemplate) {
+      throw new ApiError(translate("template-not-found"), 400);
+    }
+
+    const isNumberExist = await Project.getItemByNumber(number);
+    if (isNumberExist) {
+      throw new ApiError(translate("project-number-used"), 409);
+    }
+
+    const project = Project.create({
+      ...data,
+      projectDocUrl: document,
+    });
+    project.template = projectTemplate;
+    await project.save();
+    return project;
+  }
+
+  static async getProjects(query: ProjectType & BaseQuery) {
+    const { name, number, status, city, page, pageSize, fromDate, toDate } =
+      query;
+    const { skip, take } = getPaginationData({ page, pageSize });
+
+    const queryBuilder = Project.createQueryBuilder(
+      "project"
+    ).leftJoinAndSelect("project.units", "units");
+
+    if (name) {
+      queryBuilder.andWhere("LOWER(project.name) LIKE LOWER(:name)", {
+        name: `%${name}%`,
+      });
+    }
+    if (city) {
+      queryBuilder.andWhere("LOWER(project.city) LIKE LOWER(:city)", {
+        city: `%${city}%`,
+      });
+    }
+    if (number) {
+      queryBuilder.andWhere("project.number = :number", { number });
+    }
+    if (status) {
+      queryBuilder.andWhere("LOWER(project.status) = LOWER(:status)", {
+        status,
+      });
+    }
+    if (fromDate) {
+      queryBuilder.andWhere("project.createdAt >= :fromDate", { fromDate });
+    }
+    if (toDate) {
+      queryBuilder.andWhere("project.createdAt <= :toDate", { toDate });
+    }
+
+    return await queryBuilder.skip(skip).take(take).getManyAndCount();
+  }
+
+  static async updateProject(
+    id: string,
+    data: { document: string } & ProjectType,
+    translate: TFunction
+  ) {
+    const { document, templateId, number } = data;
+
+    const projectTemplate = await ProjectTemplate.findOneBy({ id: templateId });
+    if (!projectTemplate) {
+      throw new ApiError(translate("template-not-found"), 400);
+    }
+
+    const project = await Project.findOneBy({ id });
+    if (!project) {
+      throw new ApiError(translate("project-not-found"), 404);
+    }
+
+    const isNumberExist = await Project.getItemByNumber(number);
+    if (isNumberExist && isNumberExist.id !== project.id) {
+      throw new ApiError(translate("project-number-used"), 409);
+    }
+
+    Object.assign(project, {
+      ...data,
+      projectDocUrl: document || project.projectDocUrl,
+      template: projectTemplate,
+    });
+
+    await project.save();
+    return project;
+  }
+
+  static async deleteProject(id: string, translate: TFunction) {
+    const project = await Project.findOneBy({ id });
+    if (!project) {
+      throw new ApiError(translate("project-not-found"), 404);
+    }
+    await project.softRemove();
+    return project;
+  }
+
+  static async getProjectById(id: string) {
+    return await Project.findOneBy({ id });
+  }
+}
