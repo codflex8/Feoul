@@ -5,6 +5,9 @@ import { BaseQuery } from "../utils/types/types";
 import { ProjectTemplate } from "../entities/ProjectTemplate.model";
 import ApiError from "../utils/ApiError";
 import { getPaginationData } from "../utils/getPaginationData";
+import { CommonStatus } from "../utils/types/enums";
+import { Unit } from "../entities/Unit.model";
+import { UnitService } from "./units.service";
 
 export class ProjectService {
   static async createProject(
@@ -111,6 +114,31 @@ export class ProjectService {
   }
 
   static async getProjectById(id: string) {
-    return await Project.findOneBy({ id });
+    return await Project.findOne({
+      where: { id },
+      relations: {
+        units: true,
+        facilities: true,
+        template: true,
+      },
+    });
+  }
+
+  static async getProjectWithProjectData(id: string) {
+    const project = await Project.findOne({
+      where: { id, status: CommonStatus.posted },
+      relations: {
+        // units: {
+        //   floors: true,
+        //   category: true,
+        // },
+        facilities: true,
+        template: true,
+      },
+    });
+    const projectUnitsData = await UnitService.getProjectUnitsGroupedByStatus(
+      id
+    );
+    return { project, unitsData: projectUnitsData };
   }
 }

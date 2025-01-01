@@ -1,4 +1,5 @@
 {
+  "user-intreseted-not-found":"بيانات المستخدم المهتم غير موجودة",
   "unit-category-number-used":"رقم الفئة مستخدم مسبقًا",
   "unit-number-used":"رقم الوحدة مستخدم مسبقًا",
   "project-number-used":"رقم المشروع مستخدم مسبقًا",
@@ -8,6 +9,7 @@
   "delete-success":"تم الحذف بنجاح",
   "not-found":"غير موجود",
   "unit-not-found":"الوحدة غير موجودة",
+  "unit-not-avaliable":"الوحدة غير متاحة",
   "map-location-not-found":"لا يمكن ايجاد هذا الموقع",
   "project-not-found":"لا يمكن ايجاد هذا المشروع",
   "this_employee_signed_up_already": "تم تسجيل اسم المستخدم مسبقًا.",

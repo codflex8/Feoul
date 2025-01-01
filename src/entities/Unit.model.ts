@@ -13,9 +13,6 @@ export class Unit extends BaseNumberModel {
   name!: string;
 
   @Column()
-  color!: string;
-
-  @Column()
   price!: number;
 
   @Column()

@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
-import { UnitType } from "../../utils/validators/UnitValidator";
+import {
+  UnitReverseType,
+  UnitType,
+} from "../../utils/validators/UnitValidator";
 import { GenericResponse } from "../../utils/GenericResponse";
 import { UnitService } from "../../services/units.service";
 
@@ -11,6 +14,40 @@ export class UnitController {
     try {
       const unit = await UnitService.createUnit(req.body, req.t);
       res.status(201).json(unit);
+    } catch (error: any) {
+      res.status(error?.statusCode || 400).json({ error: error.message });
+    }
+  }
+
+  static async reserveUnit(
+    req: Request<{ id: string }, {}, UnitReverseType>,
+    res: Response
+  ): Promise<void> {
+    try {
+      const unit = await UnitService.reserveUnit({
+        unitId: req.params.id,
+        intresetId: req.body.intresetId,
+        translate: req.t,
+        price: req.body.price,
+      });
+      res.status(200).json({ message: "reserved success", unit });
+    } catch (error: any) {
+      res.status(error?.statusCode || 400).json({ error: error.message });
+    }
+  }
+
+  static async buyUnit(
+    req: Request<{ id: string }, {}, UnitReverseType>,
+    res: Response
+  ): Promise<void> {
+    try {
+      const unit = await UnitService.buyUnit({
+        unitId: req.params.id,
+        intresetId: req.body.intresetId,
+        translate: req.t,
+        price: req.body.price,
+      });
+      res.status(200).json({ message: "buy success", unit });
     } catch (error: any) {
       res.status(error?.statusCode || 400).json({ error: error.message });
     }

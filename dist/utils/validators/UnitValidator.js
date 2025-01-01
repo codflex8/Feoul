@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitStatus = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitIntresetStatus = exports.UnitStatus = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitStatus;
@@ -9,11 +9,17 @@ var UnitStatus;
     UnitStatus["reserved"] = "reserved";
     UnitStatus["avaliable"] = "avaliable";
 })(UnitStatus || (exports.UnitStatus = UnitStatus = {}));
+var UnitIntresetStatus;
+(function (UnitIntresetStatus) {
+    UnitIntresetStatus["buy"] = "buy";
+    UnitIntresetStatus["reserve"] = "reserve";
+    UnitIntresetStatus["intreset"] = "intreset";
+})(UnitIntresetStatus || (exports.UnitIntresetStatus = UnitIntresetStatus = {}));
 const UnitValidator = zod_1.z.object({
     name: zod_1.z.string(),
     projectId: zod_1.z.string(),
     number: zod_1.z.string().transform((val) => Number(val)),
-    color: zod_1.z.string(),
+    // color: z.string(),
     price: zod_1.z.string().transform((val) => Number(val)),
     landSpace: zod_1.z.string().transform((val) => Number(val)),
     buildSpace: zod_1.z.string().transform((val) => Number(val)),
@@ -23,7 +29,7 @@ const UnitValidator = zod_1.z.object({
     videoUrl: zod_1.z.string().optional(),
     floorsNumber: zod_1.z.string().transform((val) => Number(val)),
     advantages: zod_1.z.string().optional(),
-    categoryId: zod_1.z.string().optional(),
+    categoryId: zod_1.z.string(),
 });
 exports.unitCategoryValidation = zod_1.z.object({
     name: zod_1.z.string(),
@@ -44,7 +50,11 @@ exports.unitIntresetValidation = zod_1.z.object({
     phoneNumber: zod_1.z.string(),
     area: zod_1.z.string(),
     email: zod_1.z.string().optional(),
-    // status: z.string(),
+    notes: zod_1.z.string().optional(),
     unitId: zod_1.z.string(),
+});
+exports.reverseUnitValidator = zod_1.z.object({
+    intresetId: zod_1.z.string(),
+    price: zod_1.z.number(),
 });
 exports.default = UnitValidator;

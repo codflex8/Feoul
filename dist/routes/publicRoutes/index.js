@@ -1,0 +1,16 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const project_router_1 = __importDefault(require("./project.router"));
+const units_router_1 = __importDefault(require("./units.router"));
+const projectFacilities_router_1 = __importDefault(require("./projectFacilities.router"));
+const unitCategories_router_1 = __importDefault(require("./unitCategories.router"));
+const router = (0, express_1.Router)();
+router.use("/projects/", project_router_1.default);
+router.use("/units/", units_router_1.default);
+router.use("/project-facilities/", projectFacilities_router_1.default);
+router.use("/unit-category", unitCategories_router_1.default);
+exports.default = router;

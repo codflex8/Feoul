@@ -5,10 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setRoutes = void 0;
 const dashboardRoutes_1 = __importDefault(require("./dashboardRoutes"));
+const publicRoutes_1 = __importDefault(require("./publicRoutes"));
 const auth_controller_1 = require("../controllers/dashboard/auth.controller");
 const auth_route_1 = __importDefault(require("./dashboardRoutes/auth.route"));
 const setRoutes = (app) => {
     app.use("/api/v1/dashboard/auth", auth_route_1.default);
     app.use("/api/v1/dashboard", auth_controller_1.AuthController.protect, dashboardRoutes_1.default);
+    app.use("/api/v1/public", publicRoutes_1.default);
 };
 exports.setRoutes = setRoutes;

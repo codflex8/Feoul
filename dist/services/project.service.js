@@ -8,6 +8,8 @@ const Project_model_1 = require("../entities/Project.model");
 const ProjectTemplate_model_1 = require("../entities/ProjectTemplate.model");
 const ApiError_1 = __importDefault(require("../utils/ApiError"));
 const getPaginationData_1 = require("../utils/getPaginationData");
+const enums_1 = require("../utils/types/enums");
+const units_service_1 = require("./units.service");
 class ProjectService {
     static async createProject(data, translate) {
         const { document, templateId, number } = data;
@@ -88,7 +90,29 @@ class ProjectService {
         return project;
     }
     static async getProjectById(id) {
-        return await Project_model_1.Project.findOneBy({ id });
+        return await Project_model_1.Project.findOne({
+            where: { id },
+            relations: {
+                units: true,
+                facilities: true,
+                template: true,
+            },
+        });
+    }
+    static async getProjectWithProjectData(id) {
+        const project = await Project_model_1.Project.findOne({
+            where: { id, status: enums_1.CommonStatus.posted },
+            relations: {
+                // units: {
+                //   floors: true,
+                //   category: true,
+                // },
+                facilities: true,
+                template: true,
+            },
+        });
+        const projectUnitsData = await units_service_1.UnitService.getProjectUnitsGroupedByStatus(id);
+        return { project, unitsData: projectUnitsData };
     }
 }
 exports.ProjectService = ProjectService;

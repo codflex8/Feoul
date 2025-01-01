@@ -13,6 +13,34 @@ class UnitController {
             res.status(error?.statusCode || 400).json({ error: error.message });
         }
     }
+    static async reserveUnit(req, res) {
+        try {
+            const unit = await units_service_1.UnitService.reserveUnit({
+                unitId: req.params.id,
+                intresetId: req.body.intresetId,
+                translate: req.t,
+                price: req.body.price,
+            });
+            res.status(200).json({ message: "reserved success", unit });
+        }
+        catch (error) {
+            res.status(error?.statusCode || 400).json({ error: error.message });
+        }
+    }
+    static async buyUnit(req, res) {
+        try {
+            const unit = await units_service_1.UnitService.buyUnit({
+                unitId: req.params.id,
+                intresetId: req.body.intresetId,
+                translate: req.t,
+                price: req.body.price,
+            });
+            res.status(200).json({ message: "buy success", unit });
+        }
+        catch (error) {
+            res.status(error?.statusCode || 400).json({ error: error.message });
+        }
+    }
     static async getUnits(req, res) {
         try {
             const [units, count] = await units_service_1.UnitService.getUnits(req.query);

@@ -26,10 +26,6 @@ __decorate([
 ], Unit.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Unit.prototype, "color", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Unit.prototype, "price", void 0);
 __decorate([

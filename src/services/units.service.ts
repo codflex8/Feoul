@@ -2,9 +2,14 @@ import { TFunction } from "i18next";
 import { Unit } from "../entities/Unit.model";
 import { Project } from "../entities/Project.model";
 import { UnitCategories } from "../entities/UnitCategories.model";
-import { UnitType } from "../utils/validators/UnitValidator";
+import {
+  UnitIntresetStatus,
+  UnitStatus,
+  UnitType,
+} from "../utils/validators/UnitValidator";
 import ApiError from "../utils/ApiError";
 import { getPaginationData } from "../utils/getPaginationData";
+import { UnitInterestService } from "./unitIntreset.service";
 
 interface GetUnitsQuery {
   page: number;
@@ -66,8 +71,8 @@ export class UnitService {
 
     const queryBuilder = Unit.createQueryBuilder("unit")
       .leftJoin("unit.project", "project")
-      .leftJoinAndSelect("unit.category", "category");
-
+      .leftJoinAndSelect("unit.category", "category")
+      .leftJoinAndSelect("unit.floors", "floors");
     if (categoryId) {
       queryBuilder.andWhere("category.id = :categoryId", { categoryId });
     }
@@ -93,6 +98,50 @@ export class UnitService {
     }
 
     return await queryBuilder.skip(skip).take(take).getManyAndCount();
+  }
+
+  static async getProjectUnitsGroupedByStatus(projectId: string) {
+    const querable = Unit.createQueryBuilder("unit")
+      .leftJoin("unit.project", "project")
+      .where("project.id = :projectId", { projectId });
+
+    const reverseUnits = await querable
+      .where("unit.status = :reverseStatus", {
+        reverseStatus: UnitStatus.reserved,
+      })
+      // .select("unit")
+      // .groupBy("unit.status")
+      .getMany();
+
+    const avaliableUnits = await querable
+      .where("unit.status = :reverseStatus", {
+        reverseStatus: UnitStatus.avaliable,
+      })
+      .getMany();
+
+    const saledUnits = await querable
+      .where("unit.status = :reverseStatus", {
+        reverseStatus: UnitStatus.saled,
+      })
+      .getMany();
+
+    const unitsPriceRange = await querable
+      .select("Max(unit.price)", "maxPrice")
+      .addSelect("Min(unit.price)", "minPrice")
+      .getRawOne();
+
+    const unitsSpaceRange = await querable
+      .select("Max(unit.landSpace)", "maxSpace")
+      .addSelect("Min(unit.landSpace)", "minSpace")
+      .getRawOne();
+
+    return {
+      unitsPriceRange,
+      unitsSpaceRange,
+      reverseUnits,
+      saledUnits,
+      avaliableUnits,
+    };
   }
 
   static async getUnitById(id: string) {
@@ -133,6 +182,72 @@ export class UnitService {
       throw new ApiError(translate("not-found"), 404);
     }
     await unit.softRemove();
+    return unit;
+  }
+
+  public static async reserveUnit({
+    unitId,
+    intresetId,
+    translate,
+    price,
+  }: {
+    unitId: string;
+    intresetId: string;
+    translate: TFunction;
+    price: number;
+  }) {
+    const unit = await this.getUnitById(unitId);
+    if (!unit) {
+      throw new ApiError(translate("unit-not-found"), 400);
+    }
+    if (unit.status !== UnitStatus.avaliable) {
+      throw new ApiError(translate("unit-not-avaliable"), 400);
+    }
+    const intreset = await UnitInterestService.getUnitInterestById(
+      intresetId,
+      translate
+    );
+    if (!intreset) {
+      throw new ApiError(translate("user-intreseted-not-found"), 400);
+    }
+    unit.status = UnitStatus.reserved;
+    intreset.status = UnitIntresetStatus.reserve;
+    intreset.reversePrice = price;
+    await unit.save();
+    await intreset.save();
+    return unit;
+  }
+
+  public static async buyUnit({
+    unitId,
+    intresetId,
+    translate,
+    price,
+  }: {
+    unitId: string;
+    intresetId: string;
+    translate: TFunction;
+    price: number;
+  }) {
+    const unit = await this.getUnitById(unitId);
+    if (!unit) {
+      throw new ApiError(translate("unit-not-found"), 400);
+    }
+    const intreset = await UnitInterestService.getUnitInterestById(
+      intresetId,
+      translate
+    );
+    if (!intreset) {
+      throw new ApiError(translate("user-intreseted-not-found"), 400);
+    }
+    if (intreset.id !== intresetId) {
+      throw new ApiError(translate("unit-not-avaliable"), 400);
+    }
+    unit.status = UnitStatus.saled;
+    intreset.status = UnitIntresetStatus.buy;
+    intreset.buyPrice = price;
+    await unit.save();
+    await intreset.save();
     return unit;
   }
 }

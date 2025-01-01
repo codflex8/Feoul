@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { UnitController } from "../../controllers/dashboard/units.controller";
 import { validateData } from "../../middleware/validationMiddleware";
-import UnitValidator from "../../utils/validators/UnitValidator";
+import UnitValidator, {
+  reverseUnitValidator,
+} from "../../utils/validators/UnitValidator";
 import { upload } from "../../middleware/uploadFiles";
 import { AuthController } from "../../controllers/dashboard/auth.controller";
 import { UsersRoles } from "../../utils/types/enums";
@@ -18,13 +20,17 @@ router.get("/:id", expressAsyncHandler(UnitController.getUnitById));
 // Create a new unit
 router.post(
   "/",
-
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("video"),
   validateData(UnitValidator),
   expressAsyncHandler(UnitController.createUnit)
 );
-
+router.post(
+  "/:id/reserve",
+  AuthController.allowedto([UsersRoles.Admin]),
+  validateData(reverseUnitValidator),
+  UnitController.reserveUnit
+);
 // Update an existing unit
 router.put(
   "/:id",

@@ -13,6 +13,7 @@ exports.UnitIntreset = void 0;
 const typeorm_1 = require("typeorm");
 const BaseModel_1 = require("./BaseModel");
 const Unit_model_1 = require("./Unit.model");
+const UnitValidator_1 = require("../utils/validators/UnitValidator");
 let UnitIntreset = class UnitIntreset extends BaseModel_1.BaseModel {
 };
 exports.UnitIntreset = UnitIntreset;
@@ -37,9 +38,25 @@ __decorate([
     __metadata("design:type", String)
 ], UnitIntreset.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({
+        type: "enum",
+        enum: UnitValidator_1.UnitIntresetStatus,
+        default: UnitValidator_1.UnitIntresetStatus.intreset,
+    }),
     __metadata("design:type", String)
 ], UnitIntreset.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], UnitIntreset.prototype, "reversePrice", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], UnitIntreset.prototype, "buyPrice", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], UnitIntreset.prototype, "notes", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Unit_model_1.Unit, (unit) => unit.interests, {
         onDelete: "CASCADE",

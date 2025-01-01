@@ -6,11 +6,18 @@ export enum UnitStatus {
   reserved = "reserved",
   avaliable = "avaliable",
 }
+
+export enum UnitIntresetStatus {
+  buy = "buy",
+  reserve = "reserve",
+  intreset = "intreset",
+}
+
 const UnitValidator = z.object({
   name: z.string(),
   projectId: z.string(),
   number: z.string().transform((val) => Number(val)),
-  color: z.string(),
+  // color: z.string(),
   price: z.string().transform((val) => Number(val)),
   landSpace: z.string().transform((val) => Number(val)),
   buildSpace: z.string().transform((val) => Number(val)),
@@ -20,7 +27,7 @@ const UnitValidator = z.object({
   videoUrl: z.string().optional(),
   floorsNumber: z.string().transform((val) => Number(val)),
   advantages: z.string().optional(),
-  categoryId: z.string().optional(),
+  categoryId: z.string(),
 });
 
 export const unitCategoryValidation = z.object({
@@ -44,10 +51,16 @@ export const unitIntresetValidation = z.object({
   phoneNumber: z.string(),
   area: z.string(),
   email: z.string().optional(),
-  // status: z.string(),
+  notes: z.string().optional(),
   unitId: z.string(),
 });
 
+export const reverseUnitValidator = z.object({
+  intresetId: z.string(),
+  price: z.number(),
+});
+
+export type UnitReverseType = z.infer<typeof reverseUnitValidator>;
 export type UnitIntresetType = z.infer<typeof unitIntresetValidation>;
 export type UnitFloorType = z.infer<typeof unitFloorValidation>;
 export type UnitCategoryType = z.infer<typeof unitCategoryValidation>;
