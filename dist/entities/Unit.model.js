@@ -29,6 +29,29 @@ __decorate([
     __metadata("design:type", Number)
 ], Unit.prototype, "price", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: "enum", enum: UnitValidator_1.UnitTypes }),
+    __metadata("design:type", String)
+], Unit.prototype, "type", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Unit.prototype, "buildStatus", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Unit.prototype, "buildLevel", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: "simple-array",
+        nullable: true,
+    }),
+    __metadata("design:type", Array)
+], Unit.prototype, "salesChannels", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Unit.prototype, "saledSpace", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Unit.prototype, "landSpace", void 0);

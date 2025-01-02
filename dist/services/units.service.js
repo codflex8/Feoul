@@ -105,7 +105,12 @@ class UnitService {
         };
     }
     static async getUnitById(id) {
-        return await Unit_model_1.Unit.findOneBy({ id });
+        return await Unit_model_1.Unit.findOne({
+            where: { id },
+            relations: {
+                floors: true,
+            },
+        });
     }
     static async updateUnit(id, data, translate) {
         const unit = await Unit_model_1.Unit.findOneBy({ id });
@@ -127,6 +132,8 @@ class UnitService {
         Object.assign(unit, data);
         unit.category = category;
         unit.project = project;
+        if (data.video)
+            unit.videoUrl = data.video;
         await unit.save();
         return unit;
     }

@@ -6,7 +6,7 @@ const unitFloor_service_1 = require("../../services/unitFloor.service");
 class UnitFloorController {
     static async createUnitFloor(req, res) {
         try {
-            const unitFloor = await unitFloor_service_1.UnitFloorService.createUnitFloor(req.body, req.t);
+            const unitFloor = await unitFloor_service_1.UnitFloorService.createUnitFloor({ ...req.body }, req.t);
             res.status(201).json(unitFloor);
         }
         catch (error) {

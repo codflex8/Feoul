@@ -16,6 +16,7 @@ class UnitFloorService {
         }
         const newUnitFloor = UnitFloor_model_1.UnitFloor.create(data);
         newUnitFloor.unit = unit;
+        newUnitFloor.imageUrl = data.image;
         await newUnitFloor.save();
         return newUnitFloor;
     }

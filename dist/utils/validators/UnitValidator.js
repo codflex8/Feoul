@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitIntresetStatus = exports.UnitStatus = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitStatus;
@@ -9,6 +9,11 @@ var UnitStatus;
     UnitStatus["reserved"] = "reserved";
     UnitStatus["avaliable"] = "avaliable";
 })(UnitStatus || (exports.UnitStatus = UnitStatus = {}));
+var UnitTypes;
+(function (UnitTypes) {
+    UnitTypes["villa"] = "villa";
+    UnitTypes["townhouse"] = "townhouse";
+})(UnitTypes || (exports.UnitTypes = UnitTypes = {}));
 var UnitIntresetStatus;
 (function (UnitIntresetStatus) {
     UnitIntresetStatus["buy"] = "buy";
@@ -18,29 +23,64 @@ var UnitIntresetStatus;
 const UnitValidator = zod_1.z.object({
     name: zod_1.z.string(),
     projectId: zod_1.z.string(),
-    number: zod_1.z.string().transform((val) => Number(val)),
+    number: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
     // color: z.string(),
-    price: zod_1.z.string().transform((val) => Number(val)),
-    landSpace: zod_1.z.string().transform((val) => Number(val)),
-    buildSpace: zod_1.z.string().transform((val) => Number(val)),
+    price: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
+    landSpace: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
+    buildSpace: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
     status: zod_1.z.nativeEnum(UnitStatus).default(UnitStatus.avaliable),
-    bedroomNumber: zod_1.z.string().transform((val) => Number(val)),
-    bathroomNumber: zod_1.z.string().transform((val) => Number(val)),
+    bedroomNumber: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
+    bathroomNumber: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
     videoUrl: zod_1.z.string().optional(),
-    floorsNumber: zod_1.z.string().transform((val) => Number(val)),
+    floorsNumber: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
     advantages: zod_1.z.string().optional(),
     categoryId: zod_1.z.string(),
+    type: zod_1.z.nativeEnum(UnitTypes),
+    buildStatus: zod_1.z.string(),
+    buildLevel: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
+    salesChannels: zod_1.z.array(zod_1.z.string()).optional(),
+    saledSpace: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
 });
 exports.unitCategoryValidation = zod_1.z.object({
     name: zod_1.z.string(),
     color: zod_1.z.string(),
-    number: zod_1.z.string().transform((val) => Number(val)),
+    number: zod_1.z.number(),
     status: zod_1.z.nativeEnum(enums_1.CommonStatus).default(enums_1.CommonStatus.archived),
     // unitId: z.string(),
 });
 exports.unitFloorValidation = zod_1.z.object({
     name: zod_1.z.string(),
-    index: zod_1.z.string().transform((val) => Number(val)),
+    index: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
     unitId: zod_1.z.string(),
     image: zod_1.z.string(),
 });
