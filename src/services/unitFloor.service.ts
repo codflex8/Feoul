@@ -22,6 +22,7 @@ export class UnitFloorService {
 
     const newUnitFloor = UnitFloor.create(data);
     newUnitFloor.unit = unit;
+    newUnitFloor.imageUrl = data.image;
     await newUnitFloor.save();
     return newUnitFloor;
   }

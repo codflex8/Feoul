@@ -9,7 +9,10 @@ export class UnitFloorController {
     res: Response
   ): Promise<void> {
     try {
-      const unitFloor = await UnitFloorService.createUnitFloor(req.body, req.t);
+      const unitFloor = await UnitFloorService.createUnitFloor(
+        { ...req.body },
+        req.t
+      );
       res.status(201).json(unitFloor);
     } catch (error: any) {
       res.status(error?.statusCode || 400).json({ error: error.message });

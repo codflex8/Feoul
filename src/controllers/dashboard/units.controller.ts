@@ -93,7 +93,7 @@ export class UnitController {
   }
 
   static async updateUnit(
-    req: Request<{ id: string }, {}, UnitType>,
+    req: Request<{ id: string }, {}, { video: string } & UnitType>,
     res: Response
   ): Promise<void> {
     try {

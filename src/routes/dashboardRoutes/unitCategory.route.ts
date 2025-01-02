@@ -23,7 +23,6 @@ router.post(
   "/",
 
   AuthController.allowedto([UsersRoles.Admin]),
-  upload.single("video"),
   validateData(unitCategoryValidation),
   expressAsyncHandler(UnitCategoryController.createUnitCategory)
 );
@@ -33,7 +32,6 @@ router.put(
   "/:id",
 
   AuthController.allowedto([UsersRoles.Admin]),
-  upload.single("video"),
   validateData(unitCategoryValidation),
   expressAsyncHandler(UnitCategoryController.updateUnitCategory)
 );

@@ -145,10 +145,19 @@ export class UnitService {
   }
 
   static async getUnitById(id: string) {
-    return await Unit.findOneBy({ id });
+    return await Unit.findOne({
+      where: { id },
+      relations: {
+        floors: true,
+      },
+    });
   }
 
-  static async updateUnit(id: string, data: UnitType, translate: TFunction) {
+  static async updateUnit(
+    id: string,
+    data: { video: string } & UnitType,
+    translate: TFunction
+  ) {
     const unit = await Unit.findOneBy({ id });
     if (!unit) {
       throw new ApiError(translate("not-found"), 404);
@@ -172,6 +181,7 @@ export class UnitService {
     Object.assign(unit, data);
     unit.category = category;
     unit.project = project;
+    if (data.video) unit.videoUrl = data.video;
     await unit.save();
     return unit;
   }

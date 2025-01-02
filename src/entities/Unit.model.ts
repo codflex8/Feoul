@@ -4,7 +4,7 @@ import { Project } from "./Project.model";
 import { UnitCategories } from "./UnitCategories.model";
 import { UnitFloor } from "./UnitFloor.model";
 import { UnitIntreset } from "./UnitIntreset.model";
-import { UnitStatus } from "../utils/validators/UnitValidator";
+import { UnitStatus, UnitTypes } from "../utils/validators/UnitValidator";
 import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
@@ -14,6 +14,26 @@ export class Unit extends BaseNumberModel {
 
   @Column()
   price!: number;
+
+  @Column({ type: "enum", enum: UnitTypes })
+  type!: UnitTypes;
+
+  @Column()
+  buildStatus!: string;
+
+  @Column()
+  buildLevel!: number;
+
+  // {web,mobile,partners,third_party,ops_team}
+  @Column({
+    type: "simple-array",
+    nullable: true,
+  })
+  salesChannels!: string[];
+
+  // المساحة البيعية
+  @Column()
+  saledSpace!: number;
 
   @Column()
   landSpace!: number;

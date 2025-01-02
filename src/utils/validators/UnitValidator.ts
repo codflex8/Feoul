@@ -7,6 +7,11 @@ export enum UnitStatus {
   avaliable = "avaliable",
 }
 
+export enum UnitTypes {
+  villa = "villa",
+  townhouse = "townhouse",
+}
+
 export enum UnitIntresetStatus {
   buy = "buy",
   reserve = "reserve",
@@ -16,31 +21,66 @@ export enum UnitIntresetStatus {
 const UnitValidator = z.object({
   name: z.string(),
   projectId: z.string(),
-  number: z.string().transform((val) => Number(val)),
+  number: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
   // color: z.string(),
-  price: z.string().transform((val) => Number(val)),
-  landSpace: z.string().transform((val) => Number(val)),
-  buildSpace: z.string().transform((val) => Number(val)),
+  price: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
+  landSpace: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
+  buildSpace: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
   status: z.nativeEnum(UnitStatus).default(UnitStatus.avaliable),
-  bedroomNumber: z.string().transform((val) => Number(val)),
-  bathroomNumber: z.string().transform((val) => Number(val)),
+  bedroomNumber: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
+  bathroomNumber: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
   videoUrl: z.string().optional(),
-  floorsNumber: z.string().transform((val) => Number(val)),
+  floorsNumber: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
   advantages: z.string().optional(),
   categoryId: z.string(),
+  type: z.nativeEnum(UnitTypes),
+  buildStatus: z.string(),
+  buildLevel: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
+  salesChannels: z.array(z.string()).optional(),
+  saledSpace: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
 });
 
 export const unitCategoryValidation = z.object({
   name: z.string(),
   color: z.string(),
-  number: z.string().transform((val) => Number(val)),
+  number: z.number(),
   status: z.nativeEnum(CommonStatus).default(CommonStatus.archived),
   // unitId: z.string(),
 });
 
 export const unitFloorValidation = z.object({
   name: z.string(),
-  index: z.string().transform((val) => Number(val)),
+  index: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
   unitId: z.string(),
   image: z.string(),
 });
