@@ -120,7 +120,7 @@ const localStorage = multer.diskStorage({
     if (isImage) relativePath = `/public/images/${filename}`;
     if (isAudio) relativePath = `/public/audio/${filename}`;
     if (isDocument) relativePath = `/public/documents/${filename}`;
-    if (isDocument) relativePath = `/public/videos/${filename}`;
+    if (isVideo) relativePath = `/public/videos/${filename}`;
 
     // Add the path to req.body using the field name
     req.body[file.fieldname] = relativePath;
@@ -151,55 +151,6 @@ const fileFilter = (req: Request, file: any, cb: Function) => {
   }
 };
 
-// const s3Storage = multerS3({
-//   s3,
-//   acl: "public-read",
-//   bucket: process.env.AWS_BUCKET_NAME,
-//   contentType: multerS3.AUTO_CONTENT_TYPE,
-//   key: (req:Request, file:any, cb:Function) => {
-//     const fileName = `${Date.now()}_${Math.round(Math.random() * 1e9)}`;
-//     cb(null, `${fileName}${path.extname(file.originalname)}`);
-//   },
-// });
-
-// export const dynamicStorage: multer.StorageEngine = {
-//   _handleFile(req:Request, file:any, cb:Function) {
-//     if (file.fieldname === "file") {
-//       // Use S3 for "file" field
-
-//       return s3Storage._handleFile(req:Request, file:any, cb:Function);
-//     } else if (file.fieldname === "image") {
-//       // Use local storage for "image" field
-//       return localStorage._handleFile(req:Request, file:any, cb:Function);
-//     } else {
-//       cb(new Error("Unsupported field name"));
-//     }
-//   },
-//   _removeFile(req:Request, file:any, cb:Function) {
-//     if (file.fieldname === "file") {
-//       // Use S3's remove logic if needed
-//       const s3Storage = multerS3({
-//         s3,
-//         acl: "public-read",
-//         bucket: process.env.AWS_BUCKET_NAME!,
-//       });
-//       return s3Storage._removeFile(req:Request, file:any, cb:Function);
-//     } else if (file.fieldname === "image") {
-//       // Use local storage's remove logic
-//       return localStorage._removeFile(req:Request, file:any, cb:Function);
-//     } else {
-//       cb(new Error("Unsupported field name"));
-//     }
-//   },
-// };
-
-// Create the multer upload instance
-// export const s3Upload = multer({
-//   storage: dynamicStorage,
-//   fileFilter: fileFilter,
-//   limits: { fileSize: 50 * 1024 * 1024 }, // Increased to 50 MB limit
-// });
-// Create the multer upload instance
 export const upload = multer({
   storage: localStorage,
   fileFilter: fileFilter,

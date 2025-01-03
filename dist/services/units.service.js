@@ -70,6 +70,7 @@ class UnitService {
     static async getProjectUnitsGroupedByStatus(projectId) {
         const querable = Unit_model_1.Unit.createQueryBuilder("unit")
             .leftJoin("unit.project", "project")
+            .leftJoinAndSelect("unit.floors", "floor")
             .where("project.id = :projectId", { projectId });
         const unitsPriceRange = await querable
             .clone()
