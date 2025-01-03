@@ -105,8 +105,21 @@ export class UnitService {
       .leftJoin("unit.project", "project")
       .where("project.id = :projectId", { projectId });
 
+    const unitsPriceRange = await querable
+      .clone()
+      .select("Max(unit.price)", "maxPrice")
+      .addSelect("Min(unit.price)", "minPrice")
+      .getRawOne();
+
+    const unitsSpaceRange = await querable
+      .clone()
+      .select("Max(unit.landSpace)", "maxSpace")
+      .addSelect("Min(unit.landSpace)", "minSpace")
+      .getRawOne();
+
     const reverseUnits = await querable
-      .where("unit.status = :reverseStatus", {
+      .clone()
+      .andWhere("unit.status = :reverseStatus", {
         reverseStatus: UnitStatus.reserved,
       })
       // .select("unit")
@@ -114,26 +127,18 @@ export class UnitService {
       .getMany();
 
     const avaliableUnits = await querable
-      .where("unit.status = :reverseStatus", {
+      .clone()
+      .andWhere("unit.status = :reverseStatus", {
         reverseStatus: UnitStatus.avaliable,
       })
       .getMany();
 
     const saledUnits = await querable
-      .where("unit.status = :reverseStatus", {
+      .clone()
+      .andWhere("unit.status = :reverseStatus", {
         reverseStatus: UnitStatus.saled,
       })
       .getMany();
-
-    const unitsPriceRange = await querable
-      .select("Max(unit.price)", "maxPrice")
-      .addSelect("Min(unit.price)", "minPrice")
-      .getRawOne();
-
-    const unitsSpaceRange = await querable
-      .select("Max(unit.landSpace)", "maxSpace")
-      .addSelect("Min(unit.landSpace)", "minSpace")
-      .getRawOne();
 
     return {
       unitsPriceRange,
@@ -149,6 +154,7 @@ export class UnitService {
       where: { id },
       relations: {
         floors: true,
+        category: true,
       },
     });
   }

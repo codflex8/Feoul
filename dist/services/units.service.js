@@ -71,31 +71,36 @@ class UnitService {
         const querable = Unit_model_1.Unit.createQueryBuilder("unit")
             .leftJoin("unit.project", "project")
             .where("project.id = :projectId", { projectId });
+        const unitsPriceRange = await querable
+            .clone()
+            .select("Max(unit.price)", "maxPrice")
+            .addSelect("Min(unit.price)", "minPrice")
+            .getRawOne();
+        const unitsSpaceRange = await querable
+            .clone()
+            .select("Max(unit.landSpace)", "maxSpace")
+            .addSelect("Min(unit.landSpace)", "minSpace")
+            .getRawOne();
         const reverseUnits = await querable
-            .where("unit.status = :reverseStatus", {
+            .clone()
+            .andWhere("unit.status = :reverseStatus", {
             reverseStatus: UnitValidator_1.UnitStatus.reserved,
         })
             // .select("unit")
             // .groupBy("unit.status")
             .getMany();
         const avaliableUnits = await querable
-            .where("unit.status = :reverseStatus", {
+            .clone()
+            .andWhere("unit.status = :reverseStatus", {
             reverseStatus: UnitValidator_1.UnitStatus.avaliable,
         })
             .getMany();
         const saledUnits = await querable
-            .where("unit.status = :reverseStatus", {
+            .clone()
+            .andWhere("unit.status = :reverseStatus", {
             reverseStatus: UnitValidator_1.UnitStatus.saled,
         })
             .getMany();
-        const unitsPriceRange = await querable
-            .select("Max(unit.price)", "maxPrice")
-            .addSelect("Min(unit.price)", "minPrice")
-            .getRawOne();
-        const unitsSpaceRange = await querable
-            .select("Max(unit.landSpace)", "maxSpace")
-            .addSelect("Min(unit.landSpace)", "minSpace")
-            .getRawOne();
         return {
             unitsPriceRange,
             unitsSpaceRange,
@@ -109,6 +114,7 @@ class UnitService {
             where: { id },
             relations: {
                 floors: true,
+                category: true,
             },
         });
     }
