@@ -32,7 +32,7 @@ class ProjectService {
     static async getProjects(query) {
         const { name, number, status, city, page, pageSize, fromDate, toDate } = query;
         const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
-        const queryBuilder = Project_model_1.Project.createQueryBuilder("project").leftJoinAndSelect("project.units", "units");
+        const queryBuilder = Project_model_1.Project.createQueryBuilder("project").leftJoin("project.units", "units");
         if (name) {
             queryBuilder.andWhere("LOWER(project.name) LIKE LOWER(:name)", {
                 name: `%${name}%`,

@@ -1,7 +1,11 @@
 import { TFunction } from "i18next";
 import { UnitIntreset } from "../entities/UnitIntreset.model";
 import { Unit } from "../entities/Unit.model";
-import { UnitIntresetType } from "../utils/validators/UnitValidator";
+import {
+  UnitIntresetStatus,
+  UnitIntresetType,
+  UnitStatus,
+} from "../utils/validators/UnitValidator";
 import ApiError from "../utils/ApiError";
 import { getPaginationData } from "../utils/getPaginationData";
 
@@ -15,6 +19,7 @@ interface GetInterestQuery {
   phoneNumber?: string;
   email?: string;
   status?: string;
+  financial?: boolean;
 }
 
 export class UnitInterestService {
@@ -44,6 +49,7 @@ export class UnitInterestService {
       phoneNumber,
       email,
       status,
+      financial,
     } = query;
     const { skip, take } = getPaginationData({
       page: Number(page ?? 1),
@@ -90,6 +96,26 @@ export class UnitInterestService {
       queryBuilder.andWhere("unit.id = :unitId", { unitId });
     }
 
+    if (financial) {
+      queryBuilder
+        .andWhere(
+          "(LOWER(unitIntreset.status) = LOWER(:reversedStatus) OR LOWER(unitIntreset.status) = LOWER(:saledStatus))",
+          {
+            reversedStatus: UnitIntresetStatus.reserve.toString(),
+            saledStatus: UnitIntresetStatus.buy.toString(),
+          }
+        )
+        .select([
+          "unitIntreset.id",
+          "unitIntreset.firstName",
+          "unitIntreset.lastName",
+          "unitIntreset.phoneNumber",
+          "unitIntreset.status",
+          "unitIntreset.reversePrice",
+          "unitIntreset.buyPrice",
+          "unitIntreset.createdAt",
+        ]);
+    }
     return await queryBuilder.skip(skip).take(take).getManyAndCount();
   }
 

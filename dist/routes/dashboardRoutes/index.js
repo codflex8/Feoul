@@ -15,6 +15,7 @@ const auth_controller_1 = require("../../controllers/dashboard/auth.controller")
 const enums_1 = require("../../utils/types/enums");
 const unitIntreset_router_1 = __importDefault(require("./unitIntreset.router"));
 const mapLocation_router_1 = __importDefault(require("./mapLocation.router"));
+const financial_route_1 = __importDefault(require("./financial.route"));
 const home_controller_1 = require("../../controllers/dashboard/home.controller");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const router = (0, express_1.Router)();
@@ -28,4 +29,5 @@ router.use("/unit-category", unitCategory_route_1.default);
 router.use("/unit-floor", unitFloor_route_1.default);
 router.use("/unit-intreset", unitIntreset_router_1.default);
 router.use("/map-locations", mapLocation_router_1.default);
+router.use("/financial", financial_route_1.default);
 exports.default = router;

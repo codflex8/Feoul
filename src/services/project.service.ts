@@ -40,9 +40,10 @@ export class ProjectService {
       query;
     const { skip, take } = getPaginationData({ page, pageSize });
 
-    const queryBuilder = Project.createQueryBuilder(
-      "project"
-    ).leftJoinAndSelect("project.units", "units");
+    const queryBuilder = Project.createQueryBuilder("project").leftJoin(
+      "project.units",
+      "units"
+    );
 
     if (name) {
       queryBuilder.andWhere("LOWER(project.name) LIKE LOWER(:name)", {

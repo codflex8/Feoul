@@ -35,6 +35,17 @@ class MapLocationsService {
             .getManyAndCount();
         return [mapLocations, count];
     }
+    static async getMapLocationsWithGroup() {
+        const records = await MapLocations_model_1.MapLocations.createQueryBuilder("location").getMany();
+        const groupedRecords = records.reduce((acc, record) => {
+            if (!acc[record.type]) {
+                acc[record.type] = [];
+            }
+            acc[record.type].push(record);
+            return acc;
+        }, {});
+        return groupedRecords;
+    }
     static async getMapLocationById(id) {
         const mapLocation = await MapLocations_model_1.MapLocations.findOneBy({ id });
         return mapLocation;

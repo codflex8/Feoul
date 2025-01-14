@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnitInterestService = void 0;
 const UnitIntreset_model_1 = require("../entities/UnitIntreset.model");
 const Unit_model_1 = require("../entities/Unit.model");
+const UnitValidator_1 = require("../utils/validators/UnitValidator");
 const ApiError_1 = __importDefault(require("../utils/ApiError"));
 const getPaginationData_1 = require("../utils/getPaginationData");
 class UnitInterestService {
@@ -20,7 +21,7 @@ class UnitInterestService {
         return newUnitInterest;
     }
     static async getUnitInterests(query) {
-        const { page, pageSize, unitId, firstName, lastName, area, phoneNumber, email, status, } = query;
+        const { page, pageSize, unitId, firstName, lastName, area, phoneNumber, email, status, financial, } = query;
         const { skip, take } = (0, getPaginationData_1.getPaginationData)({
             page: Number(page ?? 1),
             pageSize: Number(pageSize ?? 10),
@@ -54,6 +55,23 @@ class UnitInterestService {
         }
         if (unitId) {
             queryBuilder.andWhere("unit.id = :unitId", { unitId });
+        }
+        if (financial) {
+            queryBuilder
+                .andWhere("(LOWER(unitIntreset.status) = LOWER(:reversedStatus) OR LOWER(unitIntreset.status) = LOWER(:saledStatus))", {
+                reversedStatus: UnitValidator_1.UnitIntresetStatus.reserve.toString(),
+                saledStatus: UnitValidator_1.UnitIntresetStatus.buy.toString(),
+            })
+                .select([
+                "unitIntreset.id",
+                "unitIntreset.firstName",
+                "unitIntreset.lastName",
+                "unitIntreset.phoneNumber",
+                "unitIntreset.status",
+                "unitIntreset.reversePrice",
+                "unitIntreset.buyPrice",
+                "unitIntreset.createdAt",
+            ]);
         }
         return await queryBuilder.skip(skip).take(take).getManyAndCount();
     }

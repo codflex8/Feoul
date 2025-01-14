@@ -11,6 +11,7 @@ import { AuthController } from "../../controllers/dashboard/auth.controller";
 import { UsersRoles } from "../../utils/types/enums";
 import unitIntresetRouter from "./unitIntreset.router";
 import mapLocationsRouter from "./mapLocation.router";
+import financialRouter from "./financial.route";
 import { HomeController } from "../../controllers/dashboard/home.controller";
 import expressAsyncHandler from "express-async-handler";
 
@@ -31,5 +32,6 @@ router.use("/unit-category", unitsCategoryRouter);
 router.use("/unit-floor", unitFloorRouter);
 router.use("/unit-intreset", unitIntresetRouter);
 router.use("/map-locations", mapLocationsRouter);
+router.use("/financial", financialRouter);
 
 export default router;
