@@ -51,10 +51,11 @@ class UploadData {
                     continue;
                 }
                 const isInValidProjects = validProjects.find((proj) => proj.name === projectName.trim());
-                let project = isInValidProjects ??
-                    (await projectRepo.findOne({
+                let project = isInValidProjects
+                    ? isInValidProjects
+                    : await projectRepo.findOne({
                         where: { name: (0, typeorm_1.Equal)(projectName.trim()) },
-                    }));
+                    });
                 if (!project) {
                     project = projectRepo.create({
                         name: projectName,
@@ -65,6 +66,7 @@ class UploadData {
                         lng: 39.127317,
                         city: "Jeddah", // Add default city or extract if available
                     });
+                    await project.save();
                     validProjects.push(project);
                 }
                 // Extract and map unit data
