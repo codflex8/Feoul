@@ -18,12 +18,20 @@ const UnitIntreset_model_1 = require("./UnitIntreset.model");
 const UnitValidator_1 = require("../utils/validators/UnitValidator");
 const BaseNumberModel_1 = require("./BaseNumberModel");
 let Unit = class Unit extends BaseNumberModel_1.BaseNumberModel {
+    setUnitPropertiesBaseOnTemplate() {
+        switch (this.template) {
+            case UnitValidator_1.UnitTemplates.lavender:
+                this.bedroomNumber = 3;
+                this.bathroomNumber = 4;
+                break;
+            default:
+                this.bedroomNumber = 4;
+                this.bathroomNumber = 5;
+                break;
+        }
+    }
 };
 exports.Unit = Unit;
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Unit.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
@@ -33,11 +41,15 @@ __decorate([
     __metadata("design:type", String)
 ], Unit.prototype, "type", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: "enum", enum: UnitValidator_1.UnitTemplates }),
+    __metadata("design:type", String)
+], Unit.prototype, "template", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Unit.prototype, "buildStatus", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Unit.prototype, "buildLevel", void 0);
 __decorate([
@@ -113,6 +125,13 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Unit.prototype, "interests", void 0);
+__decorate([
+    (0, typeorm_1.BeforeInsert)(),
+    (0, typeorm_1.BeforeUpdate)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Unit.prototype, "setUnitPropertiesBaseOnTemplate", null);
 exports.Unit = Unit = __decorate([
     (0, typeorm_1.Entity)()
 ], Unit);

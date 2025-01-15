@@ -1,16 +1,27 @@
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+} from "typeorm";
 import { BaseModel } from "./BaseModel";
 import { Project } from "./Project.model";
 import { UnitCategories } from "./UnitCategories.model";
 import { UnitFloor } from "./UnitFloor.model";
 import { UnitIntreset } from "./UnitIntreset.model";
-import { UnitStatus, UnitTypes } from "../utils/validators/UnitValidator";
+import {
+  UnitStatus,
+  UnitTemplates,
+  UnitTypes,
+} from "../utils/validators/UnitValidator";
 import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
 export class Unit extends BaseNumberModel {
-  @Column()
-  name!: string;
+  // @Column({ nullable: true })
+  // name!: string;
 
   @Column()
   price!: number;
@@ -18,10 +29,13 @@ export class Unit extends BaseNumberModel {
   @Column({ type: "enum", enum: UnitTypes })
   type!: UnitTypes;
 
+  @Column({ type: "enum", enum: UnitTemplates })
+  template!: UnitTemplates;
+
   @Column()
   buildStatus!: string;
 
-  @Column()
+  @Column({ nullable: true })
   buildLevel!: number;
 
   // {web,mobile,partners,third_party,ops_team}
@@ -84,4 +98,19 @@ export class Unit extends BaseNumberModel {
     onUpdate: "CASCADE",
   })
   interests!: UnitIntreset[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  setUnitPropertiesBaseOnTemplate() {
+    switch (this.template) {
+      case UnitTemplates.lavender:
+        this.bedroomNumber = 3;
+        this.bathroomNumber = 4;
+        break;
+      default:
+        this.bedroomNumber = 4;
+        this.bathroomNumber = 5;
+        break;
+    }
+  }
 }

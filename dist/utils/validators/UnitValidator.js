@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitStatus;
@@ -20,8 +20,15 @@ var UnitIntresetStatus;
     UnitIntresetStatus["reserve"] = "reserve";
     UnitIntresetStatus["intreset"] = "intreset";
 })(UnitIntresetStatus || (exports.UnitIntresetStatus = UnitIntresetStatus = {}));
+var UnitTemplates;
+(function (UnitTemplates) {
+    UnitTemplates["yasmin"] = "\u0627\u0644\u064A\u0627\u0633\u0645\u064A\u0646";
+    UnitTemplates["lavender"] = "\u0644\u0627\u0641\u0646\u062F\u0631";
+    UnitTemplates["orcid"] = "\u0627\u0648\u0631\u0643\u064A\u062F";
+    UnitTemplates["tolib"] = "\u062A\u0648\u0644\u064A\u0628";
+})(UnitTemplates || (exports.UnitTemplates = UnitTemplates = {}));
 const UnitValidator = zod_1.z.object({
-    name: zod_1.z.string(),
+    // name: z.string(),
     projectId: zod_1.z.string(),
     number: zod_1.z
         .string()

@@ -12,6 +12,7 @@ import { UsersRoles } from "../../utils/types/enums";
 import unitIntresetRouter from "./unitIntreset.router";
 import mapLocationsRouter from "./mapLocation.router";
 import financialRouter from "./financial.route";
+import uploadDataRouter from "./uploadData.router";
 import { HomeController } from "../../controllers/dashboard/home.controller";
 import expressAsyncHandler from "express-async-handler";
 
@@ -33,5 +34,6 @@ router.use("/unit-floor", unitFloorRouter);
 router.use("/unit-intreset", unitIntresetRouter);
 router.use("/map-locations", mapLocationsRouter);
 router.use("/financial", financialRouter);
+router.use("/upload-data", uploadDataRouter);
 
 export default router;

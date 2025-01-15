@@ -1,0 +1,138 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UploadData = void 0;
+const xlsx_1 = __importDefault(require("xlsx"));
+const data_source_1 = __importDefault(require("../../data-source"));
+const Project_model_1 = require("../../entities/Project.model");
+const Unit_model_1 = require("../../entities/Unit.model");
+const UnitCategories_model_1 = require("../../entities/UnitCategories.model");
+const UnitValidator_1 = require("../../utils/validators/UnitValidator");
+const enums_1 = require("../../utils/types/enums");
+const typeorm_1 = require("typeorm");
+class UploadData {
+    static async uploadData(req, res, next) {
+        const file = req.file?.buffer;
+        if (!file) {
+            res.status(400).json({ message: "No file uploaded" });
+        }
+        const buffer = file?.buffer;
+        const workbook = xlsx_1.default.read(buffer, { type: "buffer" });
+        const sheetName = workbook.SheetNames[0]; // First sheet
+        const sheetData = xlsx_1.default.utils.sheet_to_json(workbook.Sheets[sheetName], {});
+        const trimmedData = sheetData.map((row) => Object.fromEntries(Object.entries(row).map(([key, value]) => [key.trim(), value])));
+        const projectRepo = data_source_1.default.getRepository(Project_model_1.Project);
+        const unitRepo = data_source_1.default.getRepository(Unit_model_1.Unit);
+        const validProjects = [];
+        const validUnits = [];
+        const errors = [];
+        for (const [index, row] of trimmedData.entries()) {
+            try {
+                // Extract and map project data
+                const projectName = row["اسم المشروع"]?.trim();
+                const unitTemplate = row["النموذج"]?.trim();
+                // let unitCategory = await UnitCategories.findOne({
+                //     name: unitCategoryName,
+                // });
+                // if (!unitCategory) {
+                //   unitCategory = UnitCategories.create({
+                //     name: unitCategoryName,
+                //   });
+                // }
+                // ToDo: get random category until set value in sheet
+                const randomCategory = (await UnitCategories_model_1.UnitCategories.createQueryBuilder("unitCategories")
+                    .orderBy("RAND()") // MySQL syntax for random ordering
+                    .limit(1) // Fetch only one record
+                    .getOne());
+                if (!projectName) {
+                    errors.push(`Row ${index + 1}: Missing project name.`);
+                    continue;
+                }
+                const isInValidProjects = validProjects.find((proj) => proj.name === projectName.trim());
+                let project = isInValidProjects ??
+                    (await projectRepo.findOne({
+                        where: { name: (0, typeorm_1.Equal)(projectName.trim()) },
+                    }));
+                if (!project) {
+                    project = projectRepo.create({
+                        name: projectName,
+                        // ToDo: set real values from sheet after add it
+                        number: 1,
+                        status: enums_1.CommonStatus.posted,
+                        lat: 21.771543,
+                        lng: 39.127317,
+                        city: "Jeddah", // Add default city or extract if available
+                    });
+                    validProjects.push(project);
+                }
+                // Extract and map unit data
+                const unitNumber = Number(row["رقم الفيلا"]);
+                const unitType = row["نوع الفيلا"]?.trim();
+                const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
+                const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
+                const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
+                const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
+                const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
+                const buildStatus = row["حالة البناء"]?.trim();
+                const salesChannels = row["sales_channels"]
+                    ?.trim()
+                    ?.replace(/[{}]/g, "")
+                    .split(",")
+                    .map((channel) => channel.trim());
+                if (!unitNumber || !unitType || isNaN(unitPrice)) {
+                    errors.push(`Row ${index + 1}: Missing or invalid unit data.`);
+                    continue;
+                }
+                // Check for duplicate unit
+                const existingUnit = await unitRepo.findOneBy({ number: unitNumber });
+                if (existingUnit) {
+                    errors.push(`Row ${index + 1}: Duplicate unit number ${unitNumber}.`);
+                    continue;
+                }
+                const enumValues = Object.values(UnitValidator_1.UnitStatus);
+                // Pick a random value
+                const randomStatus = enumValues[Math.floor(Math.random() * enumValues.length)];
+                const unit = unitRepo.create({
+                    number: unitNumber,
+                    type: unitType,
+                    price: unitPrice,
+                    landSpace,
+                    buildSpace,
+                    bedroomNumber,
+                    bathroomNumber,
+                    buildStatus,
+                    salesChannels,
+                    project,
+                    template: unitTemplate,
+                    category: randomCategory, // ToDo:change random with one we get from sheet
+                    //   category: unitCategory,
+                    //   ToDo:add real values from sheet
+                    buildLevel: 1,
+                    saledSpace: 200,
+                    floorsNumber: 3,
+                    status: randomStatus,
+                });
+                validUnits.push(unit);
+            }
+            catch (error) {
+                errors.push(`Row ${index + 1}: ${error.message}`);
+            }
+        }
+        // Save valid projects and units
+        if (validProjects.length > 0) {
+            await projectRepo.save(validProjects);
+        }
+        if (validUnits.length > 0) {
+            await unitRepo.save(validUnits);
+        }
+        res.status(200).json({
+            message: "File processed successfully",
+            projectsAdded: validProjects.length,
+            unitsAdded: validUnits.length,
+            errors,
+        });
+    }
+}
+exports.UploadData = UploadData;

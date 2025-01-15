@@ -18,8 +18,15 @@ export enum UnitIntresetStatus {
   intreset = "intreset",
 }
 
+export enum UnitTemplates {
+  yasmin = "الياسمين",
+  lavender = "لافندر",
+  orcid = "اوركيد",
+  tolib = "توليب",
+}
+
 const UnitValidator = z.object({
-  name: z.string(),
+  // name: z.string(),
   projectId: z.string(),
   number: z
     .string()

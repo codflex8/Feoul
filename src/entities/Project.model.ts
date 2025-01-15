@@ -11,7 +11,7 @@ export class Project extends BaseNumberModel {
   @Column()
   name!: string;
 
-  @Column({ type: "enum", enum: CommonStatus, default: CommonStatus.archived })
+  @Column({ type: "enum", enum: CommonStatus, default: CommonStatus.posted })
   status!: CommonStatus;
 
   @Column({ nullable: true })

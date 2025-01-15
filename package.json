@@ -9,8 +9,8 @@
     "typeorm": "ts-node ./node_modules/.bin/typeorm",
     "migration:generate": "npx typeorm-ts-node-commonjs migration:generate",
     "migration:create": "npm run typeorm migration:create -- -n",
-    "migration:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
-    "migration:revert": "npm run typeorm migration:revert",
+    "apply:migrations": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
+    "migration:revert": "npm run typeorm migration:revert -d ./src/data-source.ts",
     "prod:apply:migrations": "typeorm migration:run -d ./dist/data-source.js"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "twitter-lite": "^1.1.0",
     "typeorm": "^0.3.20",
     "winston": "^3.17.0",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {
