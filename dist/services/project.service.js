@@ -75,6 +75,8 @@ class ProjectService {
         }
         Object.assign(project, {
             ...data,
+            lat: data.lat,
+            lng: data.lng,
             projectDocUrl: document || project.projectDocUrl,
             template: projectTemplate,
         });
