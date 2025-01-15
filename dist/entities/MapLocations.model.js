@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapLocations = void 0;
 const typeorm_1 = require("typeorm");
 const BaseModel_1 = require("./BaseModel");
+const MapLocation_1 = require("../utils/validators/MapLocation");
 let MapLocations = class MapLocations extends BaseModel_1.BaseModel {
 };
 exports.MapLocations = MapLocations;
@@ -31,6 +32,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], MapLocations.prototype, "lng", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "enum", enum: MapLocation_1.MapLocationClassification }),
+    __metadata("design:type", String)
+], MapLocations.prototype, "classification", void 0);
 exports.MapLocations = MapLocations = __decorate([
     (0, typeorm_1.Entity)()
 ], MapLocations);

@@ -1,5 +1,6 @@
 import { Column, Entity } from "typeorm";
 import { BaseModel } from "./BaseModel";
+import { MapLocationClassification } from "../utils/validators/MapLocation";
 
 @Entity()
 export class MapLocations extends BaseModel {
@@ -14,4 +15,7 @@ export class MapLocations extends BaseModel {
 
   @Column()
   lng!: string;
+
+  @Column({ type: "enum", enum: MapLocationClassification })
+  classification!: MapLocationClassification;
 }

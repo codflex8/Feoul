@@ -7,4 +7,9 @@ export const MapLocationValidator = z.object({
   lng: z.number(),
 });
 
+export enum MapLocationClassification {
+  primary = "primary",
+  secondary = "secondary",
+}
+
 export type MapLocationType = z.infer<typeof MapLocationValidator>;

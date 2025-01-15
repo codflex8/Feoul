@@ -2,7 +2,10 @@ import { TFunction } from "i18next";
 import { MapLocations } from "../entities/MapLocations.model";
 import ApiError from "../utils/ApiError";
 import { getPaginationData } from "../utils/getPaginationData";
-import { MapLocationType } from "../utils/validators/MapLocation";
+import {
+  MapLocationClassification,
+  MapLocationType,
+} from "../utils/validators/MapLocation";
 
 export class MapLocationsService {
   static async createMapLocation(data: MapLocationType): Promise<MapLocations> {
@@ -41,17 +44,17 @@ export class MapLocationsService {
   }
 
   static async getMapLocationsWithGroup() {
-    const records = await MapLocations.createQueryBuilder("location").getMany();
-
-    const groupedRecords = records.reduce((acc, record) => {
-      if (!acc[record.type]) {
-        acc[record.type] = [];
-      }
-      acc[record.type].push(record);
-      return acc;
-    }, {} as Record<string, MapLocations[]>);
-
-    return groupedRecords;
+    const primary = await MapLocations.find({
+      where: {
+        classification: MapLocationClassification.primary,
+      },
+    });
+    const secondary = await MapLocations.find({
+      where: {
+        classification: MapLocationClassification.secondary,
+      },
+    });
+    return { primary, secondary };
   }
 
   public static async getMapLocationById(id: string) {

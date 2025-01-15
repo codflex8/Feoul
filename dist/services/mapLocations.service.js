@@ -7,6 +7,7 @@ exports.MapLocationsService = void 0;
 const MapLocations_model_1 = require("../entities/MapLocations.model");
 const ApiError_1 = __importDefault(require("../utils/ApiError"));
 const getPaginationData_1 = require("../utils/getPaginationData");
+const MapLocation_1 = require("../utils/validators/MapLocation");
 class MapLocationsService {
     static async createMapLocation(data) {
         const mapLocation = MapLocations_model_1.MapLocations.create({
@@ -38,15 +39,17 @@ class MapLocationsService {
         return [mapLocations, count];
     }
     static async getMapLocationsWithGroup() {
-        const records = await MapLocations_model_1.MapLocations.createQueryBuilder("location").getMany();
-        const groupedRecords = records.reduce((acc, record) => {
-            if (!acc[record.type]) {
-                acc[record.type] = [];
-            }
-            acc[record.type].push(record);
-            return acc;
-        }, {});
-        return groupedRecords;
+        const primary = await MapLocations_model_1.MapLocations.find({
+            where: {
+                classification: MapLocation_1.MapLocationClassification.primary,
+            },
+        });
+        const secondary = await MapLocations_model_1.MapLocations.find({
+            where: {
+                classification: MapLocation_1.MapLocationClassification.secondary,
+            },
+        });
+        return { primary, secondary };
     }
     static async getMapLocationById(id) {
         const mapLocation = await MapLocations_model_1.MapLocations.findOneBy({ id });
