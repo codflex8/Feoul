@@ -20,11 +20,11 @@ export class Project extends BaseNumberModel {
   @Column({ nullable: true })
   city?: string;
 
-  @Column({ type: "float" })
-  lng!: number;
+  @Column()
+  lng!: string;
 
-  @Column({ type: "float" })
-  lat!: number;
+  @Column()
+  lat!: string;
 
   @OneToMany(() => Unit, (unit) => unit.project, {
     cascade: true,

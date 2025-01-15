@@ -40,12 +40,12 @@ __decorate([
     __metadata("design:type", String)
 ], Project.prototype, "city", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "float" }),
-    __metadata("design:type", Number)
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], Project.prototype, "lng", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "float" }),
-    __metadata("design:type", Number)
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], Project.prototype, "lat", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => Unit_model_1.Unit, (unit) => unit.project, {

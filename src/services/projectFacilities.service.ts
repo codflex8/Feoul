@@ -19,8 +19,8 @@ export class ProjectFacilitiesService {
 
     const projectFacilities = ProjectFacilities.create({
       name,
-      lat,
-      lng,
+      lat: data.lat.toString(),
+      lng: data.lng.toString(),
       project,
     });
     await projectFacilities.save();

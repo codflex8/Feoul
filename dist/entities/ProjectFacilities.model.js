@@ -21,12 +21,12 @@ __decorate([
     __metadata("design:type", String)
 ], ProjectFacilities.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "float" }),
-    __metadata("design:type", Number)
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], ProjectFacilities.prototype, "lat", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "float" }),
-    __metadata("design:type", Number)
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], ProjectFacilities.prototype, "lng", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Project_model_1.Project, (project) => project.facilities, {

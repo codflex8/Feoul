@@ -7,11 +7,11 @@ export class ProjectFacilities extends BaseModel {
   @Column()
   name!: string;
 
-  @Column({ type: "float" })
-  lat!: number;
+  @Column()
+  lat!: string;
 
-  @Column({ type: "float" })
-  lng!: number;
+  @Column()
+  lng!: string;
 
   @ManyToOne(() => Project, (project) => project.facilities, {
     onDelete: "CASCADE",

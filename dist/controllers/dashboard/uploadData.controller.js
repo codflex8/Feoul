@@ -62,8 +62,8 @@ class UploadData {
                         // ToDo: set real values from sheet after add it
                         number: 1,
                         status: enums_1.CommonStatus.posted,
-                        lat: 21.771543,
-                        lng: 39.127317,
+                        lat: "21.771543",
+                        lng: "39.127317",
                         city: "Jeddah", // Add default city or extract if available
                     });
                     await project.save();

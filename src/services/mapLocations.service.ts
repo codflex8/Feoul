@@ -8,6 +8,8 @@ export class MapLocationsService {
   static async createMapLocation(data: MapLocationType): Promise<MapLocations> {
     const mapLocation = MapLocations.create({
       ...data,
+      lat: data.lat.toString(),
+      lng: data.lng.toString(),
     });
     await mapLocation.save();
     return mapLocation;

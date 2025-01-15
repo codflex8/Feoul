@@ -29,6 +29,8 @@ export class ProjectService {
     const project = Project.create({
       ...data,
       projectDocUrl: document,
+      lat: data.lat.toString(),
+      lng: data.lng.toString(),
     });
     project.template = projectTemplate;
     await project.save();

@@ -11,6 +11,8 @@ class MapLocationsService {
     static async createMapLocation(data) {
         const mapLocation = MapLocations_model_1.MapLocations.create({
             ...data,
+            lat: data.lat.toString(),
+            lng: data.lng.toString(),
         });
         await mapLocation.save();
         return mapLocation;
