@@ -24,11 +24,11 @@ __decorate([
     __metadata("design:type", String)
 ], MapLocations.prototype, "type", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "float" }),
     __metadata("design:type", Number)
 ], MapLocations.prototype, "lat", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "float" }),
     __metadata("design:type", Number)
 ], MapLocations.prototype, "lng", void 0);
 exports.MapLocations = MapLocations = __decorate([

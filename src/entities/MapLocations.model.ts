@@ -9,9 +9,9 @@ export class MapLocations extends BaseModel {
   @Column()
   type!: string;
 
-  @Column()
+  @Column({ type: "float" })
   lat!: number;
 
-  @Column()
+  @Column({ type: "float" })
   lng!: number;
 }

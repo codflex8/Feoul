@@ -40,11 +40,11 @@ __decorate([
     __metadata("design:type", String)
 ], Project.prototype, "city", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "float" }),
     __metadata("design:type", Number)
 ], Project.prototype, "lng", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "float" }),
     __metadata("design:type", Number)
 ], Project.prototype, "lat", void 0);
 __decorate([

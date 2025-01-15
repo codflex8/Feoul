@@ -7,10 +7,10 @@ export class ProjectFacilities extends BaseModel {
   @Column()
   name!: string;
 
-  @Column()
+  @Column({ type: "float" })
   lat!: number;
 
-  @Column()
+  @Column({ type: "float" })
   lng!: number;
 
   @ManyToOne(() => Project, (project) => project.facilities, {
