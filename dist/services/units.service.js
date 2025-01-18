@@ -39,7 +39,7 @@ class UnitService {
         const { page, pageSize, name, number, status, priceFrom, priceTo, projectId, categoryId, } = query;
         const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
         const queryBuilder = Unit_model_1.Unit.createQueryBuilder("unit")
-            .leftJoin("unit.project", "project")
+            .leftJoinAndSelect("unit.project", "project")
             .leftJoinAndSelect("unit.category", "category")
             .leftJoinAndSelect("unit.floors", "floors");
         if (categoryId) {
@@ -69,8 +69,9 @@ class UnitService {
     }
     static async getProjectUnitsGroupedByStatus(projectId) {
         const querable = Unit_model_1.Unit.createQueryBuilder("unit")
-            .leftJoin("unit.project", "project")
+            .leftJoinAndSelect("unit.project", "project")
             .leftJoinAndSelect("unit.floors", "floor")
+            .leftJoinAndSelect("unit.category", "category")
             .where("project.id = :projectId", { projectId });
         const unitsPriceRange = await querable
             .clone()
@@ -116,6 +117,7 @@ class UnitService {
             relations: {
                 floors: true,
                 category: true,
+                project: true,
             },
         });
     }

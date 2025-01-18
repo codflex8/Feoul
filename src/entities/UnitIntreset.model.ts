@@ -27,10 +27,10 @@ export class UnitIntreset extends BaseModel {
   })
   status?: UnitIntresetStatus;
 
-  @Column()
+  @Column({ nullable: true })
   reversePrice!: number;
 
-  @Column()
+  @Column({ nullable: true })
   buyPrice!: number;
 
   @Column({ nullable: true })
