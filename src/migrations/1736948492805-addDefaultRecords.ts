@@ -8,22 +8,27 @@ export class AddDefaultRecords1736948492805 implements MigrationInterface {
 
     // Insert categories using the query builder
     await unitCategoryRepository.save([
-      { number: 1, name: "A-1", color: "#00CEC9", status: CommonStatus.posted },
+      {
+        number: 1,
+        name: "class-A",
+        color: "#00CEC9",
+        status: CommonStatus.posted,
+      },
       {
         number: 2,
-        name: "A-2",
+        name: "class-B",
         color: "rgb(153, 182, 255)",
         status: CommonStatus.posted,
       },
       {
         number: 3,
-        name: "B",
+        name: "class-C",
         color: "rgb(213, 121, 255)",
         status: CommonStatus.posted,
       },
       {
         number: 4,
-        name: "C",
+        name: "class-D",
         color: "rgb(233, 214, 109)",
         status: CommonStatus.posted,
       },

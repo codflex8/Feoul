@@ -42,7 +42,11 @@ export class UnitCategoryService {
       });
     }
 
-    return await queryBuilder.skip(skip).take(take).getManyAndCount();
+    return await queryBuilder
+      .orderBy("name", "ASC")
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
   }
 
   static async getUnitCategoryById(id: string) {

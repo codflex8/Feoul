@@ -20,8 +20,8 @@ import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
 export class Unit extends BaseNumberModel {
-  // @Column({ nullable: true })
-  // name!: string;
+  @Column({ nullable: true })
+  name!: string;
 
   @Column()
   price!: number;
@@ -44,6 +44,18 @@ export class Unit extends BaseNumberModel {
     nullable: true,
   })
   salesChannels!: string[];
+
+  @Column({
+    type: "simple-array",
+    nullable: true,
+  })
+  size!: number[];
+
+  @Column({
+    type: "simple-array",
+    nullable: true,
+  })
+  position!: number[];
 
   // المساحة البيعية
   @Column()

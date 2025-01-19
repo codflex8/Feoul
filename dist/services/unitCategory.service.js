@@ -31,7 +31,11 @@ class UnitCategoryService {
                 status,
             });
         }
-        return await queryBuilder.skip(skip).take(take).getManyAndCount();
+        return await queryBuilder
+            .orderBy("name", "ASC")
+            .skip(skip)
+            .take(take)
+            .getManyAndCount();
     }
     static async getUnitCategoryById(id) {
         return await UnitCategories_model_1.UnitCategories.findOneBy({ id });

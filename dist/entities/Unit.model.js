@@ -33,6 +33,10 @@ let Unit = class Unit extends BaseNumberModel_1.BaseNumberModel {
 };
 exports.Unit = Unit;
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Unit.prototype, "name", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Unit.prototype, "price", void 0);
@@ -59,6 +63,20 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Unit.prototype, "salesChannels", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: "simple-array",
+        nullable: true,
+    }),
+    __metadata("design:type", Array)
+], Unit.prototype, "size", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: "simple-array",
+        nullable: true,
+    }),
+    __metadata("design:type", Array)
+], Unit.prototype, "position", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)

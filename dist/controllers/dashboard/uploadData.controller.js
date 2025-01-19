@@ -12,6 +12,7 @@ const UnitCategories_model_1 = require("../../entities/UnitCategories.model");
 const UnitValidator_1 = require("../../utils/validators/UnitValidator");
 const enums_1 = require("../../utils/types/enums");
 const typeorm_1 = require("typeorm");
+const units_data_1 = require("../../units-data");
 class UploadData {
     static async uploadData(req, res, next) {
         const file = req.file?.buffer;
@@ -30,6 +31,7 @@ class UploadData {
         const errors = [];
         for (const [index, row] of trimmedData.entries()) {
             try {
+                const unitData = units_data_1.unitsData[index];
                 // Extract and map project data
                 const projectName = row["اسم المشروع"]?.trim();
                 const unitTemplate = row["النموذج"]?.trim();
@@ -41,11 +43,6 @@ class UploadData {
                 //     name: unitCategoryName,
                 //   });
                 // }
-                // ToDo: get random category until set value in sheet
-                const randomCategory = (await UnitCategories_model_1.UnitCategories.createQueryBuilder("unitCategories")
-                    .orderBy("RAND()") // MySQL syntax for random ordering
-                    .limit(1) // Fetch only one record
-                    .getOne());
                 if (!projectName) {
                     errors.push(`Row ${index + 1}: Missing project name.`);
                     continue;
@@ -74,7 +71,7 @@ class UploadData {
                 const unitType = row["نوع الفيلا"]?.trim();
                 const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
                 const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
-                const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
+                const saledSpace = parseFloat(row["المساحة البيعية"?.trim()]);
                 const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
                 const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
                 const buildStatus = row["حالة البناء"]?.trim();
@@ -96,23 +93,31 @@ class UploadData {
                 const enumValues = Object.values(UnitValidator_1.UnitStatus);
                 // Pick a random value
                 const randomStatus = enumValues[Math.floor(Math.random() * enumValues.length)];
+                const unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
+                    .where("LOWER(category.name) LIKE LOWER(:name)", {
+                    name: `%${unitData.category}%`,
+                })
+                    .getOne();
+                console.log("unitCategoryyyyy", unitCategory);
                 const unit = unitRepo.create({
                     number: unitNumber,
                     type: unitType,
                     price: unitPrice,
                     landSpace,
-                    buildSpace,
+                    saledSpace,
                     bedroomNumber,
                     bathroomNumber,
                     buildStatus,
                     salesChannels,
                     project,
                     template: unitTemplate,
-                    category: randomCategory, // ToDo:change random with one we get from sheet
-                    //   category: unitCategory,
+                    category: unitCategory ?? undefined,
+                    size: unitData.size,
+                    position: unitData.position,
+                    name: unitData.name,
                     //   ToDo:add real values from sheet
                     buildLevel: 1,
-                    saledSpace: 200,
+                    buildSpace: 200,
                     floorsNumber: 3,
                     status: randomStatus,
                 });

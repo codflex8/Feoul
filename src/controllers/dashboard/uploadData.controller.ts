@@ -11,6 +11,7 @@ import {
 } from "../../utils/validators/UnitValidator";
 import { CommonStatus } from "../../utils/types/enums";
 import { Equal } from "typeorm";
+import { unitsData } from "../../units-data";
 export class UploadData {
   static async uploadData(req: Request, res: Response, next: NextFunction) {
     const file = req.file?.buffer;
@@ -37,6 +38,7 @@ export class UploadData {
     const errors: string[] = [];
     for (const [index, row] of trimmedData.entries()) {
       try {
+        const unitData = unitsData[index];
         // Extract and map project data
         const projectName = row["اسم المشروع"]?.trim();
         const unitTemplate: UnitTemplates = row[
@@ -50,13 +52,6 @@ export class UploadData {
         //     name: unitCategoryName,
         //   });
         // }
-
-        // ToDo: get random category until set value in sheet
-        const randomCategory: UnitCategories =
-          (await UnitCategories.createQueryBuilder("unitCategories")
-            .orderBy("RAND()") // MySQL syntax for random ordering
-            .limit(1) // Fetch only one record
-            .getOne()) as UnitCategories;
 
         if (!projectName) {
           errors.push(`Row ${index + 1}: Missing project name.`);
@@ -89,7 +84,7 @@ export class UploadData {
         const unitType: UnitTypes = row["نوع الفيلا"]?.trim() as UnitTypes;
         const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
         const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
-        const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
+        const saledSpace = parseFloat(row["المساحة البيعية"?.trim()]);
         const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
         const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
         const buildStatus = row["حالة البناء"]?.trim();
@@ -115,24 +110,31 @@ export class UploadData {
         // Pick a random value
         const randomStatus =
           enumValues[Math.floor(Math.random() * enumValues.length)];
-
+        const unitCategory = await UnitCategories.createQueryBuilder("category")
+          .where("LOWER(category.name) LIKE LOWER(:name)", {
+            name: `%${unitData.category}%`,
+          })
+          .getOne();
+        console.log("unitCategoryyyyy", unitCategory);
         const unit = unitRepo.create({
           number: unitNumber,
           type: unitType,
           price: unitPrice,
           landSpace,
-          buildSpace,
+          saledSpace,
           bedroomNumber,
           bathroomNumber,
           buildStatus,
           salesChannels,
           project,
           template: unitTemplate,
-          category: randomCategory, // ToDo:change random with one we get from sheet
-          //   category: unitCategory,
+          category: unitCategory ?? undefined,
+          size: unitData.size,
+          position: unitData.position,
+          name: unitData.name,
           //   ToDo:add real values from sheet
           buildLevel: 1,
-          saledSpace: 200,
+          buildSpace: 200,
           floorsNumber: 3,
           status: randomStatus,
         });
