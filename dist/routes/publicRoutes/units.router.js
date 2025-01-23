@@ -9,4 +9,5 @@ const units_controller_1 = require("../../controllers/public/units.controller");
 const router = (0, express_1.Router)();
 router.get("/", (0, express_async_handler_1.default)(units_controller_1.PublicUnitController.getUnits));
 router.get("/:id", (0, express_async_handler_1.default)(units_controller_1.PublicUnitController.getUnitById));
+router.get("/:id/floors", (0, express_async_handler_1.default)(units_controller_1.PublicUnitController.getUnitFloors));
 exports.default = router;

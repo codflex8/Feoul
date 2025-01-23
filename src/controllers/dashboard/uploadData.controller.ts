@@ -5,6 +5,7 @@ import { Project } from "../../entities/Project.model";
 import { Unit } from "../../entities/Unit.model";
 import { UnitCategories } from "../../entities/UnitCategories.model";
 import {
+  UnitBuildStatus,
   UnitStatus,
   UnitTemplates,
   UnitTypes,
@@ -12,6 +13,7 @@ import {
 import { CommonStatus } from "../../utils/types/enums";
 import { Equal } from "typeorm";
 import { unitsData } from "../../units-data";
+import { UnitFloor } from "../../entities/UnitFloor.model";
 export class UploadData {
   static async uploadData(req: Request, res: Response, next: NextFunction) {
     const file = req.file?.buffer;
@@ -71,8 +73,8 @@ export class UploadData {
             // ToDo: set real values from sheet after add it
             number: 1,
             status: CommonStatus.posted,
-            lat: "21.771543",
-            lng: "39.127317",
+            lat: "21.740182275411662",
+            lng: "39.22477929186214",
             city: "Jeddah", // Add default city or extract if available
           });
           await project.save();
@@ -83,11 +85,16 @@ export class UploadData {
         const unitNumber = Number(row["رقم الفيلا"]);
         const unitType: UnitTypes = row["نوع الفيلا"]?.trim() as UnitTypes;
         const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
+        const buildLevel = parseFloat(row["المرحلة"?.trim()]);
         const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
         const saledSpace = parseFloat(row["المساحة البيعية"?.trim()]);
         const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
         const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
-        const buildStatus = row["حالة البناء"]?.trim();
+        const buildStatusValue = row["حالة البناء"]?.trim();
+        const buildStatus =
+          buildStatusValue === UnitBuildStatus.construction
+            ? UnitBuildStatus.construction
+            : UnitBuildStatus.noConstruction;
         const salesChannels = row["sales_channels"]
           ?.trim()
           ?.replace(/[{}]/g, "")
@@ -115,7 +122,7 @@ export class UploadData {
             name: `%${unitData.category}%`,
           })
           .getOne();
-        console.log("unitCategoryyyyy", unitCategory);
+
         const unit = unitRepo.create({
           number: unitNumber,
           type: unitType,
@@ -133,10 +140,27 @@ export class UploadData {
           position: unitData.position,
           name: unitData.name,
           //   ToDo:add real values from sheet
-          buildLevel: 1,
+          buildLevel,
           buildSpace: 200,
           floorsNumber: 3,
           status: randomStatus,
+          floors: UnitFloor.create([
+            {
+              index: 0,
+              name: "first floor",
+              imageUrl: "/public/default/Type_A_GF.png",
+            },
+            {
+              index: 1,
+              name: "first floor",
+              imageUrl: "/public/default/Type_A_FF.png",
+            },
+            {
+              index: 2,
+              name: "first floor",
+              imageUrl: "/public/default/Type_A_RF.png",
+            },
+          ]),
         });
         validUnits.push(unit);
       } catch (error: any) {

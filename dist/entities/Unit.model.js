@@ -49,7 +49,7 @@ __decorate([
     __metadata("design:type", String)
 ], Unit.prototype, "template", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "enum", enum: UnitValidator_1.UnitBuildStatus }),
     __metadata("design:type", String)
 ], Unit.prototype, "buildStatus", void 0);
 __decorate([

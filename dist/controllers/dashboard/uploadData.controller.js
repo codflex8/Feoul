@@ -13,6 +13,7 @@ const UnitValidator_1 = require("../../utils/validators/UnitValidator");
 const enums_1 = require("../../utils/types/enums");
 const typeorm_1 = require("typeorm");
 const units_data_1 = require("../../units-data");
+const UnitFloor_model_1 = require("../../entities/UnitFloor.model");
 class UploadData {
     static async uploadData(req, res, next) {
         const file = req.file?.buffer;
@@ -59,8 +60,8 @@ class UploadData {
                         // ToDo: set real values from sheet after add it
                         number: 1,
                         status: enums_1.CommonStatus.posted,
-                        lat: "21.771543",
-                        lng: "39.127317",
+                        lat: "21.740182275411662",
+                        lng: "39.22477929186214",
                         city: "Jeddah", // Add default city or extract if available
                     });
                     await project.save();
@@ -70,11 +71,15 @@ class UploadData {
                 const unitNumber = Number(row["رقم الفيلا"]);
                 const unitType = row["نوع الفيلا"]?.trim();
                 const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
+                const buildLevel = parseFloat(row["المرحلة"?.trim()]);
                 const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
                 const saledSpace = parseFloat(row["المساحة البيعية"?.trim()]);
                 const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
                 const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
-                const buildStatus = row["حالة البناء"]?.trim();
+                const buildStatusValue = row["حالة البناء"]?.trim();
+                const buildStatus = buildStatusValue === UnitValidator_1.UnitBuildStatus.construction
+                    ? UnitValidator_1.UnitBuildStatus.construction
+                    : UnitValidator_1.UnitBuildStatus.noConstruction;
                 const salesChannels = row["sales_channels"]
                     ?.trim()
                     ?.replace(/[{}]/g, "")
@@ -98,7 +103,6 @@ class UploadData {
                     name: `%${unitData.category}%`,
                 })
                     .getOne();
-                console.log("unitCategoryyyyy", unitCategory);
                 const unit = unitRepo.create({
                     number: unitNumber,
                     type: unitType,
@@ -116,10 +120,27 @@ class UploadData {
                     position: unitData.position,
                     name: unitData.name,
                     //   ToDo:add real values from sheet
-                    buildLevel: 1,
+                    buildLevel,
                     buildSpace: 200,
                     floorsNumber: 3,
                     status: randomStatus,
+                    floors: UnitFloor_model_1.UnitFloor.create([
+                        {
+                            index: 0,
+                            name: "first floor",
+                            imageUrl: "/public/default/Type_A_GF.png",
+                        },
+                        {
+                            index: 1,
+                            name: "first floor",
+                            imageUrl: "/public/default/Type_A_FF.png",
+                        },
+                        {
+                            index: 2,
+                            name: "first floor",
+                            imageUrl: "/public/default/Type_A_RF.png",
+                        },
+                    ]),
                 });
                 validUnits.push(unit);
             }

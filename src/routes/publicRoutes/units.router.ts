@@ -6,5 +6,9 @@ const router = Router();
 
 router.get("/", expressAsyncHandler(PublicUnitController.getUnits));
 router.get("/:id", expressAsyncHandler(PublicUnitController.getUnitById));
+router.get(
+  "/:id/floors",
+  expressAsyncHandler(PublicUnitController.getUnitFloors)
+);
 
 export default router;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitStatus;
@@ -27,6 +27,11 @@ var UnitTemplates;
     UnitTemplates["orcid"] = "\u0627\u0648\u0631\u0643\u064A\u062F";
     UnitTemplates["tolib"] = "\u062A\u0648\u0644\u064A\u0628";
 })(UnitTemplates || (exports.UnitTemplates = UnitTemplates = {}));
+var UnitBuildStatus;
+(function (UnitBuildStatus) {
+    UnitBuildStatus["noConstruction"] = "no_construction";
+    UnitBuildStatus["construction"] = "construction";
+})(UnitBuildStatus || (exports.UnitBuildStatus = UnitBuildStatus = {}));
 const UnitValidator = zod_1.z.object({
     // name: z.string(),
     projectId: zod_1.z.string(),
@@ -64,7 +69,7 @@ const UnitValidator = zod_1.z.object({
     advantages: zod_1.z.string().optional(),
     categoryId: zod_1.z.string(),
     type: zod_1.z.nativeEnum(UnitTypes),
-    buildStatus: zod_1.z.string(),
+    buildStatus: zod_1.z.nativeEnum(UnitBuildStatus),
     buildLevel: zod_1.z
         .string()
         .nonempty()

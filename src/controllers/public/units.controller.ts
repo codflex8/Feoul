@@ -2,6 +2,7 @@ import { Request, Response, NextFunction, query } from "express";
 import { UnitService } from "../../services/units.service";
 import { UnitType } from "../../utils/validators/UnitValidator";
 import { GenericResponse } from "../../utils/GenericResponse";
+import { UnitFloorService } from "../../services/unitFloor.service";
 
 export class PublicUnitController {
   public static async getUnits(
@@ -37,5 +38,35 @@ export class PublicUnitController {
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
+  }
+  static async getUnitFloors(
+    req: Request<
+      { id: string },
+      {},
+      {},
+      {
+        page: number;
+        pageSize: number;
+        name: string;
+        index: string;
+      }
+    >,
+    res: Response
+  ) {
+    const unitId = req.params.id;
+    const [unitFloors, count] = await UnitFloorService.getUnitFloors({
+      ...req.query,
+      unitId,
+    });
+    res
+      .status(200)
+      .json(
+        new GenericResponse(
+          req.query.page,
+          req.query.pageSize,
+          count,
+          unitFloors
+        )
+      );
   }
 }

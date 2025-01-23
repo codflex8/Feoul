@@ -25,6 +25,11 @@ export enum UnitTemplates {
   tolib = "توليب",
 }
 
+export enum UnitBuildStatus {
+  noConstruction = "no_construction",
+  construction = "construction",
+}
+
 const UnitValidator = z.object({
   // name: z.string(),
   projectId: z.string(),
@@ -62,7 +67,7 @@ const UnitValidator = z.object({
   advantages: z.string().optional(),
   categoryId: z.string(),
   type: z.nativeEnum(UnitTypes),
-  buildStatus: z.string(),
+  buildStatus: z.nativeEnum(UnitBuildStatus),
   buildLevel: z
     .string()
     .nonempty()

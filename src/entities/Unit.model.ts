@@ -12,6 +12,7 @@ import { UnitCategories } from "./UnitCategories.model";
 import { UnitFloor } from "./UnitFloor.model";
 import { UnitIntreset } from "./UnitIntreset.model";
 import {
+  UnitBuildStatus,
   UnitStatus,
   UnitTemplates,
   UnitTypes,
@@ -32,8 +33,8 @@ export class Unit extends BaseNumberModel {
   @Column({ type: "enum", enum: UnitTemplates })
   template!: UnitTemplates;
 
-  @Column()
-  buildStatus!: string;
+  @Column({ type: "enum", enum: UnitBuildStatus })
+  buildStatus!: UnitBuildStatus;
 
   @Column({ nullable: true })
   buildLevel!: number;
