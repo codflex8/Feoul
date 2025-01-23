@@ -87,7 +87,7 @@ export class UploadData {
         const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
         const buildLevel = parseFloat(row["المرحلة"?.trim()]);
         const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
-        const saledSpace = parseFloat(row["المساحة البيعية"?.trim()]);
+        const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
         const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
         const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
         const buildStatusValue = row["حالة البناء"]?.trim();
@@ -128,7 +128,7 @@ export class UploadData {
           type: unitType,
           price: unitPrice,
           landSpace,
-          saledSpace,
+          // saledSpace,
           bedroomNumber,
           bathroomNumber,
           buildStatus,
@@ -139,9 +139,9 @@ export class UploadData {
           size: unitData.size,
           position: unitData.position,
           name: unitData.name,
+          buildSpace,
           //   ToDo:add real values from sheet
           buildLevel,
-          buildSpace: 200,
           floorsNumber: 3,
           status: randomStatus,
           floors: UnitFloor.create([

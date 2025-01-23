@@ -59,8 +59,8 @@ export class Unit extends BaseNumberModel {
   position!: number[];
 
   // المساحة البيعية
-  @Column()
-  saledSpace!: number;
+  @Column({ nullable: true })
+  saledSpace?: number;
 
   @Column()
   landSpace!: number;
