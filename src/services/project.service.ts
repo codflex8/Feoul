@@ -83,15 +83,14 @@ export class ProjectService {
     const { document, templateId, number } = data;
 
     const projectTemplate = await ProjectTemplate.findOneBy({ id: templateId });
-    if (!projectTemplate) {
-      throw new ApiError(translate("template-not-found"), 400);
-    }
 
     const project = await Project.findOneBy({ id });
     if (!project) {
       throw new ApiError(translate("project-not-found"), 404);
     }
-
+    if (projectTemplate) {
+      project.template = projectTemplate;
+    }
     const isNumberExist = await Project.getItemByNumber(number);
     if (isNumberExist && isNumberExist.id !== project.id) {
       throw new ApiError(translate("project-number-used"), 409);

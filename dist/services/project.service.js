@@ -63,12 +63,12 @@ class ProjectService {
     static async updateProject(id, data, translate) {
         const { document, templateId, number } = data;
         const projectTemplate = await ProjectTemplate_model_1.ProjectTemplate.findOneBy({ id: templateId });
-        if (!projectTemplate) {
-            throw new ApiError_1.default(translate("template-not-found"), 400);
-        }
         const project = await Project_model_1.Project.findOneBy({ id });
         if (!project) {
             throw new ApiError_1.default(translate("project-not-found"), 404);
+        }
+        if (projectTemplate) {
+            project.template = projectTemplate;
         }
         const isNumberExist = await Project_model_1.Project.getItemByNumber(number);
         if (isNumberExist && isNumberExist.id !== project.id) {

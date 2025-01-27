@@ -11,10 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnitCategories = void 0;
 const typeorm_1 = require("typeorm");
+const BaseModel_1 = require("./BaseModel");
 const enums_1 = require("../utils/types/enums");
 const Unit_model_1 = require("./Unit.model");
-const BaseNumberModel_1 = require("./BaseNumberModel");
-let UnitCategories = class UnitCategories extends BaseNumberModel_1.BaseNumberModel {
+let UnitCategories = class UnitCategories extends BaseModel_1.BaseModel {
 };
 exports.UnitCategories = UnitCategories;
 __decorate([

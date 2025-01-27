@@ -16,10 +16,12 @@ export class UnitCategoryService {
     data: UnitCategoryType,
     translate: TFunction
   ) {
-    const isNumberExist = await UnitCategories.getItemByNumber(data.number);
-    if (isNumberExist) {
-      throw new ApiError(translate("unit-category-number-used"), 409);
-    }
+    // const isNumberExist = await UnitCategories.findOneBy({
+    //   number: data.number,
+    // });
+    // if (isNumberExist) {
+    //   throw new ApiError(translate("unit-category-number-used"), 409);
+    // }
     const newUnitCategory = UnitCategories.create({ ...data });
     await newUnitCategory.save();
     return newUnitCategory;

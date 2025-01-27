@@ -1,13 +1,17 @@
-import { Entity, Column, OneToMany } from "typeorm";
+import { Entity, Column, OneToMany, Generated } from "typeorm";
 import { BaseModel } from "./BaseModel";
 import { CommonStatus } from "../utils/types/enums";
 import { Unit } from "./Unit.model";
 import { BaseNumberModel } from "./BaseNumberModel";
 
 @Entity()
-export class UnitCategories extends BaseNumberModel {
+export class UnitCategories extends BaseModel {
   @Column()
   name!: string;
+
+  // @Column()
+  // @Generated("increment")
+  // number!: number;
 
   @Column()
   color!: string;

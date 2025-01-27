@@ -9,10 +9,12 @@ const ApiError_1 = __importDefault(require("../utils/ApiError"));
 const getPaginationData_1 = require("../utils/getPaginationData");
 class UnitCategoryService {
     static async createUnitCategory(data, translate) {
-        const isNumberExist = await UnitCategories_model_1.UnitCategories.getItemByNumber(data.number);
-        if (isNumberExist) {
-            throw new ApiError_1.default(translate("unit-category-number-used"), 409);
-        }
+        // const isNumberExist = await UnitCategories.findOneBy({
+        //   number: data.number,
+        // });
+        // if (isNumberExist) {
+        //   throw new ApiError(translate("unit-category-number-used"), 409);
+        // }
         const newUnitCategory = UnitCategories_model_1.UnitCategories.create({ ...data });
         await newUnitCategory.save();
         return newUnitCategory;
