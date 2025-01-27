@@ -17,9 +17,6 @@ export class ProjectService {
     const { document, templateId, number } = data;
 
     const projectTemplate = await ProjectTemplate.findOneBy({ id: templateId });
-    if (!projectTemplate) {
-      throw new ApiError(translate("template-not-found"), 400);
-    }
 
     const isNumberExist = await Project.getItemByNumber(number);
     if (isNumberExist) {
@@ -32,7 +29,10 @@ export class ProjectService {
       lat: data.lat.toString(),
       lng: data.lng.toString(),
     });
-    project.template = projectTemplate;
+    if (projectTemplate) {
+      project.template = projectTemplate;
+    }
+
     await project.save();
     return project;
   }

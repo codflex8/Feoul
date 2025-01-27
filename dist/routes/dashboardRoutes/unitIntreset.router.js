@@ -16,9 +16,9 @@ router.get("/", (0, express_async_handler_1.default)(unitIntreset_controller_1.U
 // Get a single unit by ID
 router.get("/:id", (0, express_async_handler_1.default)(unitIntreset_controller_1.UnitIntresetController.getUnitIntresetById));
 // Create a new unit
-router.post("/", (0, validationMiddleware_1.validateData)(UnitValidator_1.unitIntresetValidation), (0, express_async_handler_1.default)(unitIntreset_controller_1.UnitIntresetController.createUnitIntreset));
+router.post("/", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.unitIntresetValidation), (0, express_async_handler_1.default)(unitIntreset_controller_1.UnitIntresetController.createUnitIntreset));
 // Update an existing unit
-router.put("/:id", (0, validationMiddleware_1.validateData)(UnitValidator_1.unitIntresetValidation), (0, express_async_handler_1.default)(unitIntreset_controller_1.UnitIntresetController.updateUnitIntreset));
+router.put("/:id", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.unitIntresetValidation), (0, express_async_handler_1.default)(unitIntreset_controller_1.UnitIntresetController.updateUnitIntreset));
 // Delete a unit
 router.delete("/:id", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, express_async_handler_1.default)(unitIntreset_controller_1.UnitIntresetController.deleteUnitIntreset));
 exports.default = router;

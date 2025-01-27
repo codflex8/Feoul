@@ -9,7 +9,7 @@ export const ProjectValidator = z.object({
   status: z.nativeEnum(CommonStatus).default(CommonStatus.archived),
   projectDocUrl: z.string().url().optional(),
   city: z.string().optional(),
-  templateId: z.string(),
+  templateId: z.string().optional(),
 });
 
 export const projectFacilitesValidator = z.object({

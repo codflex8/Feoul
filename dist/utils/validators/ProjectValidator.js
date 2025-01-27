@@ -11,7 +11,7 @@ exports.ProjectValidator = zod_1.z.object({
     status: zod_1.z.nativeEnum(enums_1.CommonStatus).default(enums_1.CommonStatus.archived),
     projectDocUrl: zod_1.z.string().url().optional(),
     city: zod_1.z.string().optional(),
-    templateId: zod_1.z.string(),
+    templateId: zod_1.z.string().optional(),
 });
 exports.projectFacilitesValidator = zod_1.z.object({
     name: zod_1.z.string(),

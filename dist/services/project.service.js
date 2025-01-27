@@ -14,9 +14,6 @@ class ProjectService {
     static async createProject(data, translate) {
         const { document, templateId, number } = data;
         const projectTemplate = await ProjectTemplate_model_1.ProjectTemplate.findOneBy({ id: templateId });
-        if (!projectTemplate) {
-            throw new ApiError_1.default(translate("template-not-found"), 400);
-        }
         const isNumberExist = await Project_model_1.Project.getItemByNumber(number);
         if (isNumberExist) {
             throw new ApiError_1.default(translate("project-number-used"), 409);
@@ -27,7 +24,9 @@ class ProjectService {
             lat: data.lat.toString(),
             lng: data.lng.toString(),
         });
-        project.template = projectTemplate;
+        if (projectTemplate) {
+            project.template = projectTemplate;
+        }
         await project.save();
         return project;
     }

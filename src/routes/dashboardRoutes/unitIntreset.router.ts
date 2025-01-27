@@ -25,6 +25,7 @@ router.get(
 // Create a new unit
 router.post(
   "/",
+  AuthController.allowedto([UsersRoles.Admin]),
   validateData(unitIntresetValidation),
   expressAsyncHandler(UnitIntresetController.createUnitIntreset)
 );
@@ -32,6 +33,7 @@ router.post(
 // Update an existing unit
 router.put(
   "/:id",
+  AuthController.allowedto([UsersRoles.Admin]),
   validateData(unitIntresetValidation),
   expressAsyncHandler(UnitIntresetController.updateUnitIntreset)
 );
