@@ -187,6 +187,9 @@ class UnitService {
         if (!unit) {
             throw new ApiError_1.default(translate("unit-not-found"), 400);
         }
+        if (unit.status === UnitValidator_1.UnitStatus.saled) {
+            throw new ApiError_1.default(translate("unit-not-avaliable"), 400);
+        }
         const intreset = await unitIntreset_service_1.UnitInterestService.getUnitInterestById(intresetId, translate);
         if (!intreset) {
             throw new ApiError_1.default(translate("user-intreseted-not-found"), 400);

@@ -266,6 +266,9 @@ export class UnitService {
     if (!unit) {
       throw new ApiError(translate("unit-not-found"), 400);
     }
+    if (unit.status === UnitStatus.saled) {
+      throw new ApiError(translate("unit-not-avaliable"), 400);
+    }
     const intreset = await UnitInterestService.getUnitInterestById(
       intresetId,
       translate
