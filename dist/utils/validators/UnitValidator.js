@@ -83,7 +83,7 @@ const UnitValidator = zod_1.z.object({
 exports.unitCategoryValidation = zod_1.z.object({
     name: zod_1.z.string(),
     color: zod_1.z.string(),
-    number: zod_1.z.number(),
+    // number: z.number(),
     status: zod_1.z.nativeEnum(enums_1.CommonStatus).default(enums_1.CommonStatus.archived),
     // unitId: z.string(),
 });
