@@ -204,16 +204,30 @@ export class UnitService {
     return unit;
   }
 
+  static async setUnitStatus(
+    id: string,
+    status: UnitStatus,
+    translate: TFunction
+  ) {
+    const unit = await Unit.findOneBy({ id });
+    if (!unit) {
+      throw new ApiError(translate("unit-not-found"), 404);
+    }
+    unit.status = status;
+    await unit.save();
+    return unit;
+  }
+
   public static async reserveUnit({
     unitId,
     intresetId,
     translate,
-    price,
-  }: {
+  }: // price,
+  {
     unitId: string;
     intresetId: string;
     translate: TFunction;
-    price: number;
+    // price: number;
   }) {
     const unit = await this.getUnitById(unitId);
     if (!unit) {
@@ -231,7 +245,7 @@ export class UnitService {
     }
     unit.status = UnitStatus.reserved;
     intreset.status = UnitIntresetStatus.reserve;
-    intreset.reversePrice = price;
+    intreset.reversePrice = unit.price;
     await unit.save();
     await intreset.save();
     return unit;
@@ -241,12 +255,12 @@ export class UnitService {
     unitId,
     intresetId,
     translate,
-    price,
-  }: {
+  }: // price,
+  {
     unitId: string;
     intresetId: string;
     translate: TFunction;
-    price: number;
+    // price: number;
   }) {
     const unit = await this.getUnitById(unitId);
     if (!unit) {
@@ -264,7 +278,7 @@ export class UnitService {
     }
     unit.status = UnitStatus.saled;
     intreset.status = UnitIntresetStatus.buy;
-    intreset.buyPrice = price;
+    intreset.buyPrice = unit.price;
     await unit.save();
     await intreset.save();
     return unit;

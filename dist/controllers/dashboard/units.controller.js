@@ -13,13 +13,22 @@ class UnitController {
             res.status(error?.statusCode || 400).json({ error: error.message });
         }
     }
+    static async SetUnitStatus(req, res) {
+        try {
+            const unit = await units_service_1.UnitService.setUnitStatus(req.params.id, req.body.status, req.t);
+            res.status(200).json(unit);
+        }
+        catch (error) {
+            res.status(error?.statusCode || 400).json({ error: error.message });
+        }
+    }
     static async reserveUnit(req, res) {
         try {
             const unit = await units_service_1.UnitService.reserveUnit({
                 unitId: req.params.id,
                 intresetId: req.body.intresetId,
                 translate: req.t,
-                price: req.body.price,
+                // price: req.body.price,
             });
             res.status(200).json({ message: "reserved success", unit });
         }
@@ -33,7 +42,7 @@ class UnitController {
                 unitId: req.params.id,
                 intresetId: req.body.intresetId,
                 translate: req.t,
-                price: req.body.price,
+                // price: req.body.price,
             });
             res.status(200).json({ message: "buy success", unit });
         }

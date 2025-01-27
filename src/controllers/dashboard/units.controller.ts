@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  SetUnitStatusType,
   UnitReverseType,
   UnitType,
 } from "../../utils/validators/UnitValidator";
@@ -19,6 +20,22 @@ export class UnitController {
     }
   }
 
+  static async SetUnitStatus(
+    req: Request<{ id: string }, SetUnitStatusType>,
+    res: Response
+  ): Promise<void> {
+    try {
+      const unit = await UnitService.setUnitStatus(
+        req.params.id,
+        req.body.status,
+        req.t
+      );
+      res.status(200).json(unit);
+    } catch (error: any) {
+      res.status(error?.statusCode || 400).json({ error: error.message });
+    }
+  }
+
   static async reserveUnit(
     req: Request<{ id: string }, {}, UnitReverseType>,
     res: Response
@@ -28,7 +45,7 @@ export class UnitController {
         unitId: req.params.id,
         intresetId: req.body.intresetId,
         translate: req.t,
-        price: req.body.price,
+        // price: req.body.price,
       });
       res.status(200).json({ message: "reserved success", unit });
     } catch (error: any) {
@@ -45,7 +62,7 @@ export class UnitController {
         unitId: req.params.id,
         intresetId: req.body.intresetId,
         translate: req.t,
-        price: req.body.price,
+        // price: req.body.price,
       });
       res.status(200).json({ message: "buy success", unit });
     } catch (error: any) {

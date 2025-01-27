@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitStatus;
@@ -80,6 +80,9 @@ const UnitValidator = zod_1.z.object({
         .nonempty()
         .transform((val) => Number(val)),
 });
+exports.SetUnitStatusValidator = zod_1.z.object({
+    status: zod_1.z.nativeEnum(UnitStatus),
+});
 exports.unitCategoryValidation = zod_1.z.object({
     name: zod_1.z.string(),
     color: zod_1.z.string(),
@@ -107,6 +110,6 @@ exports.unitIntresetValidation = zod_1.z.object({
 });
 exports.reverseUnitValidator = zod_1.z.object({
     intresetId: zod_1.z.string(),
-    price: zod_1.z.number(),
+    // price: z.number(),
 });
 exports.default = UnitValidator;

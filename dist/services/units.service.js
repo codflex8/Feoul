@@ -154,7 +154,16 @@ class UnitService {
         await unit.softRemove();
         return unit;
     }
-    static async reserveUnit({ unitId, intresetId, translate, price, }) {
+    static async setUnitStatus(id, status, translate) {
+        const unit = await Unit_model_1.Unit.findOneBy({ id });
+        if (!unit) {
+            throw new ApiError_1.default(translate("unit-not-found"), 404);
+        }
+        unit.status = status;
+        await unit.save();
+        return unit;
+    }
+    static async reserveUnit({ unitId, intresetId, translate, }) {
         const unit = await this.getUnitById(unitId);
         if (!unit) {
             throw new ApiError_1.default(translate("unit-not-found"), 400);
@@ -168,12 +177,12 @@ class UnitService {
         }
         unit.status = UnitValidator_1.UnitStatus.reserved;
         intreset.status = UnitValidator_1.UnitIntresetStatus.reserve;
-        intreset.reversePrice = price;
+        intreset.reversePrice = unit.price;
         await unit.save();
         await intreset.save();
         return unit;
     }
-    static async buyUnit({ unitId, intresetId, translate, price, }) {
+    static async buyUnit({ unitId, intresetId, translate, }) {
         const unit = await this.getUnitById(unitId);
         if (!unit) {
             throw new ApiError_1.default(translate("unit-not-found"), 400);
@@ -187,7 +196,7 @@ class UnitService {
         }
         unit.status = UnitValidator_1.UnitStatus.saled;
         intreset.status = UnitValidator_1.UnitIntresetStatus.buy;
-        intreset.buyPrice = price;
+        intreset.buyPrice = unit.price;
         await unit.save();
         await intreset.save();
         return unit;

@@ -3,6 +3,7 @@ import { UnitController } from "../../controllers/dashboard/units.controller";
 import { validateData } from "../../middleware/validationMiddleware";
 import UnitValidator, {
   reverseUnitValidator,
+  SetUnitStatusValidator,
 } from "../../utils/validators/UnitValidator";
 import { upload } from "../../middleware/uploadFiles";
 import { AuthController } from "../../controllers/dashboard/auth.controller";
@@ -30,6 +31,19 @@ router.post(
   AuthController.allowedto([UsersRoles.Admin]),
   validateData(reverseUnitValidator),
   UnitController.reserveUnit
+);
+router.post(
+  "/:id/buy",
+  AuthController.allowedto([UsersRoles.Admin]),
+  validateData(reverseUnitValidator),
+  UnitController.buyUnit
+);
+
+router.put(
+  "/:id/status",
+  AuthController.allowedto([UsersRoles.Admin]),
+  validateData(SetUnitStatusValidator),
+  expressAsyncHandler(UnitController.SetUnitStatus)
 );
 // Update an existing unit
 router.put(

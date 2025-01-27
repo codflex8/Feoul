@@ -52,6 +52,8 @@ router.get("/:id", (0, express_async_handler_1.default)(units_controller_1.UnitC
 // Create a new unit
 router.post("/", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.createUnit));
 router.post("/:id/reserve", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.reverseUnitValidator), units_controller_1.UnitController.reserveUnit);
+router.post("/:id/buy", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.reverseUnitValidator), units_controller_1.UnitController.buyUnit);
+router.put("/:id/status", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.SetUnitStatusValidator), (0, express_async_handler_1.default)(units_controller_1.UnitController.SetUnitStatus));
 // Update an existing unit
 router.put("/:id", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.updateUnit));
 // Delete a unit

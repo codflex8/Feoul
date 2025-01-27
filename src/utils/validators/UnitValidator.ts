@@ -79,6 +79,10 @@ const UnitValidator = z.object({
     .transform((val) => Number(val)),
 });
 
+export const SetUnitStatusValidator = z.object({
+  status: z.nativeEnum(UnitStatus),
+});
+
 export const unitCategoryValidation = z.object({
   name: z.string(),
   color: z.string(),
@@ -109,7 +113,7 @@ export const unitIntresetValidation = z.object({
 
 export const reverseUnitValidator = z.object({
   intresetId: z.string(),
-  price: z.number(),
+  // price: z.number(),
 });
 
 export type UnitReverseType = z.infer<typeof reverseUnitValidator>;
@@ -117,5 +121,5 @@ export type UnitIntresetType = z.infer<typeof unitIntresetValidation>;
 export type UnitFloorType = z.infer<typeof unitFloorValidation>;
 export type UnitCategoryType = z.infer<typeof unitCategoryValidation>;
 export type UnitType = z.infer<typeof UnitValidator>;
-
+export type SetUnitStatusType = z.infer<typeof SetUnitStatusValidator>;
 export default UnitValidator;

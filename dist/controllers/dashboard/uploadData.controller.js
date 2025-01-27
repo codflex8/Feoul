@@ -97,7 +97,8 @@ class UploadData {
                 }
                 const enumValues = Object.values(UnitValidator_1.UnitStatus);
                 // Pick a random value
-                const randomStatus = enumValues[Math.floor(Math.random() * enumValues.length)];
+                // const randomStatus =
+                //   enumValues[Math.floor(Math.random() * enumValues.length)];
                 const unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
                     .where("LOWER(category.name) LIKE LOWER(:name)", {
                     name: `%${unitData.category}%`,
@@ -123,7 +124,7 @@ class UploadData {
                     //   ToDo:add real values from sheet
                     buildLevel,
                     floorsNumber: 3,
-                    status: randomStatus,
+                    status: UnitValidator_1.UnitStatus.avaliable,
                     floors: UnitFloor_model_1.UnitFloor.create([
                         {
                             index: 0,
