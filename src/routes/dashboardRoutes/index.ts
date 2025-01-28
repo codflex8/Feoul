@@ -13,6 +13,8 @@ import unitIntresetRouter from "./unitIntreset.router";
 import mapLocationsRouter from "./mapLocation.router";
 import financialRouter from "./financial.route";
 import uploadDataRouter from "./uploadData.router";
+import issuesRouter from "./issues.route";
+
 import { HomeController } from "../../controllers/dashboard/home.controller";
 import expressAsyncHandler from "express-async-handler";
 
@@ -35,5 +37,6 @@ router.use("/unit-intreset", unitIntresetRouter);
 router.use("/map-locations", mapLocationsRouter);
 router.use("/financial", financialRouter);
 router.use("/upload-data", uploadDataRouter);
+router.use("/issues", issuesRouter);
 
 export default router;

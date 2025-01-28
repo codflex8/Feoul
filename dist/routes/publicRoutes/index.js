@@ -10,6 +10,7 @@ const projectFacilities_router_1 = __importDefault(require("./projectFacilities.
 const unitCategories_router_1 = __importDefault(require("./unitCategories.router"));
 const mapLocations_router_1 = __importDefault(require("./mapLocations.router"));
 const unitIntreset_router_1 = __importDefault(require("./unitIntreset.router"));
+const issue_router_1 = __importDefault(require("./issue.router"));
 const router = (0, express_1.Router)();
 router.use("/projects/", project_router_1.default);
 router.use("/units/", units_router_1.default);
@@ -17,4 +18,5 @@ router.use("/map-locations/", mapLocations_router_1.default);
 router.use("/project-facilities/", projectFacilities_router_1.default);
 router.use("/unit-category", unitCategories_router_1.default);
 router.use("/unit-intreset", unitIntreset_router_1.default);
+router.use("/issues", issue_router_1.default);
 exports.default = router;
