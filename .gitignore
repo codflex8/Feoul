@@ -14,6 +14,12 @@ coverage
 /src/public/documents/*
 /src/public/videos/*
 
+
+/dist/public/images/*
+/dist/public/audio/*
+/dist/public/documents/*
+/dist/public/videos/*
+
 # Benchmarking
 benchmarks/graphs
 
