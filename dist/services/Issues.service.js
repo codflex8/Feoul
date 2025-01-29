@@ -23,17 +23,17 @@ class IssuesService {
         });
         const issuesQuery = await Issues_model_1.Issues.createQueryBuilder("issues");
         if (query.name) {
-            issuesQuery.andWhere("LOWER(issues.name) = LOWER(:name)", {
+            issuesQuery.andWhere("LOWER(issues.name) Like LOWER(:name)", {
                 name: `%${query.name}%`,
             });
         }
         if (query.phoneNumber) {
             issuesQuery.andWhere("issues.phoneNumber = :phoneNumber", {
-                phoneNumber: `%${query.phoneNumber}%`,
+                phoneNumber: `${query.phoneNumber}`,
             });
         }
         if (query.description) {
-            issuesQuery.andWhere("LOWER(issues.description) = LOWER(:description)", {
+            issuesQuery.andWhere("LOWER(issues.description) Like LOWER(:description)", {
                 description: `%${query.description}%`,
             });
         }

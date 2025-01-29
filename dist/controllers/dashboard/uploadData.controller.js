@@ -15,6 +15,77 @@ const typeorm_1 = require("typeorm");
 const units_data_1 = require("../../units-data");
 const UnitFloor_model_1 = require("../../entities/UnitFloor.model");
 class UploadData {
+    static getPrice(index) {
+        if (1 <= index && index <= 21) {
+            return 1145000;
+        }
+        if (22 <= index && index <= 27) {
+            return 111700;
+        }
+        if (index > 27) {
+            return 902000;
+        }
+    }
+    static getFloorsImages(category) {
+        if (category === UnitValidator_1.UnitCategoriesNames.yasmeen) {
+            return [
+                {
+                    index: 0,
+                    name: "الطابق الارضي",
+                    imageUrl: "/public/floors/yasmeen/1.jpg",
+                },
+                {
+                    index: 1,
+                    name: "الطابق الاول",
+                    imageUrl: "/public/floors/yasmeen/2.jpg",
+                },
+                {
+                    index: 2,
+                    name: "الطابق الثاني",
+                    imageUrl: "/public/floors/yasmeen/3.jpg",
+                },
+            ];
+        }
+        if (category === UnitValidator_1.UnitCategoriesNames.orkeed) {
+            return [
+                {
+                    index: 0,
+                    name: "الطابق الارضي",
+                    imageUrl: "/public/floors/orkeeda/1.jpg",
+                },
+                {
+                    index: 1,
+                    name: "الطابق الاول",
+                    imageUrl: "/public/floors/orkeeda/2.jpg",
+                },
+                {
+                    index: 2,
+                    name: "الطابق الثاني",
+                    imageUrl: "/public/floors/orkeeda/3.jpg",
+                },
+            ];
+        }
+        if (category === UnitValidator_1.UnitCategoriesNames.toleeb) {
+            return [
+                {
+                    index: 0,
+                    name: "الطابق الارضي",
+                    imageUrl: "/public/floors/toleeb/1.jpg",
+                },
+                {
+                    index: 1,
+                    name: "الطابق الاول",
+                    imageUrl: "/public/floors/toleeb/2.jpg",
+                },
+                {
+                    index: 2,
+                    name: "الطابق الثاني",
+                    imageUrl: "/public/floors/toleeb/3.jpg",
+                },
+            ];
+        }
+        return [];
+    }
     static async uploadData(req, res, next) {
         const file = req.file?.buffer;
         if (!file) {
@@ -35,15 +106,8 @@ class UploadData {
                 const unitData = units_data_1.unitsData[index];
                 // Extract and map project data
                 const projectName = row["اسم المشروع"]?.trim();
+                const categoryName = row["النموذج"]?.trim() ?? UnitValidator_1.UnitCategoriesNames.yasmeen;
                 const unitTemplate = row["النموذج"]?.trim();
-                // let unitCategory = await UnitCategories.findOne({
-                //     name: unitCategoryName,
-                // });
-                // if (!unitCategory) {
-                //   unitCategory = UnitCategories.create({
-                //     name: unitCategoryName,
-                //   });
-                // }
                 if (!projectName) {
                     errors.push(`Row ${index + 1}: Missing project name.`);
                     continue;
@@ -70,7 +134,8 @@ class UploadData {
                 // Extract and map unit data
                 const unitNumber = Number(row["رقم الفيلا"]);
                 const unitType = row["نوع الفيلا"]?.trim();
-                const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
+                // const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
+                const unitPrice = Number(UploadData.getPrice(unitNumber));
                 const buildLevel = parseFloat(row["المرحلة"?.trim()]);
                 const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
                 const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
@@ -89,19 +154,19 @@ class UploadData {
                     errors.push(`Row ${index + 1}: Missing or invalid unit data.`);
                     continue;
                 }
+                const floors = UploadData.getFloorsImages(categoryName);
                 // Check for duplicate unit
                 const existingUnit = await unitRepo.findOneBy({ number: unitNumber });
                 if (existingUnit) {
                     errors.push(`Row ${index + 1}: Duplicate unit number ${unitNumber}.`);
                     continue;
                 }
-                const enumValues = Object.values(UnitValidator_1.UnitStatus);
                 // Pick a random value
                 // const randomStatus =
                 //   enumValues[Math.floor(Math.random() * enumValues.length)];
                 const unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
                     .where("LOWER(category.name) LIKE LOWER(:name)", {
-                    name: `%${unitData.category}%`,
+                    name: `%${categoryName}%`,
                 })
                     .getOne();
                 const unit = unitRepo.create({
@@ -125,23 +190,7 @@ class UploadData {
                     buildLevel,
                     floorsNumber: 3,
                     status: UnitValidator_1.UnitStatus.avaliable,
-                    floors: UnitFloor_model_1.UnitFloor.create([
-                        {
-                            index: 0,
-                            name: "first floor",
-                            imageUrl: "/public/default/Type_A_GF.png",
-                        },
-                        {
-                            index: 1,
-                            name: "first floor",
-                            imageUrl: "/public/default/Type_A_FF.png",
-                        },
-                        {
-                            index: 2,
-                            name: "first floor",
-                            imageUrl: "/public/default/Type_A_RF.png",
-                        },
-                    ]),
+                    floors: UnitFloor_model_1.UnitFloor.create(floors),
                 });
                 validUnits.push(unit);
             }

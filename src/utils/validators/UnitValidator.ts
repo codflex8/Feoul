@@ -1,6 +1,32 @@
 import { z } from "zod";
 import { CommonStatus } from "../types/enums";
 
+export enum UnitCategoriesNames {
+  yasmeen = "الياسمين",
+  toleeb = "توليب",
+  orkeed = "اوركيد",
+}
+
+export const CategoriesImages = {
+  yasmeen: [
+    "/public/categories/yasmeen/yasmeen-1.jpeg",
+    "/public/categories/yasmeen/yasmeen-2.jpeg",
+    "/public/categories/yasmeen/yasmeen-3.jpeg",
+    "/public/categories/yasmeen/yasmeen-4.jpeg",
+  ],
+  orkeed: [
+    "/public/categories/orkeed/orkeed-1.jpeg",
+    "/public/categories/orkeed/orkeed-2.jpeg",
+    "/public/categories/orkeed/orkeed-3.jpeg",
+    "/public/categories/orkeed/orkeed-4.jpeg",
+  ],
+  toleeb: [
+    "/public/categories/toleeb/toleeb-1.jpeg",
+    "/public/categories/toleeb/toleeb-2.jpeg",
+    "/public/categories/toleeb/toleeb-3.jpeg",
+  ],
+};
+
 export enum UnitStatus {
   saled = "saled",
   reserved = "reserved",

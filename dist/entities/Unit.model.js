@@ -17,7 +17,12 @@ const UnitFloor_model_1 = require("./UnitFloor.model");
 const UnitIntreset_model_1 = require("./UnitIntreset.model");
 const UnitValidator_1 = require("../utils/validators/UnitValidator");
 const BaseNumberModel_1 = require("./BaseNumberModel");
+const UnitValidator_2 = require("../utils/validators/UnitValidator");
 let Unit = class Unit extends BaseNumberModel_1.BaseNumberModel {
+    constructor() {
+        super(...arguments);
+        this.images = [];
+    }
     setUnitPropertiesBaseOnTemplate() {
         switch (this.template) {
             case UnitValidator_1.UnitTemplates.lavender:
@@ -28,6 +33,26 @@ let Unit = class Unit extends BaseNumberModel_1.BaseNumberModel {
                 this.bedroomNumber = 4;
                 this.bathroomNumber = 5;
                 break;
+        }
+    }
+    setImagesValue() {
+        if (this.category?.name === UnitValidator_2.UnitCategoriesNames.yasmeen) {
+            this.images = UnitValidator_1.CategoriesImages.yasmeen.map((url) => ({
+                title: "المظهر الخارجي",
+                src: url,
+            }));
+        }
+        if (this.category?.name === UnitValidator_2.UnitCategoriesNames.orkeed) {
+            this.images = UnitValidator_1.CategoriesImages.orkeed.map((url) => ({
+                title: "المظهر الخارجي",
+                src: url,
+            }));
+        }
+        if (this.category?.name === UnitValidator_2.UnitCategoriesNames.toleeb) {
+            this.images = UnitValidator_1.CategoriesImages.toleeb.map((url) => ({
+                title: "المظهر الخارجي",
+                src: url,
+            }));
         }
     }
 };
@@ -150,6 +175,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Unit.prototype, "setUnitPropertiesBaseOnTemplate", null);
+__decorate([
+    (0, typeorm_1.AfterInsert)(),
+    (0, typeorm_1.AfterUpdate)(),
+    (0, typeorm_1.AfterLoad)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Unit.prototype, "setImagesValue", null);
 exports.Unit = Unit = __decorate([
     (0, typeorm_1.Entity)()
 ], Unit);

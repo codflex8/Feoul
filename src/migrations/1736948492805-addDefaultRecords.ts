@@ -10,26 +10,20 @@ export class AddDefaultRecords1736948492805 implements MigrationInterface {
     await unitCategoryRepository.save([
       {
         number: 1,
-        name: "class-A",
+        name: "اوركيد",
         color: "#00CEC9",
         status: CommonStatus.posted,
       },
       {
         number: 2,
-        name: "class-B",
+        name: "توليب",
         color: "rgb(153, 182, 255)",
         status: CommonStatus.posted,
       },
       {
         number: 3,
-        name: "class-C",
+        name: "الياسمين",
         color: "rgb(213, 121, 255)",
-        status: CommonStatus.posted,
-      },
-      {
-        number: 4,
-        name: "class-D",
-        color: "rgb(233, 214, 109)",
         status: CommonStatus.posted,
       },
     ]);
@@ -40,7 +34,7 @@ export class AddDefaultRecords1736948492805 implements MigrationInterface {
 
     // Remove the categories by their names
     await UnitCategories.delete({
-      name: In(["A-1", "A-2", "B", "C"]),
+      name: In(["اوركيد", "توليب", "الياسمين"]),
     });
   }
 }

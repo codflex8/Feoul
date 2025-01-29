@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InitModels1734811560899 = void 0;
 class InitModels1734811560899 {
     constructor() {
-        this.name = 'InitModels1734811560899';
+        this.name = "InitModels1734811560899";
     }
     async up(queryRunner) {
         await queryRunner.query(`
@@ -42,11 +42,11 @@ class InitModels1734811560899 {
                 \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
                 \`name\` varchar(255) NOT NULL,
                 \`color\` varchar(255) NOT NULL,
-                \`number\` int NOT NULL,
                 \`status\` enum ('archived', 'posted', 'deleted') NOT NULL DEFAULT 'archived',
                 PRIMARY KEY (\`id\`)
             ) ENGINE = InnoDB
         `);
+        // \`number\` int NOT NULL,
         await queryRunner.query(`
             CREATE TABLE \`unit_floor\` (
                 \`id\` varchar(36) NOT NULL,

@@ -24,19 +24,22 @@ export class IssuesService {
     });
     const issuesQuery = await Issues.createQueryBuilder("issues");
     if (query.name) {
-      issuesQuery.andWhere("LOWER(issues.name) = LOWER(:name)", {
+      issuesQuery.andWhere("LOWER(issues.name) Like LOWER(:name)", {
         name: `%${query.name}%`,
       });
     }
     if (query.phoneNumber) {
       issuesQuery.andWhere("issues.phoneNumber = :phoneNumber", {
-        phoneNumber: `%${query.phoneNumber}%`,
+        phoneNumber: `${query.phoneNumber}`,
       });
     }
     if (query.description) {
-      issuesQuery.andWhere("LOWER(issues.description) = LOWER(:description)", {
-        description: `%${query.description}%`,
-      });
+      issuesQuery.andWhere(
+        "LOWER(issues.description) Like LOWER(:description)",
+        {
+          description: `%${query.description}%`,
+        }
+      );
     }
     return await issuesQuery.skip(skip).take(take).getManyAndCount();
     // Return the issues

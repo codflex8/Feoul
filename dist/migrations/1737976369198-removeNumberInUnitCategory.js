@@ -6,15 +6,15 @@ class RemoveNumberInUnitCategory1737976369198 {
         this.name = "RemoveNumberInUnitCategory1737976369198";
     }
     async up(queryRunner) {
-        await queryRunner.query(`
-            ALTER TABLE \`unit_categories\` DROP COLUMN \`number\`
-        `);
+        // await queryRunner.query(`
+        //         ALTER TABLE \`unit_categories\` DROP COLUMN \`number\`
+        //     `);
     }
     async down(queryRunner) {
-        await queryRunner.query(`
-            ALTER TABLE \`unit_categories\`
-            ADD \`number\` int NOT NULL
-        `);
+        // await queryRunner.query(`
+        //         ALTER TABLE \`unit_categories\`
+        //         ADD \`number\` int NOT NULL
+        //     `);
     }
 }
 exports.RemoveNumberInUnitCategory1737976369198 = RemoveNumberInUnitCategory1737976369198;

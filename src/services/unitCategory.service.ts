@@ -48,6 +48,7 @@ export class UnitCategoryService {
       .orderBy("name", "ASC")
       .skip(skip)
       .take(take)
+      .orderBy("createdAt", "ASC")
       .getManyAndCount();
   }
 

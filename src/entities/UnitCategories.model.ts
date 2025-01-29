@@ -9,10 +9,6 @@ export class UnitCategories extends BaseModel {
   @Column()
   name!: string;
 
-  // @Column()
-  // @Generated("increment")
-  // number!: number;
-
   @Column()
   color!: string;
 

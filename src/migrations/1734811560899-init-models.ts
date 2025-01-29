@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class InitModels1734811560899 implements MigrationInterface {
-    name = 'InitModels1734811560899'
+  name = "InitModels1734811560899";
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TABLE \`users\` (
                 \`id\` varchar(36) NOT NULL,
                 \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -20,7 +20,7 @@ export class InitModels1734811560899 implements MigrationInterface {
                 PRIMARY KEY (\`id\`)
             ) ENGINE = InnoDB
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE \`project\` (
                 \`id\` varchar(36) NOT NULL,
                 \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -33,19 +33,20 @@ export class InitModels1734811560899 implements MigrationInterface {
                 PRIMARY KEY (\`id\`)
             ) ENGINE = InnoDB
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE \`unit_categories\` (
                 \`id\` varchar(36) NOT NULL,
                 \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
                 \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
                 \`name\` varchar(255) NOT NULL,
                 \`color\` varchar(255) NOT NULL,
-                \`number\` int NOT NULL,
                 \`status\` enum ('archived', 'posted', 'deleted') NOT NULL DEFAULT 'archived',
                 PRIMARY KEY (\`id\`)
             ) ENGINE = InnoDB
         `);
-        await queryRunner.query(`
+    // \`number\` int NOT NULL,
+
+    await queryRunner.query(`
             CREATE TABLE \`unit_floor\` (
                 \`id\` varchar(36) NOT NULL,
                 \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -57,7 +58,7 @@ export class InitModels1734811560899 implements MigrationInterface {
                 PRIMARY KEY (\`id\`)
             ) ENGINE = InnoDB
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE \`unit_interest\` (
                 \`id\` varchar(36) NOT NULL,
                 \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -73,7 +74,7 @@ export class InitModels1734811560899 implements MigrationInterface {
                 PRIMARY KEY (\`id\`)
             ) ENGINE = InnoDB
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE \`unit\` (
                 \`id\` varchar(36) NOT NULL,
                 \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -95,63 +96,62 @@ export class InitModels1734811560899 implements MigrationInterface {
                 PRIMARY KEY (\`id\`)
             ) ENGINE = InnoDB
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE \`unit_floor\`
             ADD CONSTRAINT \`FK_60693208c86e749f8da94e3a5c5\` FOREIGN KEY (\`unitId\`) REFERENCES \`unit\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE \`unit_interest\`
             ADD CONSTRAINT \`FK_bc94761f6b367a71d44af07d08a\` FOREIGN KEY (\`unitId\`) REFERENCES \`unit\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE \`unit\`
             ADD CONSTRAINT \`FK_081a1021523202d85962a6ef10c\` FOREIGN KEY (\`projectId\`) REFERENCES \`project\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE \`unit\`
             ADD CONSTRAINT \`FK_6b7d4a7b16eec49b852a59caf8f\` FOREIGN KEY (\`categoryId\`) REFERENCES \`unit_categories\`(\`id\`) ON DELETE
             SET NULL ON UPDATE
             SET NULL
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             ALTER TABLE \`unit\` DROP FOREIGN KEY \`FK_6b7d4a7b16eec49b852a59caf8f\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE \`unit\` DROP FOREIGN KEY \`FK_081a1021523202d85962a6ef10c\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE \`unit_interest\` DROP FOREIGN KEY \`FK_bc94761f6b367a71d44af07d08a\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE \`unit_floor\` DROP FOREIGN KEY \`FK_60693208c86e749f8da94e3a5c5\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE \`unit\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE \`unit_interest\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE \`unit_floor\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE \`unit_categories\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE \`project\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP INDEX \`IDX_1e3d0240b49c40521aaeb95329\` ON \`users\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP INDEX \`IDX_97672ac88f789774dd47f7c8be\` ON \`users\`
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE \`users\`
         `);
-    }
-
+  }
 }

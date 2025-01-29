@@ -72,7 +72,8 @@ class UnitService {
             .leftJoinAndSelect("unit.project", "project")
             .leftJoinAndSelect("unit.floors", "floor")
             .leftJoinAndSelect("unit.category", "category")
-            .where("project.id = :projectId", { projectId });
+            .where("project.id = :projectId", { projectId })
+            .orderBy("unit.number", "ASC");
         const unitsPriceRange = await querable
             .clone()
             .select("Max(unit.price)", "maxPrice")

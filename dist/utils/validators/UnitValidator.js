@@ -1,8 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = exports.CategoriesImages = exports.UnitCategoriesNames = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
+var UnitCategoriesNames;
+(function (UnitCategoriesNames) {
+    UnitCategoriesNames["yasmeen"] = "\u0627\u0644\u064A\u0627\u0633\u0645\u064A\u0646";
+    UnitCategoriesNames["toleeb"] = "\u062A\u0648\u0644\u064A\u0628";
+    UnitCategoriesNames["orkeed"] = "\u0627\u0648\u0631\u0643\u064A\u062F";
+})(UnitCategoriesNames || (exports.UnitCategoriesNames = UnitCategoriesNames = {}));
+exports.CategoriesImages = {
+    yasmeen: [
+        "/public/categories/yasmeen/yasmeen-1.jpeg",
+        "/public/categories/yasmeen/yasmeen-2.jpeg",
+        "/public/categories/yasmeen/yasmeen-3.jpeg",
+        "/public/categories/yasmeen/yasmeen-4.jpeg",
+    ],
+    orkeed: [
+        "/public/categories/orkeed/orkeed-1.jpeg",
+        "/public/categories/orkeed/orkeed-2.jpeg",
+        "/public/categories/orkeed/orkeed-3.jpeg",
+        "/public/categories/orkeed/orkeed-4.jpeg",
+    ],
+    toleeb: [
+        "/public/categories/toleeb/toleeb-1.jpeg",
+        "/public/categories/toleeb/toleeb-2.jpeg",
+        "/public/categories/toleeb/toleeb-3.jpeg",
+    ],
+};
 var UnitStatus;
 (function (UnitStatus) {
     UnitStatus["saled"] = "saled";

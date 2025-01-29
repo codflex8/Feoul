@@ -1,4 +1,7 @@
 import {
+  AfterInsert,
+  AfterLoad,
+  AfterUpdate,
   BeforeInsert,
   BeforeUpdate,
   Column,
@@ -12,12 +15,19 @@ import { UnitCategories } from "./UnitCategories.model";
 import { UnitFloor } from "./UnitFloor.model";
 import { UnitIntreset } from "./UnitIntreset.model";
 import {
+  CategoriesImages,
   UnitBuildStatus,
   UnitStatus,
   UnitTemplates,
   UnitTypes,
 } from "../utils/validators/UnitValidator";
 import { BaseNumberModel } from "./BaseNumberModel";
+import { UnitCategoriesNames } from "../utils/validators/UnitValidator";
+
+interface ImageObject {
+  title: string;
+  src: string;
+}
 
 @Entity()
 export class Unit extends BaseNumberModel {
@@ -124,6 +134,32 @@ export class Unit extends BaseNumberModel {
         this.bedroomNumber = 4;
         this.bathroomNumber = 5;
         break;
+    }
+  }
+
+  images: ImageObject[] = [];
+
+  @AfterInsert()
+  @AfterUpdate()
+  @AfterLoad()
+  setImagesValue() {
+    if (this.category?.name === UnitCategoriesNames.yasmeen) {
+      this.images = CategoriesImages.yasmeen.map((url) => ({
+        title: "المظهر الخارجي",
+        src: url,
+      }));
+    }
+    if (this.category?.name === UnitCategoriesNames.orkeed) {
+      this.images = CategoriesImages.orkeed.map((url) => ({
+        title: "المظهر الخارجي",
+        src: url,
+      }));
+    }
+    if (this.category?.name === UnitCategoriesNames.toleeb) {
+      this.images = CategoriesImages.toleeb.map((url) => ({
+        title: "المظهر الخارجي",
+        src: url,
+      }));
     }
   }
 }
