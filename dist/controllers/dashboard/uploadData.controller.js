@@ -15,14 +15,14 @@ const typeorm_1 = require("typeorm");
 const units_data_1 = require("../../units-data");
 const UnitFloor_model_1 = require("../../entities/UnitFloor.model");
 class UploadData {
-    static getPrice(index) {
-        if (1 <= index && index <= 21) {
+    static getPrice(category) {
+        if (category === UnitValidator_1.UnitCategoriesNames.toleeb) {
             return 1145000;
         }
-        if (22 <= index && index <= 27) {
+        else if (category === UnitValidator_1.UnitCategoriesNames.orkeed) {
             return 111700;
         }
-        if (index > 27) {
+        else {
             return 902000;
         }
     }
@@ -32,17 +32,17 @@ class UploadData {
                 {
                     index: 0,
                     name: "الطابق الارضي",
-                    imageUrl: "/public/floors/yasmeen/1.jpg",
+                    imageUrl: "/public/floors/yasmeen/1.jpeg",
                 },
                 {
                     index: 1,
                     name: "الطابق الاول",
-                    imageUrl: "/public/floors/yasmeen/2.jpg",
+                    imageUrl: "/public/floors/yasmeen/2.jpeg",
                 },
                 {
                     index: 2,
                     name: "الطابق الثاني",
-                    imageUrl: "/public/floors/yasmeen/3.jpg",
+                    imageUrl: "/public/floors/yasmeen/3.jpeg",
                 },
             ];
         }
@@ -51,17 +51,17 @@ class UploadData {
                 {
                     index: 0,
                     name: "الطابق الارضي",
-                    imageUrl: "/public/floors/orkeeda/1.jpg",
+                    imageUrl: "/public/floors/orkeeda/1.jpeg",
                 },
                 {
                     index: 1,
                     name: "الطابق الاول",
-                    imageUrl: "/public/floors/orkeeda/2.jpg",
+                    imageUrl: "/public/floors/orkeeda/2.jpeg",
                 },
                 {
                     index: 2,
                     name: "الطابق الثاني",
-                    imageUrl: "/public/floors/orkeeda/3.jpg",
+                    imageUrl: "/public/floors/orkeeda/3.jpeg",
                 },
             ];
         }
@@ -70,17 +70,17 @@ class UploadData {
                 {
                     index: 0,
                     name: "الطابق الارضي",
-                    imageUrl: "/public/floors/toleeb/1.jpg",
+                    imageUrl: "/public/floors/toleeb/1.jpeg",
                 },
                 {
                     index: 1,
                     name: "الطابق الاول",
-                    imageUrl: "/public/floors/toleeb/2.jpg",
+                    imageUrl: "/public/floors/toleeb/2.jpeg",
                 },
                 {
                     index: 2,
                     name: "الطابق الثاني",
-                    imageUrl: "/public/floors/toleeb/3.jpg",
+                    imageUrl: "/public/floors/toleeb/3.jpeg",
                 },
             ];
         }
@@ -135,7 +135,7 @@ class UploadData {
                 const unitNumber = Number(row["رقم الفيلا"]);
                 const unitType = row["نوع الفيلا"]?.trim();
                 // const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
-                const unitPrice = Number(UploadData.getPrice(unitNumber));
+                const unitPrice = Number(UploadData.getPrice(categoryName));
                 const buildLevel = parseFloat(row["المرحلة"?.trim()]);
                 const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
                 const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
@@ -164,11 +164,18 @@ class UploadData {
                 // Pick a random value
                 // const randomStatus =
                 //   enumValues[Math.floor(Math.random() * enumValues.length)];
-                const unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
+                let unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
                     .where("LOWER(category.name) LIKE LOWER(:name)", {
                     name: `%${categoryName}%`,
                 })
                     .getOne();
+                if (!unitCategory) {
+                    unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
+                        .where("LOWER(category.name) LIKE LOWER(:name)", {
+                        name: `%${UnitValidator_1.UnitCategoriesNames.yasmeen}%`,
+                    })
+                        .getOne();
+                }
                 const unit = unitRepo.create({
                     number: unitNumber,
                     type: unitType,
@@ -184,7 +191,7 @@ class UploadData {
                     category: unitCategory ?? undefined,
                     size: unitData.size,
                     position: unitData.position,
-                    name: unitData.name,
+                    name: `مبنى ${unitNumber}`,
                     buildSpace,
                     //   ToDo:add real values from sheet
                     buildLevel,

@@ -16,14 +16,12 @@ import { Equal } from "typeorm";
 import { unitsData } from "../../units-data";
 import { UnitFloor } from "../../entities/UnitFloor.model";
 export class UploadData {
-  private static getPrice(index: number) {
-    if (1 <= index && index <= 21) {
+  private static getPrice(category: string) {
+    if (category === UnitCategoriesNames.toleeb) {
       return 1145000;
-    }
-    if (22 <= index && index <= 27) {
+    } else if (category === UnitCategoriesNames.orkeed) {
       return 111700;
-    }
-    if (index > 27) {
+    } else {
       return 902000;
     }
   }
@@ -34,17 +32,17 @@ export class UploadData {
         {
           index: 0,
           name: "الطابق الارضي",
-          imageUrl: "/public/floors/yasmeen/1.jpg",
+          imageUrl: "/public/floors/yasmeen/1.jpeg",
         },
         {
           index: 1,
           name: "الطابق الاول",
-          imageUrl: "/public/floors/yasmeen/2.jpg",
+          imageUrl: "/public/floors/yasmeen/2.jpeg",
         },
         {
           index: 2,
           name: "الطابق الثاني",
-          imageUrl: "/public/floors/yasmeen/3.jpg",
+          imageUrl: "/public/floors/yasmeen/3.jpeg",
         },
       ];
     }
@@ -53,17 +51,17 @@ export class UploadData {
         {
           index: 0,
           name: "الطابق الارضي",
-          imageUrl: "/public/floors/orkeeda/1.jpg",
+          imageUrl: "/public/floors/orkeeda/1.jpeg",
         },
         {
           index: 1,
           name: "الطابق الاول",
-          imageUrl: "/public/floors/orkeeda/2.jpg",
+          imageUrl: "/public/floors/orkeeda/2.jpeg",
         },
         {
           index: 2,
           name: "الطابق الثاني",
-          imageUrl: "/public/floors/orkeeda/3.jpg",
+          imageUrl: "/public/floors/orkeeda/3.jpeg",
         },
       ];
     }
@@ -72,17 +70,17 @@ export class UploadData {
         {
           index: 0,
           name: "الطابق الارضي",
-          imageUrl: "/public/floors/toleeb/1.jpg",
+          imageUrl: "/public/floors/toleeb/1.jpeg",
         },
         {
           index: 1,
           name: "الطابق الاول",
-          imageUrl: "/public/floors/toleeb/2.jpg",
+          imageUrl: "/public/floors/toleeb/2.jpeg",
         },
         {
           index: 2,
           name: "الطابق الثاني",
-          imageUrl: "/public/floors/toleeb/3.jpg",
+          imageUrl: "/public/floors/toleeb/3.jpeg",
         },
       ];
     }
@@ -151,7 +149,7 @@ export class UploadData {
         const unitNumber = Number(row["رقم الفيلا"]);
         const unitType: UnitTypes = row["نوع الفيلا"]?.trim() as UnitTypes;
         // const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
-        const unitPrice = Number(UploadData.getPrice(unitNumber));
+        const unitPrice = Number(UploadData.getPrice(categoryName));
         const buildLevel = parseFloat(row["المرحلة"?.trim()]);
         const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
         const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
@@ -184,12 +182,18 @@ export class UploadData {
         // Pick a random value
         // const randomStatus =
         //   enumValues[Math.floor(Math.random() * enumValues.length)];
-        const unitCategory = await UnitCategories.createQueryBuilder("category")
+        let unitCategory = await UnitCategories.createQueryBuilder("category")
           .where("LOWER(category.name) LIKE LOWER(:name)", {
             name: `%${categoryName}%`,
           })
           .getOne();
-
+        if (!unitCategory) {
+          unitCategory = await UnitCategories.createQueryBuilder("category")
+            .where("LOWER(category.name) LIKE LOWER(:name)", {
+              name: `%${UnitCategoriesNames.yasmeen}%`,
+            })
+            .getOne();
+        }
         const unit = unitRepo.create({
           number: unitNumber,
           type: unitType,
@@ -205,7 +209,7 @@ export class UploadData {
           category: unitCategory ?? undefined,
           size: unitData.size,
           position: unitData.position,
-          name: unitData.name,
+          name: `مبنى ${unitNumber}`,
           buildSpace,
           //   ToDo:add real values from sheet
           buildLevel,
