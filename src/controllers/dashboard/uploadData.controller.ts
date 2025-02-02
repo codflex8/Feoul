@@ -51,17 +51,20 @@ export class UploadData {
         {
           index: 0,
           name: "الطابق الارضي",
-          imageUrl: "/public/floors/orkeeda/1.jpeg",
+          imageUrl:
+            "https://drive.google.com/file/d/1NQiryYBDdcm7Xx6KM322DILP3agceJ28/view?usp=share_link",
         },
         {
           index: 1,
           name: "الطابق الاول",
-          imageUrl: "/public/floors/orkeeda/2.jpeg",
+          imageUrl:
+            "https://drive.google.com/file/d/1VwY6NlcB-eBBl9n-Xdb_2EmMgVBCZsCU/view?usp=share_link",
         },
         {
           index: 2,
           name: "الطابق الثاني",
-          imageUrl: "/public/floors/orkeeda/3.jpeg",
+          imageUrl:
+            "https://drive.google.com/file/d/1YUfNc48Q1Rvusm_UBuDTt9gchoS3jSun/view?usp=share_link",
         },
       ];
     }
