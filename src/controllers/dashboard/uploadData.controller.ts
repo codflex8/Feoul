@@ -13,7 +13,7 @@ import {
 } from "../../utils/validators/UnitValidator";
 import { CommonStatus } from "../../utils/types/enums";
 import { Equal } from "typeorm";
-import { unitsData } from "../../units-data";
+import { unitsData } from "../../old-units-data";
 import { UnitFloor } from "../../entities/UnitFloor.model";
 export class UploadData {
   private static getPrice(category: string) {
