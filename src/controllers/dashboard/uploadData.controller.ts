@@ -98,15 +98,24 @@ export class UploadData {
     const buffer = file?.buffer;
     const workbook = XLSX.read(buffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0]; // First sheet
-    const sheetData: Array<Record<string, string>> = XLSX.utils.sheet_to_json(
+    let sheetData: Array<Record<string, string>> = XLSX.utils.sheet_to_json(
       workbook.Sheets[sheetName],
       {}
     );
-    const trimmedData: Array<Record<string, string>> = sheetData.map((row) =>
+
+    // console.log("sheetData", sheetData);
+
+    let trimmedData: Array<Record<string, string>> = sheetData.map((row) =>
       Object.fromEntries(
         Object.entries(row).map(([key, value]) => [key.trim(), value])
       )
     );
+    trimmedData = trimmedData.sort((a, b) => {
+      // console.log("aaaa", a);
+      const aUnitNumber = a["رقم الفيلا"];
+      const bUnitNumber = b["رقم الفيلا"];
+      return Number(aUnitNumber) - Number(bUnitNumber);
+    });
     const projectRepo = AppDataSource.getRepository(Project);
     const unitRepo = AppDataSource.getRepository(Unit);
 
@@ -150,6 +159,8 @@ export class UploadData {
 
         // Extract and map unit data
         const unitNumber = Number(row["رقم الفيلا"]);
+        // console.log("ddddd", { number: unitData.id, index, unitNumber });
+
         const unitType: UnitTypes = row["نوع الفيلا"]?.trim() as UnitTypes;
         // const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
         const unitPrice = Number(UploadData.getPrice(categoryName));

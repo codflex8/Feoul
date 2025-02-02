@@ -94,8 +94,17 @@ class UploadData {
         const buffer = file?.buffer;
         const workbook = xlsx_1.default.read(buffer, { type: "buffer" });
         const sheetName = workbook.SheetNames[0]; // First sheet
-        const sheetData = xlsx_1.default.utils.sheet_to_json(workbook.Sheets[sheetName], {});
-        const trimmedData = sheetData.map((row) => Object.fromEntries(Object.entries(row).map(([key, value]) => [key.trim(), value])));
+        let sheetData = xlsx_1.default.utils.sheet_to_json(workbook.Sheets[sheetName], {});
+        // console.log("sheetData", sheetData);
+        let trimmedData = sheetData.map((row) => Object.fromEntries(Object.entries(row).map(([key, value]) => [key.trim(), value])));
+        trimmedData = trimmedData.sort((a, b) => {
+            // console.log("aaaa", a);
+            const aUnitNumber = a["رقم الفيلا"];
+            const bUnitNumber = b["رقم الفيلا"];
+            console.log("aUnitNumberaUnitNumber", { aUnitNumber, bUnitNumber });
+            return Number(aUnitNumber) - Number(bUnitNumber);
+        });
+        console.log("trimmedData", trimmedData);
         const projectRepo = data_source_1.default.getRepository(Project_model_1.Project);
         const unitRepo = data_source_1.default.getRepository(Unit_model_1.Unit);
         const validProjects = [];
@@ -133,6 +142,7 @@ class UploadData {
                 }
                 // Extract and map unit data
                 const unitNumber = Number(row["رقم الفيلا"]);
+                // console.log("ddddd", { number: unitData.id, index, unitNumber });
                 const unitType = row["نوع الفيلا"]?.trim();
                 // const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
                 const unitPrice = Number(UploadData.getPrice(categoryName));
