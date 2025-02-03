@@ -28,7 +28,8 @@ export class UnitService {
     data: { video: string } & UnitType,
     translate: TFunction
   ) {
-    const { video, projectId, categoryId, number } = data;
+    const { video, projectId, categoryId, number, position_x, position_y } =
+      data;
 
     const isNumberExist = await Unit.getItemByNumber(number);
     if (isNumberExist) {
@@ -50,6 +51,7 @@ export class UnitService {
       videoUrl: video,
       project,
       category,
+      position: [position_x, position_y],
     });
     await unit.save();
     return unit;
@@ -195,6 +197,7 @@ export class UnitService {
     Object.assign(unit, data);
     unit.category = category;
     unit.project = project;
+    unit.position = [data.position_x, data.position_y];
     if (data.video) unit.videoUrl = data.video;
     await unit.save();
     return unit;

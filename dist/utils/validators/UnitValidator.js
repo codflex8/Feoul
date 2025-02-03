@@ -104,6 +104,14 @@ const UnitValidator = zod_1.z.object({
         .string()
         .nonempty()
         .transform((val) => Number(val)),
+    position_x: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
+    position_y: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
 });
 exports.SetUnitStatusValidator = zod_1.z.object({
     status: zod_1.z.nativeEnum(UnitStatus),

@@ -103,6 +103,14 @@ const UnitValidator = z.object({
     .string()
     .nonempty()
     .transform((val) => Number(val)),
+  position_x: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
+  position_y: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
 });
 
 export const SetUnitStatusValidator = z.object({
