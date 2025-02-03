@@ -22,7 +22,7 @@ router.get("/:id", expressAsyncHandler(UnitController.getUnitById));
 router.post(
   "/",
   AuthController.allowedto([UsersRoles.Admin]),
-  upload.single("video"),
+  // upload.single("video"),
   validateData(UnitValidator),
   expressAsyncHandler(UnitController.createUnit)
 );
@@ -48,9 +48,8 @@ router.put(
 // Update an existing unit
 router.put(
   "/:id",
-
   AuthController.allowedto([UsersRoles.Admin]),
-  upload.single("video"),
+  // upload.single("video"),
   validateData(UnitValidator),
   expressAsyncHandler(UnitController.updateUnit)
 );

@@ -9,7 +9,7 @@ import { UnitService } from "../../services/units.service";
 
 export class UnitController {
   static async createUnit(
-    req: Request<{}, {}, { video: string } & UnitType>,
+    req: Request<{}, {}, UnitType>,
     res: Response
   ): Promise<void> {
     try {
@@ -110,7 +110,7 @@ export class UnitController {
   }
 
   static async updateUnit(
-    req: Request<{ id: string }, {}, { video: string } & UnitType>,
+    req: Request<{ id: string }, {}, UnitType>,
     res: Response
   ): Promise<void> {
     try {

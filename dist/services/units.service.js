@@ -13,7 +13,7 @@ const getPaginationData_1 = require("../utils/getPaginationData");
 const unitIntreset_service_1 = require("./unitIntreset.service");
 class UnitService {
     static async createUnit(data, translate) {
-        const { video, projectId, categoryId, number, position_x, position_y } = data;
+        const { projectId, categoryId, number, position_x, position_y } = data;
         const isNumberExist = await Unit_model_1.Unit.getItemByNumber(number);
         if (isNumberExist) {
             throw new ApiError_1.default(translate("unit-number-used"), 409);
@@ -28,7 +28,7 @@ class UnitService {
         }
         const unit = Unit_model_1.Unit.create({
             ...data,
-            videoUrl: video,
+            // videoUrl,
             project,
             category,
             position: [position_x, position_y],
@@ -148,8 +148,7 @@ class UnitService {
         unit.category = category;
         unit.project = project;
         unit.position = [data.position_x, data.position_y];
-        if (data.video)
-            unit.videoUrl = data.video;
+        // if (data.video) unit.videoUrl = data.video;
         await unit.save();
         return unit;
     }

@@ -40,7 +40,6 @@ const express_1 = require("express");
 const units_controller_1 = require("../../controllers/dashboard/units.controller");
 const validationMiddleware_1 = require("../../middleware/validationMiddleware");
 const UnitValidator_1 = __importStar(require("../../utils/validators/UnitValidator"));
-const uploadFiles_1 = require("../../middleware/uploadFiles");
 const auth_controller_1 = require("../../controllers/dashboard/auth.controller");
 const enums_1 = require("../../utils/types/enums");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
@@ -50,12 +49,16 @@ router.get("/", (0, express_async_handler_1.default)(units_controller_1.UnitCont
 // Get a single unit by ID
 router.get("/:id", (0, express_async_handler_1.default)(units_controller_1.UnitController.getUnitById));
 // Create a new unit
-router.post("/", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.createUnit));
+router.post("/", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), 
+// upload.single("video"),
+(0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.createUnit));
 router.post("/:id/reserve", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.reverseUnitValidator), units_controller_1.UnitController.reserveUnit);
 router.post("/:id/buy", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.reverseUnitValidator), units_controller_1.UnitController.buyUnit);
 router.put("/:id/status", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, validationMiddleware_1.validateData)(UnitValidator_1.SetUnitStatusValidator), (0, express_async_handler_1.default)(units_controller_1.UnitController.SetUnitStatus));
 // Update an existing unit
-router.put("/:id", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("video"), (0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.updateUnit));
+router.put("/:id", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), 
+// upload.single("video"),
+(0, validationMiddleware_1.validateData)(UnitValidator_1.default), (0, express_async_handler_1.default)(units_controller_1.UnitController.updateUnit));
 // Delete a unit
 router.delete("/:id", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), (0, express_async_handler_1.default)(units_controller_1.UnitController.deleteUnit));
 exports.default = router;

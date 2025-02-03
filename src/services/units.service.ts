@@ -24,12 +24,8 @@ interface GetUnitsQuery {
 }
 
 export class UnitService {
-  static async createUnit(
-    data: { video: string } & UnitType,
-    translate: TFunction
-  ) {
-    const { video, projectId, categoryId, number, position_x, position_y } =
-      data;
+  static async createUnit(data: UnitType, translate: TFunction) {
+    const { projectId, categoryId, number, position_x, position_y } = data;
 
     const isNumberExist = await Unit.getItemByNumber(number);
     if (isNumberExist) {
@@ -48,7 +44,7 @@ export class UnitService {
 
     const unit = Unit.create({
       ...data,
-      videoUrl: video,
+      // videoUrl,
       project,
       category,
       position: [position_x, position_y],
@@ -169,11 +165,7 @@ export class UnitService {
     });
   }
 
-  static async updateUnit(
-    id: string,
-    data: { video: string } & UnitType,
-    translate: TFunction
-  ) {
+  static async updateUnit(id: string, data: UnitType, translate: TFunction) {
     const unit = await Unit.findOneBy({ id });
     if (!unit) {
       throw new ApiError(translate("not-found"), 404);
@@ -198,7 +190,7 @@ export class UnitService {
     unit.category = category;
     unit.project = project;
     unit.position = [data.position_x, data.position_y];
-    if (data.video) unit.videoUrl = data.video;
+    // if (data.video) unit.videoUrl = data.video;
     await unit.save();
     return unit;
   }
