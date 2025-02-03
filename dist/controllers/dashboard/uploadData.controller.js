@@ -109,108 +109,110 @@ class UploadData {
         const validUnits = [];
         const errors = [];
         for (const [index, row] of trimmedData.entries()) {
-            try {
-                const unitData = units_data_1.unitsData[index];
-                // Extract and map project data
-                const projectName = row["اسم المشروع"]?.trim();
-                const categoryName = row["النموذج"]?.trim() ?? UnitValidator_1.UnitCategoriesNames.yasmeen;
-                const unitTemplate = row["النموذج"]?.trim();
-                if (!projectName) {
-                    errors.push(`Row ${index + 1}: Missing project name.`);
-                    continue;
-                }
-                const isInValidProjects = validProjects.find((proj) => proj.name === projectName.trim());
-                let project = isInValidProjects
-                    ? isInValidProjects
-                    : await projectRepo.findOne({
-                        where: { name: (0, typeorm_1.Equal)(projectName.trim()) },
-                    });
-                if (!project) {
-                    project = projectRepo.create({
-                        name: projectName,
-                        // ToDo: set real values from sheet after add it
-                        number: 1,
-                        status: enums_1.CommonStatus.posted,
-                        lat: "21.740182275411662",
-                        lng: "39.22477929186214",
-                        city: "Jeddah", // Add default city or extract if available
-                    });
-                    await project.save();
-                    validProjects.push(project);
-                }
-                // Extract and map unit data
-                const unitNumber = Number(row["رقم الفيلا"]);
-                // console.log("ddddd", { number: unitData.id, index, unitNumber });
-                const unitType = row["نوع الفيلا"]?.trim();
-                // const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
-                const unitPrice = Number(UploadData.getPrice(categoryName));
-                const buildLevel = parseFloat(row["المرحلة"?.trim()]);
-                const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
-                const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
-                const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
-                const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
-                const buildStatusValue = row["حالة البناء"]?.trim();
-                const buildStatus = buildStatusValue === UnitValidator_1.UnitBuildStatus.construction
-                    ? UnitValidator_1.UnitBuildStatus.construction
-                    : UnitValidator_1.UnitBuildStatus.noConstruction;
-                const salesChannels = row["sales_channels"]
-                    ?.trim()
-                    ?.replace(/[{}]/g, "")
-                    .split(",")
-                    .map((channel) => channel.trim());
-                if (!unitNumber || !unitType || isNaN(unitPrice)) {
-                    errors.push(`Row ${index + 1}: Missing or invalid unit data.`);
-                    continue;
-                }
-                const floors = UploadData.getFloorsImages(categoryName);
-                // Check for duplicate unit
-                const existingUnit = await unitRepo.findOneBy({ number: unitNumber });
-                if (existingUnit) {
-                    errors.push(`Row ${index + 1}: Duplicate unit number ${unitNumber}.`);
-                    continue;
-                }
-                // Pick a random value
-                // const randomStatus =
-                //   enumValues[Math.floor(Math.random() * enumValues.length)];
-                let unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
-                    .where("LOWER(category.name) LIKE LOWER(:name)", {
-                    name: `%${categoryName}%`,
-                })
-                    .getOne();
-                if (!unitCategory) {
-                    unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
+            if (index <= 85) {
+                try {
+                    const unitData = units_data_1.unitsData[index];
+                    // Extract and map project data
+                    const projectName = row["اسم المشروع"]?.trim();
+                    const categoryName = row["النموذج"]?.trim() ?? UnitValidator_1.UnitCategoriesNames.yasmeen;
+                    const unitTemplate = row["النموذج"]?.trim();
+                    if (!projectName) {
+                        errors.push(`Row ${index + 1}: Missing project name.`);
+                        continue;
+                    }
+                    const isInValidProjects = validProjects.find((proj) => proj.name === projectName.trim());
+                    let project = isInValidProjects
+                        ? isInValidProjects
+                        : await projectRepo.findOne({
+                            where: { name: (0, typeorm_1.Equal)(projectName.trim()) },
+                        });
+                    if (!project) {
+                        project = projectRepo.create({
+                            name: projectName,
+                            // ToDo: set real values from sheet after add it
+                            number: 1,
+                            status: enums_1.CommonStatus.posted,
+                            lat: "21.740182275411662",
+                            lng: "39.22477929186214",
+                            city: "Jeddah", // Add default city or extract if available
+                        });
+                        await project.save();
+                        validProjects.push(project);
+                    }
+                    // Extract and map unit data
+                    const unitNumber = Number(row["رقم الفيلا"]);
+                    // console.log("ddddd", { number: unitData.id, index, unitNumber });
+                    const unitType = row["نوع الفيلا"]?.trim();
+                    // const unitPrice = parseFloat(row["سعر البيع"?.trim()]);
+                    const unitPrice = Number(UploadData.getPrice(categoryName));
+                    const buildLevel = parseFloat(row["المرحلة"?.trim()]);
+                    const landSpace = parseFloat(row["مساحة الارض"?.trim()]);
+                    const buildSpace = parseFloat(row["المساحة البيعية"?.trim()]);
+                    const bedroomNumber = parseInt(row["غرف النوم"]?.trim(), 10);
+                    const bathroomNumber = parseInt(row["دورة المياة "]?.trim(), 10);
+                    const buildStatusValue = row["حالة البناء"]?.trim();
+                    const buildStatus = buildStatusValue === UnitValidator_1.UnitBuildStatus.construction
+                        ? UnitValidator_1.UnitBuildStatus.construction
+                        : UnitValidator_1.UnitBuildStatus.noConstruction;
+                    const salesChannels = row["sales_channels"]
+                        ?.trim()
+                        ?.replace(/[{}]/g, "")
+                        .split(",")
+                        .map((channel) => channel.trim());
+                    if (!unitNumber || !unitType || isNaN(unitPrice)) {
+                        errors.push(`Row ${index + 1}: Missing or invalid unit data.`);
+                        continue;
+                    }
+                    const floors = UploadData.getFloorsImages(categoryName);
+                    // Check for duplicate unit
+                    const existingUnit = await unitRepo.findOneBy({ number: unitNumber });
+                    if (existingUnit) {
+                        errors.push(`Row ${index + 1}: Duplicate unit number ${unitNumber}.`);
+                        continue;
+                    }
+                    // Pick a random value
+                    // const randomStatus =
+                    //   enumValues[Math.floor(Math.random() * enumValues.length)];
+                    let unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
                         .where("LOWER(category.name) LIKE LOWER(:name)", {
-                        name: `%${UnitValidator_1.UnitCategoriesNames.yasmeen}%`,
+                        name: `%${categoryName}%`,
                     })
                         .getOne();
+                    if (!unitCategory) {
+                        unitCategory = await UnitCategories_model_1.UnitCategories.createQueryBuilder("category")
+                            .where("LOWER(category.name) LIKE LOWER(:name)", {
+                            name: `%${UnitValidator_1.UnitCategoriesNames.yasmeen}%`,
+                        })
+                            .getOne();
+                    }
+                    const unit = unitRepo.create({
+                        number: unitNumber,
+                        type: unitType,
+                        price: unitPrice,
+                        landSpace,
+                        // saledSpace,
+                        bedroomNumber,
+                        bathroomNumber,
+                        buildStatus,
+                        salesChannels,
+                        project,
+                        template: unitTemplate,
+                        category: unitCategory ?? undefined,
+                        size: unitData.size,
+                        position: unitData.position,
+                        name: `مبنى ${unitNumber}`,
+                        buildSpace,
+                        //   ToDo:add real values from sheet
+                        buildLevel,
+                        floorsNumber: 3,
+                        status: UnitValidator_1.UnitStatus.avaliable,
+                        floors: UnitFloor_model_1.UnitFloor.create(floors),
+                    });
+                    validUnits.push(unit);
                 }
-                const unit = unitRepo.create({
-                    number: unitNumber,
-                    type: unitType,
-                    price: unitPrice,
-                    landSpace,
-                    // saledSpace,
-                    bedroomNumber,
-                    bathroomNumber,
-                    buildStatus,
-                    salesChannels,
-                    project,
-                    template: unitTemplate,
-                    category: unitCategory ?? undefined,
-                    size: unitData.size,
-                    position: unitData.position,
-                    name: `مبنى ${unitNumber}`,
-                    buildSpace,
-                    //   ToDo:add real values from sheet
-                    buildLevel,
-                    floorsNumber: 3,
-                    status: UnitValidator_1.UnitStatus.avaliable,
-                    floors: UnitFloor_model_1.UnitFloor.create(floors),
-                });
-                validUnits.push(unit);
-            }
-            catch (error) {
-                errors.push(`Row ${index + 1}: ${error.message}`);
+                catch (error) {
+                    errors.push(`Row ${index + 1}: ${error.message}`);
+                }
             }
         }
         // Save valid projects and units
