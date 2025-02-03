@@ -65,7 +65,11 @@ class UnitService {
         if (priceTo) {
             queryBuilder.andWhere("unit.price <= :priceTo", { priceTo });
         }
-        return await queryBuilder.skip(skip).take(take).getManyAndCount();
+        return await queryBuilder
+            .orderBy("unit.number", "ASC")
+            .skip(skip)
+            .take(take)
+            .getManyAndCount();
     }
     static async getProjectUnitsGroupedByStatus(projectId) {
         const querable = Unit_model_1.Unit.createQueryBuilder("unit")

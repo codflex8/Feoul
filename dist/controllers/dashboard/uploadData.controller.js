@@ -101,10 +101,8 @@ class UploadData {
             // console.log("aaaa", a);
             const aUnitNumber = a["رقم الفيلا"];
             const bUnitNumber = b["رقم الفيلا"];
-            console.log("aUnitNumberaUnitNumber", { aUnitNumber, bUnitNumber });
             return Number(aUnitNumber) - Number(bUnitNumber);
         });
-        console.log("trimmedData", trimmedData);
         const projectRepo = data_source_1.default.getRepository(Project_model_1.Project);
         const unitRepo = data_source_1.default.getRepository(Unit_model_1.Unit);
         const validProjects = [];
