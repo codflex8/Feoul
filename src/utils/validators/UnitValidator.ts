@@ -59,58 +59,25 @@ export enum UnitBuildStatus {
 const UnitValidator = z.object({
   // name: z.string(),
   projectId: z.string(),
-  number: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
+  number: z.number(),
   // color: z.string(),
-  price: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
-  landSpace: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
-  buildSpace: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
+  price: z.number(),
+  landSpace: z.number(),
+  buildSpace: z.number(),
   status: z.nativeEnum(UnitStatus).default(UnitStatus.avaliable),
-  bedroomNumber: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
-  bathroomNumber: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
+  bedroomNumber: z.number(),
+  bathroomNumber: z.number(),
   videoUrl: z.string().optional(),
-  floorsNumber: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
+  // floorsNumber: z.nullable().number(),
   advantages: z.string().optional(),
   categoryId: z.string(),
   type: z.nativeEnum(UnitTypes),
   buildStatus: z.nativeEnum(UnitBuildStatus),
-  buildLevel: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
+  buildLevel: z.number(),
   salesChannels: z.array(z.string()).optional(),
-  saledSpace: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
-  position_x: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
-  position_y: z
-    .string()
-    .nonempty()
-    .transform((val) => Number(val)),
+  saledSpace: z.number(),
+  position_x: z.number(),
+  position_y: z.number(),
 });
 
 export const SetUnitStatusValidator = z.object({

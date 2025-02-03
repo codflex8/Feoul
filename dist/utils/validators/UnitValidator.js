@@ -60,58 +60,25 @@ var UnitBuildStatus;
 const UnitValidator = zod_1.z.object({
     // name: z.string(),
     projectId: zod_1.z.string(),
-    number: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
+    number: zod_1.z.number(),
     // color: z.string(),
-    price: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
-    landSpace: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
-    buildSpace: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
+    price: zod_1.z.number(),
+    landSpace: zod_1.z.number(),
+    buildSpace: zod_1.z.number(),
     status: zod_1.z.nativeEnum(UnitStatus).default(UnitStatus.avaliable),
-    bedroomNumber: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
-    bathroomNumber: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
+    bedroomNumber: zod_1.z.number(),
+    bathroomNumber: zod_1.z.number(),
     videoUrl: zod_1.z.string().optional(),
-    floorsNumber: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
+    // floorsNumber: z.nullable().number(),
     advantages: zod_1.z.string().optional(),
     categoryId: zod_1.z.string(),
     type: zod_1.z.nativeEnum(UnitTypes),
     buildStatus: zod_1.z.nativeEnum(UnitBuildStatus),
-    buildLevel: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
+    buildLevel: zod_1.z.number(),
     salesChannels: zod_1.z.array(zod_1.z.string()).optional(),
-    saledSpace: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
-    position_x: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
-    position_y: zod_1.z
-        .string()
-        .nonempty()
-        .transform((val) => Number(val)),
+    saledSpace: zod_1.z.number(),
+    position_x: zod_1.z.number(),
+    position_y: zod_1.z.number(),
 });
 exports.SetUnitStatusValidator = zod_1.z.object({
     status: zod_1.z.nativeEnum(UnitStatus),
