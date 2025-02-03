@@ -75,7 +75,7 @@ const UnitValidator = zod_1.z.object({
     type: zod_1.z.nativeEnum(UnitTypes),
     buildStatus: zod_1.z.nativeEnum(UnitBuildStatus),
     buildLevel: zod_1.z.number(),
-    salesChannels: zod_1.z.array(zod_1.z.string()).optional(),
+    salesChannels: zod_1.z.array(zod_1.z.string()).optional().default([]),
     saledSpace: zod_1.z.number(),
     position_x: zod_1.z.number(),
     position_y: zod_1.z.number(),

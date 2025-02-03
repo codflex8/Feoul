@@ -21,6 +21,7 @@ const UnitValidator_2 = require("../utils/validators/UnitValidator");
 let Unit = class Unit extends BaseNumberModel_1.BaseNumberModel {
     constructor() {
         super(...arguments);
+        this.size = [220, 100];
         this.images = [];
     }
     setUnitPropertiesBaseOnTemplate() {

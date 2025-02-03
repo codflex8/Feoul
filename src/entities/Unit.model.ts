@@ -60,7 +60,7 @@ export class Unit extends BaseNumberModel {
     type: "simple-array",
     nullable: true,
   })
-  size!: number[];
+  size: number[] = [220, 100];
 
   @Column({
     type: "simple-array",
