@@ -102,6 +102,16 @@ export const unitFloorValidation = z.object({
   image: z.string(),
 });
 
+export const unitCategoryFloorUpdate = z.object({
+  name: z.string(),
+  index: z
+    .string()
+    .nonempty()
+    .transform((val) => Number(val)),
+  image: z.string(),
+  categoryId: z.string(),
+});
+
 export const unitIntresetValidation = z.object({
   firstName: z.string(),
   lastName: z.string(),
@@ -120,6 +130,9 @@ export const reverseUnitValidator = z.object({
 export type UnitReverseType = z.infer<typeof reverseUnitValidator>;
 export type UnitIntresetType = z.infer<typeof unitIntresetValidation>;
 export type UnitFloorType = z.infer<typeof unitFloorValidation>;
+export type unitCategoryFloorUpdateType = z.infer<
+  typeof unitCategoryFloorUpdate
+>;
 export type UnitCategoryType = z.infer<typeof unitCategoryValidation>;
 export type UnitType = z.infer<typeof UnitValidator>;
 export type SetUnitStatusType = z.infer<typeof SetUnitStatusValidator>;

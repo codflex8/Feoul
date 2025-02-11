@@ -1,6 +1,8 @@
 { 
   "user-intreseted-not-found":"user intreseted data not found",
   "unit-category-number-used":"unit category number is used",
+  "update-success":"update success",
+  "unit-category-not-found":"unit category not found",
   "unit-number-used":"unit number is used",
   "template-number-used":"template number is used",
   "project-number-used":"project number is used",

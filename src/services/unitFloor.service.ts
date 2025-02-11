@@ -1,9 +1,13 @@
 import { TFunction } from "i18next";
 import { UnitFloor } from "../entities/UnitFloor.model";
 import { Unit } from "../entities/Unit.model";
-import { UnitFloorType } from "../utils/validators/UnitValidator";
+import {
+  unitCategoryFloorUpdateType,
+  UnitFloorType,
+} from "../utils/validators/UnitValidator";
 import ApiError from "../utils/ApiError";
 import { getPaginationData } from "../utils/getPaginationData";
+import { UnitCategories } from "../entities/UnitCategories.model";
 
 interface GetFloorsQuery {
   page: number;
@@ -14,6 +18,32 @@ interface GetFloorsQuery {
 }
 
 export class UnitFloorService {
+  static async updateUnitCategoryFloors(
+    data: unitCategoryFloorUpdateType,
+    translate: TFunction
+  ) {
+    const unitCategory = await UnitCategories.findOneBy({
+      id: data.categoryId,
+    });
+    if (!unitCategory) {
+      throw new ApiError(translate("unit-category-not-found"), 404);
+    }
+    await UnitFloor.createQueryBuilder()
+      .update(UnitFloor)
+      .set({ name: data.name, imageUrl: data.image, index: data.index })
+      .where("id IN (:...unitFloorIds)", {
+        unitFloorIds: await UnitFloor.createQueryBuilder("unitFloor")
+          .select("unitFloor.id")
+          .leftJoin("unitFloor.unit", "unit")
+          .leftJoin("unit.category", "category")
+          .where("category.id = :categoryId", { categoryId: data.categoryId })
+          .andWhere("unitFloor.index = :index", { index: data.index })
+          .getMany()
+          .then((unitFloors) => unitFloors.map((uf) => uf.id)),
+      })
+      .execute();
+  }
+
   static async createUnitFloor(data: UnitFloorType, translate: TFunction) {
     const unit = await Unit.findOneBy({ id: data.unitId });
     if (!unit) {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = exports.CategoriesImages = exports.UnitCategoriesNames = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitCategoryFloorUpdate = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = exports.CategoriesImages = exports.UnitCategoriesNames = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitCategoriesNames;
@@ -98,6 +98,15 @@ exports.unitFloorValidation = zod_1.z.object({
         .transform((val) => Number(val)),
     unitId: zod_1.z.string(),
     image: zod_1.z.string(),
+});
+exports.unitCategoryFloorUpdate = zod_1.z.object({
+    name: zod_1.z.string(),
+    index: zod_1.z
+        .string()
+        .nonempty()
+        .transform((val) => Number(val)),
+    image: zod_1.z.string(),
+    categoryId: zod_1.z.string(),
 });
 exports.unitIntresetValidation = zod_1.z.object({
     firstName: zod_1.z.string(),

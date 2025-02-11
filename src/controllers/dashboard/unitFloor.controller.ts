@@ -1,9 +1,21 @@
 import { Request, Response } from "express";
-import { UnitFloorType } from "../../utils/validators/UnitValidator";
+import {
+  unitCategoryFloorUpdateType,
+  UnitFloorType,
+} from "../../utils/validators/UnitValidator";
 import { GenericResponse } from "../../utils/GenericResponse";
 import { UnitFloorService } from "../../services/unitFloor.service";
 
 export class UnitFloorController {
+  static async updateUnitCategoryFloors(
+    req: Request<{}, {}, unitCategoryFloorUpdateType>,
+    res: Response
+  ): Promise<void> {
+    const updateUnitCategoryFloors =
+      await UnitFloorService.updateUnitCategoryFloors(req.body, req.t);
+    res.status(200).json({ message: req.t("update-success") });
+  }
+
   static async createUnitFloor(
     req: Request<{}, {}, UnitFloorType>,
     res: Response

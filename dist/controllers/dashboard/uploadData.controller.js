@@ -14,6 +14,7 @@ const enums_1 = require("../../utils/types/enums");
 const typeorm_1 = require("typeorm");
 const units_data_1 = require("../../units-data");
 const UnitFloor_model_1 = require("../../entities/UnitFloor.model");
+const getFloorsImages_1 = require("../../utils/getFloorsImages");
 class UploadData {
     static getPrice(category) {
         if (category === UnitValidator_1.UnitCategoriesNames.toleeb) {
@@ -25,66 +26,6 @@ class UploadData {
         else {
             return 902000;
         }
-    }
-    static getFloorsImages(category) {
-        if (category === UnitValidator_1.UnitCategoriesNames.yasmeen) {
-            return [
-                {
-                    index: 0,
-                    name: "الطابق الارضي",
-                    imageUrl: "/public/floors/yasmeen/1.jpeg",
-                },
-                {
-                    index: 1,
-                    name: "الطابق الاول",
-                    imageUrl: "/public/floors/yasmeen/2.jpeg",
-                },
-                {
-                    index: 2,
-                    name: "الطابق الثاني",
-                    imageUrl: "/public/floors/yasmeen/3.jpeg",
-                },
-            ];
-        }
-        if (category === UnitValidator_1.UnitCategoriesNames.orkeed) {
-            return [
-                {
-                    index: 0,
-                    name: "الطابق الارضي",
-                    imageUrl: "/public/floors/orkeeda/1.jpeg",
-                },
-                {
-                    index: 1,
-                    name: "الطابق الاول",
-                    imageUrl: "/public/floors/orkeeda/2.jpeg",
-                },
-                {
-                    index: 2,
-                    name: "الطابق الثاني",
-                    imageUrl: "/public/floors/orkeeda/3.jpeg",
-                },
-            ];
-        }
-        if (category === UnitValidator_1.UnitCategoriesNames.toleeb) {
-            return [
-                {
-                    index: 0,
-                    name: "الطابق الارضي",
-                    imageUrl: "/public/floors/toleeb/1.jpeg",
-                },
-                {
-                    index: 1,
-                    name: "الطابق الاول",
-                    imageUrl: "/public/floors/toleeb/2.jpeg",
-                },
-                {
-                    index: 2,
-                    name: "الطابق الثاني",
-                    imageUrl: "/public/floors/toleeb/3.jpeg",
-                },
-            ];
-        }
-        return [];
     }
     static async uploadData(req, res, next) {
         const file = req.file?.buffer;
@@ -162,7 +103,7 @@ class UploadData {
                     errors.push(`Row ${index + 1}: Missing or invalid unit data.`);
                     continue;
                 }
-                const floors = UploadData.getFloorsImages(categoryName);
+                const floors = (0, getFloorsImages_1.getFloorsImages)(categoryName);
                 // Check for duplicate unit
                 const existingUnit = await unitRepo.findOneBy({ number: unitNumber });
                 if (existingUnit) {

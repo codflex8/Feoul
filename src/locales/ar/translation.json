@@ -1,6 +1,8 @@
 {
   "user-intreseted-not-found":"بيانات المستخدم المهتم غير موجودة",
   "unit-category-number-used":"رقم الفئة مستخدم مسبقًا",
+  "unit-category-not-found":"رقم الفئة غير موجود",
+  "update-success":"تم التحديث بنجاح",
   "unit-number-used":"رقم الوحدة مستخدم مسبقًا",
   "project-number-used":"رقم المشروع مستخدم مسبقًا",
   "template-number-used":"رقم النموذج مستخدم مسبقًا",

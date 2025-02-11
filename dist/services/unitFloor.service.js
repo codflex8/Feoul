@@ -8,7 +8,30 @@ const UnitFloor_model_1 = require("../entities/UnitFloor.model");
 const Unit_model_1 = require("../entities/Unit.model");
 const ApiError_1 = __importDefault(require("../utils/ApiError"));
 const getPaginationData_1 = require("../utils/getPaginationData");
+const UnitCategories_model_1 = require("../entities/UnitCategories.model");
 class UnitFloorService {
+    static async updateUnitCategoryFloors(data, translate) {
+        const unitCategory = await UnitCategories_model_1.UnitCategories.findOneBy({
+            id: data.categoryId,
+        });
+        if (!unitCategory) {
+            throw new ApiError_1.default(translate("unit-category-not-found"), 404);
+        }
+        await UnitFloor_model_1.UnitFloor.createQueryBuilder()
+            .update(UnitFloor_model_1.UnitFloor)
+            .set({ name: data.name, imageUrl: data.image, index: data.index })
+            .where("id IN (:...unitFloorIds)", {
+            unitFloorIds: await UnitFloor_model_1.UnitFloor.createQueryBuilder("unitFloor")
+                .select("unitFloor.id")
+                .leftJoin("unitFloor.unit", "unit")
+                .leftJoin("unit.category", "category")
+                .where("category.id = :categoryId", { categoryId: data.categoryId })
+                .andWhere("unitFloor.index = :index", { index: data.index })
+                .getMany()
+                .then((unitFloors) => unitFloors.map((uf) => uf.id)),
+        })
+            .execute();
+    }
     static async createUnitFloor(data, translate) {
         const unit = await Unit_model_1.Unit.findOneBy({ id: data.unitId });
         if (!unit) {

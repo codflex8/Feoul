@@ -15,6 +15,7 @@ import { CommonStatus } from "../../utils/types/enums";
 import { Equal } from "typeorm";
 import { unitsData } from "../../units-data";
 import { UnitFloor } from "../../entities/UnitFloor.model";
+import { getFloorsImages } from "../../utils/getFloorsImages";
 export class UploadData {
   private static getPrice(category: string) {
     if (category === UnitCategoriesNames.toleeb) {
@@ -24,67 +25,6 @@ export class UploadData {
     } else {
       return 902000;
     }
-  }
-
-  private static getFloorsImages(category: string) {
-    if (category === UnitCategoriesNames.yasmeen) {
-      return [
-        {
-          index: 0,
-          name: "الطابق الارضي",
-          imageUrl: "/public/floors/yasmeen/1.jpeg",
-        },
-        {
-          index: 1,
-          name: "الطابق الاول",
-          imageUrl: "/public/floors/yasmeen/2.jpeg",
-        },
-        {
-          index: 2,
-          name: "الطابق الثاني",
-          imageUrl: "/public/floors/yasmeen/3.jpeg",
-        },
-      ];
-    }
-    if (category === UnitCategoriesNames.orkeed) {
-      return [
-        {
-          index: 0,
-          name: "الطابق الارضي",
-          imageUrl: "/public/floors/orkeeda/1.jpeg",
-        },
-        {
-          index: 1,
-          name: "الطابق الاول",
-          imageUrl: "/public/floors/orkeeda/2.jpeg",
-        },
-        {
-          index: 2,
-          name: "الطابق الثاني",
-          imageUrl: "/public/floors/orkeeda/3.jpeg",
-        },
-      ];
-    }
-    if (category === UnitCategoriesNames.toleeb) {
-      return [
-        {
-          index: 0,
-          name: "الطابق الارضي",
-          imageUrl: "/public/floors/toleeb/1.jpeg",
-        },
-        {
-          index: 1,
-          name: "الطابق الاول",
-          imageUrl: "/public/floors/toleeb/2.jpeg",
-        },
-        {
-          index: 2,
-          name: "الطابق الثاني",
-          imageUrl: "/public/floors/toleeb/3.jpeg",
-        },
-      ];
-    }
-    return [];
   }
 
   static async uploadData(req: Request, res: Response, next: NextFunction) {
@@ -182,7 +122,7 @@ export class UploadData {
           continue;
         }
 
-        const floors = UploadData.getFloorsImages(categoryName);
+        const floors = getFloorsImages(categoryName);
 
         // Check for duplicate unit
         const existingUnit = await unitRepo.findOneBy({ number: unitNumber });

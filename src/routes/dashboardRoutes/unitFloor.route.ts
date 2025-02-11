@@ -4,7 +4,10 @@ import { UsersRoles } from "../../utils/types/enums";
 import { AuthController } from "../../controllers/dashboard/auth.controller";
 import { upload } from "../../middleware/uploadFiles";
 import { validateData } from "../../middleware/validationMiddleware";
-import { unitFloorValidation } from "../../utils/validators/UnitValidator";
+import {
+  unitCategoryFloorUpdate,
+  unitFloorValidation,
+} from "../../utils/validators/UnitValidator";
 import expressAsyncHandler from "express-async-handler";
 
 const router = Router();
@@ -23,6 +26,14 @@ router.post(
   upload.single("image"),
   validateData(unitFloorValidation),
   expressAsyncHandler(UnitFloorController.createUnitFloor)
+);
+
+router.put(
+  "/categories-floors",
+  AuthController.allowedto([UsersRoles.Admin]),
+  upload.single("image"),
+  validateData(unitCategoryFloorUpdate),
+  expressAsyncHandler(UnitFloorController.updateUnitCategoryFloors)
 );
 
 // Update an existing unit

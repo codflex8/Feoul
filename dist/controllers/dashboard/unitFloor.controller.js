@@ -4,6 +4,10 @@ exports.UnitFloorController = void 0;
 const GenericResponse_1 = require("../../utils/GenericResponse");
 const unitFloor_service_1 = require("../../services/unitFloor.service");
 class UnitFloorController {
+    static async updateUnitCategoryFloors(req, res) {
+        const updateUnitCategoryFloors = await unitFloor_service_1.UnitFloorService.updateUnitCategoryFloors(req.body, req.t);
+        res.status(200).json({ message: req.t("update-success") });
+    }
     static async createUnitFloor(req, res) {
         try {
             const unitFloor = await unitFloor_service_1.UnitFloorService.createUnitFloor({ ...req.body }, req.t);
