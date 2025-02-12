@@ -44,6 +44,37 @@ export class UnitFloorService {
       .execute();
   }
 
+  static async addUnitCategoryFloors(
+    data: unitCategoryFloorUpdateType,
+    translate: TFunction
+  ) {
+    const unitCategory = await UnitCategories.findOneBy({
+      id: data.categoryId,
+    });
+    if (!unitCategory) {
+      throw new ApiError(translate("unit-category-not-found"), 404);
+    }
+    const units = await Unit.createQueryBuilder("unit")
+      .leftJoin("unit.category", "category")
+      .where("category.id = :categoryId", { categoryId: data.categoryId })
+      .select("unit.id")
+      .getMany();
+    const addUnitsIds = units.map((unit) => unit.id);
+
+    const newFloors = addUnitsIds.map((id) =>
+      UnitFloor.create({
+        imageUrl: data.image,
+        name: data.name,
+        index: data.index,
+        unit: {
+          id,
+        },
+      })
+    );
+
+    await UnitFloor.save(newFloors);
+  }
+
   static async createUnitFloor(data: UnitFloorType, translate: TFunction) {
     const unit = await Unit.findOneBy({ id: data.unitId });
     if (!unit) {

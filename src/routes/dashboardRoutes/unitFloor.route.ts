@@ -36,6 +36,14 @@ router.put(
   expressAsyncHandler(UnitFloorController.updateUnitCategoryFloors)
 );
 
+router.post(
+  "/categories-floors",
+  AuthController.allowedto([UsersRoles.Admin]),
+  upload.single("image"),
+  validateData(unitCategoryFloorUpdate),
+  expressAsyncHandler(UnitFloorController.addUnitCategoryFloors)
+);
+
 // Update an existing unit
 router.put(
   "/:id",

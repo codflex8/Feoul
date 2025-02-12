@@ -32,6 +32,29 @@ class UnitFloorService {
         })
             .execute();
     }
+    static async addUnitCategoryFloors(data, translate) {
+        const unitCategory = await UnitCategories_model_1.UnitCategories.findOneBy({
+            id: data.categoryId,
+        });
+        if (!unitCategory) {
+            throw new ApiError_1.default(translate("unit-category-not-found"), 404);
+        }
+        const units = await Unit_model_1.Unit.createQueryBuilder("unit")
+            .leftJoin("unit.category", "category")
+            .where("category.id = :categoryId", { categoryId: data.categoryId })
+            .select("unit.id")
+            .getMany();
+        const addUnitsIds = units.map((unit) => unit.id);
+        const newFloors = addUnitsIds.map((id) => UnitFloor_model_1.UnitFloor.create({
+            imageUrl: data.image,
+            name: data.name,
+            index: data.index,
+            unit: {
+                id,
+            },
+        }));
+        await UnitFloor_model_1.UnitFloor.save(newFloors);
+    }
     static async createUnitFloor(data, translate) {
         const unit = await Unit_model_1.Unit.findOneBy({ id: data.unitId });
         if (!unit) {

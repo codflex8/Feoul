@@ -9,6 +9,7 @@
   "template-not-found":"template not found",
   "category-not-found":"category not found",
   "not-found":"not found",
+  "add-success":"add success",
   "delete-success":"delete success",
   "project-not-found":"project not found",
   "unit-not-found":"unit not found",

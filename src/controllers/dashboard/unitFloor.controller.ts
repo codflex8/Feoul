@@ -16,6 +16,14 @@ export class UnitFloorController {
     res.status(200).json({ message: req.t("update-success") });
   }
 
+  static async addUnitCategoryFloors(
+    req: Request<{}, {}, unitCategoryFloorUpdateType>,
+    res: Response
+  ): Promise<void> {
+    await UnitFloorService.addUnitCategoryFloors(req.body, req.t);
+    res.status(200).json({ message: req.t("add-success") });
+  }
+
   static async createUnitFloor(
     req: Request<{}, {}, UnitFloorType>,
     res: Response

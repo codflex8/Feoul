@@ -19,6 +19,7 @@ router.get("/:id", (0, express_async_handler_1.default)(unitFloor_controller_1.U
 // Create a new unit
 router.post("/", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("image"), (0, validationMiddleware_1.validateData)(UnitValidator_1.unitFloorValidation), (0, express_async_handler_1.default)(unitFloor_controller_1.UnitFloorController.createUnitFloor));
 router.put("/categories-floors", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("image"), (0, validationMiddleware_1.validateData)(UnitValidator_1.unitCategoryFloorUpdate), (0, express_async_handler_1.default)(unitFloor_controller_1.UnitFloorController.updateUnitCategoryFloors));
+router.post("/categories-floors", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("image"), (0, validationMiddleware_1.validateData)(UnitValidator_1.unitCategoryFloorUpdate), (0, express_async_handler_1.default)(unitFloor_controller_1.UnitFloorController.addUnitCategoryFloors));
 // Update an existing unit
 router.put("/:id", auth_controller_1.AuthController.allowedto([enums_1.UsersRoles.Admin]), uploadFiles_1.upload.single("image"), (0, validationMiddleware_1.validateData)(UnitValidator_1.unitFloorValidation), (0, express_async_handler_1.default)(unitFloor_controller_1.UnitFloorController.updateUnitFloor));
 // Delete a unit

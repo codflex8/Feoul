@@ -8,6 +8,10 @@ class UnitFloorController {
         const updateUnitCategoryFloors = await unitFloor_service_1.UnitFloorService.updateUnitCategoryFloors(req.body, req.t);
         res.status(200).json({ message: req.t("update-success") });
     }
+    static async addUnitCategoryFloors(req, res) {
+        await unitFloor_service_1.UnitFloorService.addUnitCategoryFloors(req.body, req.t);
+        res.status(200).json({ message: req.t("add-success") });
+    }
     static async createUnitFloor(req, res) {
         try {
             const unitFloor = await unitFloor_service_1.UnitFloorService.createUnitFloor({ ...req.body }, req.t);
