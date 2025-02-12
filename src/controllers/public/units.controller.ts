@@ -49,6 +49,8 @@ export class PublicUnitController {
         pageSize: number;
         name: string;
         index: string;
+        categoryId: string;
+        unitId: string;
       }
     >,
     res: Response

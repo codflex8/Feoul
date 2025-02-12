@@ -50,6 +50,7 @@ export class UnitFloorController {
         name: string;
         index: string;
         unitId: string;
+        categoryId: string;
       }
     >,
     res: Response
