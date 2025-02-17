@@ -20,18 +20,32 @@ class HomeService {
                 .addSelect("unit.name", "unitName")
                 .groupBy("unit.id")
                 .getRawMany(),
-            Unit_model_1.Unit.createQueryBuilder("unit")
-                .leftJoin("unit.interests", "interests")
-                .addSelect((subQuery) => {
-                return subQuery
-                    .select("COUNT(interests.id)", "intresetsCount")
-                    .from("UnitIntreset", "interests")
-                    .where("interests.unitId = unit.id");
-            }, "intresetsCount")
-                .orderBy("intresetsCount", "ASC")
+            UnitIntreset_model_1.UnitIntreset.createQueryBuilder("unitIntreset")
+                .leftJoinAndSelect("unitIntreset.unit", "unit")
+                .orderBy("unitIntreset.createdAt", "DESC")
                 .skip(skip)
                 .take(take)
+                .select("unitIntreset")
+                .addSelect([
+                "unit.name",
+                "unit.id",
+                "unit.number",
+                "unit.category",
+                "unit.price",
+            ])
                 .getMany(),
+            // Unit.createQueryBuilder("unit")
+            //   .leftJoin("unit.interests", "interests")
+            //   .addSelect((subQuery) => {
+            //     return subQuery
+            //       .select("COUNT(interests.id)", "intresetsCount")
+            //       .from("UnitIntreset", "interests")
+            //       .where("interests.unitId = unit.id");
+            //   }, "intresetsCount")
+            //   .orderBy("intresetsCount", "ASC")
+            //   .skip(skip)
+            //   .take(take)
+            //   .getMany(),
         ]);
         return {
             projectsCount,

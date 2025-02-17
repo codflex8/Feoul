@@ -222,12 +222,10 @@ export class UnitService {
     unitId,
     intresetId,
     translate,
-  }: // price,
-  {
+  }: {
     unitId: string;
     intresetId: string;
     translate: TFunction;
-    // price: number;
   }) {
     const unit = await this.getUnitById(unitId);
     if (!unit) {
@@ -255,12 +253,10 @@ export class UnitService {
     unitId,
     intresetId,
     translate,
-  }: // price,
-  {
+  }: {
     unitId: string;
     intresetId: string;
     translate: TFunction;
-    // price: number;
   }) {
     const unit = await this.getUnitById(unitId);
     if (!unit) {
