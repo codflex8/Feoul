@@ -106,5 +106,30 @@ class UnitInterestService {
         await unitInterest.softRemove();
         return unitInterest;
     }
+    static async setUnitIntresetStatus(id, status, translate) {
+        const unitInterest = await UnitIntreset_model_1.UnitIntreset.findOne({
+            where: { id },
+            relations: { unit: true },
+        });
+        console.log("unitInterest", { unitInterest, id });
+        if (!unitInterest) {
+            throw new ApiError_1.default(translate("not-found"), 404);
+        }
+        const unit = await Unit_model_1.Unit.findOneBy({ id: unitInterest.unit.id });
+        if (unit && status === UnitValidator_1.UnitIntresetStatus.buy) {
+            unit.status = UnitValidator_1.UnitStatus.saled;
+        }
+        if (unit && status === UnitValidator_1.UnitIntresetStatus.reserve) {
+            unit.status = UnitValidator_1.UnitStatus.reserved;
+        }
+        if (unit && status === UnitValidator_1.UnitIntresetStatus.intreset) {
+            unit.status = UnitValidator_1.UnitStatus.avaliable;
+        }
+        if (unit)
+            await unit.save();
+        unitInterest.status = status;
+        await unitInterest.save();
+        return unitInterest;
+    }
 }
 exports.UnitInterestService = UnitInterestService;

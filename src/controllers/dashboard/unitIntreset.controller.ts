@@ -75,4 +75,21 @@ export class UnitIntresetController {
       res.status(error?.statusCode || 400).json({ error: error.message });
     }
   }
+
+  static async setUnitInterestStatus(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const { status } = req.body;
+    try {
+      const unitIntreset = await UnitInterestService.setUnitIntresetStatus(
+        req.params.id,
+        status,
+        req.t
+      );
+      res.status(200).json({ unitIntreset });
+    } catch (error: any) {
+      res.status(error?.statusCode || 400).json({ error: error.message });
+    }
+  }
 }

@@ -84,6 +84,10 @@ export const SetUnitStatusValidator = z.object({
   status: z.nativeEnum(UnitStatus),
 });
 
+export const SetUnitIntresetStatusValidator = z.object({
+  status: z.nativeEnum(UnitIntresetStatus),
+});
+
 export const unitCategoryValidation = z.object({
   name: z.string(),
   color: z.string(),

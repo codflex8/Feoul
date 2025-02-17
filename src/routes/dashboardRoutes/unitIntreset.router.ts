@@ -2,7 +2,10 @@ import { Router } from "express";
 import { UsersRoles } from "../../utils/types/enums";
 import { AuthController } from "../../controllers/dashboard/auth.controller";
 import { validateData } from "../../middleware/validationMiddleware";
-import { unitIntresetValidation } from "../../utils/validators/UnitValidator";
+import {
+  SetUnitIntresetStatusValidator,
+  unitIntresetValidation,
+} from "../../utils/validators/UnitValidator";
 import { UnitIntresetController } from "../../controllers/dashboard/unitIntreset.controller";
 import expressAsyncHandler from "express-async-handler";
 
@@ -36,6 +39,13 @@ router.put(
   AuthController.allowedto([UsersRoles.Admin]),
   validateData(unitIntresetValidation),
   expressAsyncHandler(UnitIntresetController.updateUnitIntreset)
+);
+
+router.post(
+  "/:id/status",
+  AuthController.allowedto([UsersRoles.Admin]),
+  validateData(SetUnitIntresetStatusValidator),
+  expressAsyncHandler(UnitIntresetController.setUnitInterestStatus)
 );
 
 // Delete a unit

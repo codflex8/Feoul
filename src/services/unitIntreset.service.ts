@@ -158,4 +158,33 @@ export class UnitInterestService {
     await unitInterest.softRemove();
     return unitInterest;
   }
+
+  static async setUnitIntresetStatus(
+    id: string,
+    status: UnitIntresetStatus,
+    translate: TFunction
+  ) {
+    const unitInterest = await UnitIntreset.findOne({
+      where: { id },
+      relations: { unit: true },
+    });
+    console.log("unitInterest", { unitInterest, id });
+    if (!unitInterest) {
+      throw new ApiError(translate("not-found"), 404);
+    }
+    const unit = await Unit.findOneBy({ id: unitInterest.unit.id });
+    if (unit && status === UnitIntresetStatus.buy) {
+      unit.status = UnitStatus.saled;
+    }
+    if (unit && status === UnitIntresetStatus.reserve) {
+      unit.status = UnitStatus.reserved;
+    }
+    if (unit && status === UnitIntresetStatus.intreset) {
+      unit.status = UnitStatus.avaliable;
+    }
+    if (unit) await unit.save();
+    unitInterest.status = status;
+    await unitInterest.save();
+    return unitInterest;
+  }
 }
