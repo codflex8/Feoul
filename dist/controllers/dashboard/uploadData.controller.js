@@ -140,7 +140,7 @@ class UploadData {
                     category: unitCategory ?? undefined,
                     size: unitData.size,
                     position: unitData.position,
-                    name: `مبنى ${unitNumber}`,
+                    name: `فلة ${unitNumber}`,
                     buildSpace,
                     //   ToDo:add real values from sheet
                     buildLevel,
