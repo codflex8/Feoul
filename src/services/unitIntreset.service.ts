@@ -175,9 +175,11 @@ export class UnitInterestService {
     const unit = await Unit.findOneBy({ id: unitInterest.unit.id });
     if (unit && status === UnitIntresetStatus.buy) {
       unit.status = UnitStatus.saled;
+      unitInterest.buyPrice = unit.price;
     }
     if (unit && status === UnitIntresetStatus.reserve) {
       unit.status = UnitStatus.reserved;
+      unitInterest.reversePrice = unit.price;
     }
     if (unit && status === UnitIntresetStatus.intreset) {
       unit.status = UnitStatus.avaliable;
