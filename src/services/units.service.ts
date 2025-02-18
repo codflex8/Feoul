@@ -162,6 +162,11 @@ export class UnitService {
         category: true,
         project: true,
       },
+      order: {
+        floors: {
+          index: "asc",
+        },
+      },
     });
   }
 

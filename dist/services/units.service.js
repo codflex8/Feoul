@@ -125,6 +125,11 @@ class UnitService {
                 category: true,
                 project: true,
             },
+            order: {
+                floors: {
+                    index: "asc",
+                },
+            },
         });
     }
     static async updateUnit(id, data, translate) {
