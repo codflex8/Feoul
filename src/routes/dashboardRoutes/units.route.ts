@@ -4,6 +4,7 @@ import { validateData } from "../../middleware/validationMiddleware";
 import UnitValidator, {
   reverseUnitValidator,
   SetUnitStatusValidator,
+  UpdateUnitNumbersStatusValidator,
 } from "../../utils/validators/UnitValidator";
 import { upload } from "../../middleware/uploadFiles";
 import { AuthController } from "../../controllers/dashboard/auth.controller";
@@ -26,6 +27,14 @@ router.post(
   validateData(UnitValidator),
   expressAsyncHandler(UnitController.createUnit)
 );
+
+router.post(
+  "/change-status",
+  AuthController.allowedto([UsersRoles.Admin]),
+  validateData(UpdateUnitNumbersStatusValidator),
+  expressAsyncHandler(UnitController.updateUnitsStatusByNumbers)
+);
+
 router.post(
   "/:id/reserve",
   AuthController.allowedto([UsersRoles.Admin]),

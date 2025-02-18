@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitCategoryFloorUpdate = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitIntresetStatusValidator = exports.SetUnitStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = exports.CategoriesImages = exports.UnitCategoriesNames = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitCategoryFloorUpdate = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitIntresetStatusValidator = exports.SetUnitStatusValidator = exports.UpdateUnitNumbersStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = exports.CategoriesImages = exports.UnitCategoriesNames = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitCategoriesNames;
@@ -79,6 +79,10 @@ const UnitValidator = zod_1.z.object({
     saledSpace: zod_1.z.number(),
     position_x: zod_1.z.number(),
     position_y: zod_1.z.number(),
+});
+exports.UpdateUnitNumbersStatusValidator = zod_1.z.object({
+    numbers: zod_1.z.array(zod_1.z.number()),
+    status: zod_1.z.nativeEnum(UnitStatus),
 });
 exports.SetUnitStatusValidator = zod_1.z.object({
     status: zod_1.z.nativeEnum(UnitStatus),

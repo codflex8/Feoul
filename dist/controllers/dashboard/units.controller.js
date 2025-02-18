@@ -92,5 +92,12 @@ class UnitController {
             res.status(error?.statusCode || 400).json({ error: error.message });
         }
     }
+    static async updateUnitsStatusByNumbers(req, res) {
+        await units_service_1.UnitService.changeUnitsStatusByNumbers({
+            numbers: req.body.numbers,
+            status: req.body.status,
+        });
+        res.status(200).json({ message: "update success" });
+    }
 }
 exports.UnitController = UnitController;

@@ -6,6 +6,7 @@ import {
   UnitIntresetStatus,
   UnitStatus,
   UnitType,
+  UpdateUnitNumbersStatusType,
 } from "../utils/validators/UnitValidator";
 import ApiError from "../utils/ApiError";
 import { getPaginationData } from "../utils/getPaginationData";
@@ -286,5 +287,16 @@ export class UnitService {
     await unit.save();
     await intreset.save();
     return unit;
+  }
+
+  public static async changeUnitsStatusByNumbers({
+    numbers,
+    status,
+  }: UpdateUnitNumbersStatusType) {
+    await Unit.createQueryBuilder("unit")
+      .update(Unit)
+      .set({ status })
+      .where("number IN (:...numbers)", { numbers })
+      .execute();
   }
 }

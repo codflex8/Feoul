@@ -80,6 +80,11 @@ const UnitValidator = z.object({
   position_y: z.number(),
 });
 
+export const UpdateUnitNumbersStatusValidator = z.object({
+  numbers: z.array(z.number()),
+  status: z.nativeEnum(UnitStatus),
+});
+
 export const SetUnitStatusValidator = z.object({
   status: z.nativeEnum(UnitStatus),
 });
@@ -140,4 +145,7 @@ export type unitCategoryFloorUpdateType = z.infer<
 export type UnitCategoryType = z.infer<typeof unitCategoryValidation>;
 export type UnitType = z.infer<typeof UnitValidator>;
 export type SetUnitStatusType = z.infer<typeof SetUnitStatusValidator>;
+export type UpdateUnitNumbersStatusType = z.infer<
+  typeof UpdateUnitNumbersStatusValidator
+>;
 export default UnitValidator;

@@ -3,6 +3,7 @@ import {
   SetUnitStatusType,
   UnitReverseType,
   UnitType,
+  UpdateUnitNumbersStatusType,
 } from "../../utils/validators/UnitValidator";
 import { GenericResponse } from "../../utils/GenericResponse";
 import { UnitService } from "../../services/units.service";
@@ -128,5 +129,16 @@ export class UnitController {
     } catch (error: any) {
       res.status(error?.statusCode || 400).json({ error: error.message });
     }
+  }
+
+  static async updateUnitsStatusByNumbers(
+    req: Request<{}, {}, UpdateUnitNumbersStatusType>,
+    res: Response
+  ) {
+    await UnitService.changeUnitsStatusByNumbers({
+      numbers: req.body.numbers,
+      status: req.body.status,
+    });
+    res.status(200).json({ message: "update success" });
   }
 }

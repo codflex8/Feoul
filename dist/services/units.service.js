@@ -215,5 +215,12 @@ class UnitService {
         await intreset.save();
         return unit;
     }
+    static async changeUnitsStatusByNumbers({ numbers, status, }) {
+        await Unit_model_1.Unit.createQueryBuilder("unit")
+            .update(Unit_model_1.Unit)
+            .set({ status })
+            .where("number IN (:...numbers)", { numbers })
+            .execute();
+    }
 }
 exports.UnitService = UnitService;
