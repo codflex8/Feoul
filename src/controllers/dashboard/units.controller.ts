@@ -86,12 +86,11 @@ export class UnitController {
     res: Response
   ): Promise<void> {
     try {
-      const [units, count] = await UnitService.getUnits(req.query);
-      res
-        .status(200)
-        .json(
-          new GenericResponse(req.query.page, req.query.pageSize, count, units)
-        );
+      const [units, count] = await UnitService.getUnits({
+        selectAll: true,
+        ...req.query,
+      });
+      res.status(200).json(new GenericResponse(1, count, count, units));
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }

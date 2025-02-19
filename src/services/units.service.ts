@@ -22,6 +22,7 @@ interface GetUnitsQuery {
   status?: string;
   projectId?: string;
   categoryId?: string;
+  selectAll?: boolean;
 }
 
 export class UnitService {
@@ -65,6 +66,7 @@ export class UnitService {
       priceTo,
       projectId,
       categoryId,
+      selectAll = false,
     } = query;
     const { skip, take } = getPaginationData({ page, pageSize });
 
@@ -96,11 +98,11 @@ export class UnitService {
       queryBuilder.andWhere("unit.price <= :priceTo", { priceTo });
     }
 
-    return await queryBuilder
-      .orderBy("unit.number", "ASC")
-      .skip(skip)
-      .take(take)
-      .getManyAndCount();
+    if (!selectAll) {
+      queryBuilder.skip(skip).take(take);
+    }
+
+    return await queryBuilder.orderBy("unit.number", "ASC").getManyAndCount();
   }
 
   static async getProjectUnitsGroupedByStatus(projectId: string) {

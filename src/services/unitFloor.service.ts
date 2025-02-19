@@ -95,8 +95,8 @@ export class UnitFloorService {
     const { skip, take } = getPaginationData({ page, pageSize });
 
     const queryBuilder = UnitFloor.createQueryBuilder("unitFloor")
-      .leftJoin("unitFloor.unit", "unit")
-      .leftJoin("unit.category", "category");
+      .leftJoinAndSelect("unitFloor.unit", "unit")
+      .leftJoinAndSelect("unit.category", "category");
 
     if (name) {
       queryBuilder.andWhere("LOWER(unitFloor.name) LIKE LOWER(:name)", {
@@ -115,11 +115,15 @@ export class UnitFloorService {
     if (!selectAll) {
       queryBuilder.skip(skip).take(take);
     }
-    return await queryBuilder.getManyAndCount();
+    return await queryBuilder
+      .select("unitFloor")
+      .addSelect(["unit.id", "unit.name", "unit.number"])
+      .addSelect(["category.id", "category.name"])
+      .getManyAndCount();
   }
 
   static async getUnitFloorById(id: string) {
-    return await UnitFloor.findOneBy({ id });
+    return await UnitFloor.findOne({ where: { id }, relations: ["unit"] });
   }
 
   static async updateUnitFloor(

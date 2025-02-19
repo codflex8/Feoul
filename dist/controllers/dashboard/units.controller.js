@@ -52,10 +52,11 @@ class UnitController {
     }
     static async getUnits(req, res) {
         try {
-            const [units, count] = await units_service_1.UnitService.getUnits(req.query);
-            res
-                .status(200)
-                .json(new GenericResponse_1.GenericResponse(req.query.page, req.query.pageSize, count, units));
+            const [units, count] = await units_service_1.UnitService.getUnits({
+                selectAll: true,
+                ...req.query,
+            });
+            res.status(200).json(new GenericResponse_1.GenericResponse(1, count, count, units));
         }
         catch (error) {
             res.status(400).json({ error: error.message });

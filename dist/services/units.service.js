@@ -37,7 +37,7 @@ class UnitService {
         return unit;
     }
     static async getUnits(query) {
-        const { page, pageSize, name, number, status, priceFrom, priceTo, projectId, categoryId, } = query;
+        const { page, pageSize, name, number, status, priceFrom, priceTo, projectId, categoryId, selectAll = false, } = query;
         const { skip, take } = (0, getPaginationData_1.getPaginationData)({ page, pageSize });
         const queryBuilder = Unit_model_1.Unit.createQueryBuilder("unit")
             .leftJoinAndSelect("unit.project", "project")
@@ -66,11 +66,10 @@ class UnitService {
         if (priceTo) {
             queryBuilder.andWhere("unit.price <= :priceTo", { priceTo });
         }
-        return await queryBuilder
-            .orderBy("unit.number", "ASC")
-            .skip(skip)
-            .take(take)
-            .getManyAndCount();
+        if (!selectAll) {
+            queryBuilder.skip(skip).take(take);
+        }
+        return await queryBuilder.orderBy("unit.number", "ASC").getManyAndCount();
     }
     static async getProjectUnitsGroupedByStatus(projectId) {
         const querable = Unit_model_1.Unit.createQueryBuilder("unit")
