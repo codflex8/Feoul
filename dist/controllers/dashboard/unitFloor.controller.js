@@ -23,10 +23,11 @@ class UnitFloorController {
     }
     static async getUnitFloor(req, res) {
         try {
-            const [unitFloors, count] = await unitFloor_service_1.UnitFloorService.getUnitFloors(req.query);
-            res
-                .status(200)
-                .json(new GenericResponse_1.GenericResponse(req.query.page, req.query.pageSize, count, unitFloors));
+            const [unitFloors, count] = await unitFloor_service_1.UnitFloorService.getUnitFloors({
+                ...req.query,
+                selectAll: true,
+            });
+            res.status(200).json(new GenericResponse_1.GenericResponse(1, count, count, unitFloors));
         }
         catch (error) {
             res.status(400).json({ error: error.message });

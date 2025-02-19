@@ -8,7 +8,6 @@ const UnitIntreset_model_1 = require("../entities/UnitIntreset.model");
 const Unit_model_1 = require("../entities/Unit.model");
 const UnitValidator_1 = require("../utils/validators/UnitValidator");
 const ApiError_1 = __importDefault(require("../utils/ApiError"));
-const getPaginationData_1 = require("../utils/getPaginationData");
 class UnitInterestService {
     static async createUnitInterest(data, translate) {
         const unit = await Unit_model_1.Unit.findOneBy({ id: data.unitId });
@@ -22,10 +21,10 @@ class UnitInterestService {
     }
     static async getUnitInterests(query) {
         const { page, pageSize, unitId, firstName, lastName, area, phoneNumber, email, status, financial, } = query;
-        const { skip, take } = (0, getPaginationData_1.getPaginationData)({
-            page: Number(page ?? 1),
-            pageSize: Number(pageSize ?? 10),
-        });
+        // const { skip, take } = getPaginationData({
+        //   page: Number(page ?? 1),
+        //   pageSize: Number(pageSize ?? 10),
+        // });
         const queryBuilder = UnitIntreset_model_1.UnitIntreset.createQueryBuilder("unitIntreset").leftJoinAndSelect("unitIntreset.unit", "unit");
         if (firstName) {
             queryBuilder.andWhere("LOWER(unitIntreset.firstName) LIKE LOWER(:firstName)", {
@@ -73,7 +72,7 @@ class UnitInterestService {
                 "unitIntreset.createdAt",
             ]);
         }
-        return await queryBuilder.skip(skip).take(take).getManyAndCount();
+        return await queryBuilder.getManyAndCount();
     }
     static async getUnitInterestById(id, translate) {
         const unitInterest = await UnitIntreset_model_1.UnitIntreset.findOneBy({ id });

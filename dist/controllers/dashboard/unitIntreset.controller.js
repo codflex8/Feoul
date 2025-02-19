@@ -16,9 +16,7 @@ class UnitIntresetController {
     static async getUnitIntreset(req, res) {
         try {
             const [unitInterests, count] = await unitIntreset_service_1.UnitInterestService.getUnitInterests(req.query);
-            res
-                .status(200)
-                .json(new GenericResponse_1.GenericResponse(Number(req.query.page ?? 1), Number(req.query.pageSize ?? 10), count, unitInterests));
+            res.status(200).json(new GenericResponse_1.GenericResponse(1, count, count, unitInterests));
         }
         catch (error) {
             res.status(400).json({ error: error.message });

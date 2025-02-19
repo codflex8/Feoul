@@ -24,16 +24,7 @@ export class UnitIntresetController {
       const [unitInterests, count] = await UnitInterestService.getUnitInterests(
         req.query
       );
-      res
-        .status(200)
-        .json(
-          new GenericResponse(
-            Number(req.query.page ?? 1),
-            Number(req.query.pageSize ?? 10),
-            count,
-            unitInterests
-          )
-        );
+      res.status(200).json(new GenericResponse(1, count, count, unitInterests));
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }

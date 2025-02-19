@@ -51,10 +51,10 @@ export class UnitInterestService {
       status,
       financial,
     } = query;
-    const { skip, take } = getPaginationData({
-      page: Number(page ?? 1),
-      pageSize: Number(pageSize ?? 10),
-    });
+    // const { skip, take } = getPaginationData({
+    //   page: Number(page ?? 1),
+    //   pageSize: Number(pageSize ?? 10),
+    // });
 
     const queryBuilder = UnitIntreset.createQueryBuilder(
       "unitIntreset"
@@ -116,7 +116,7 @@ export class UnitInterestService {
           "unitIntreset.createdAt",
         ]);
     }
-    return await queryBuilder.skip(skip).take(take).getManyAndCount();
+    return await queryBuilder.getManyAndCount();
   }
 
   static async getUnitInterestById(id: string, translate: TFunction) {
