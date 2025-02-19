@@ -96,7 +96,14 @@ class UnitFloorService {
             .getManyAndCount();
     }
     static async getUnitFloorById(id) {
-        return await UnitFloor_model_1.UnitFloor.findOne({ where: { id }, relations: ["unit"] });
+        return await UnitFloor_model_1.UnitFloor.findOne({
+            where: { id },
+            relations: {
+                unit: {
+                    category: true,
+                },
+            },
+        });
     }
     static async updateUnitFloor(id, data, translate) {
         const unitFloor = await UnitFloor_model_1.UnitFloor.findOneBy({ id });

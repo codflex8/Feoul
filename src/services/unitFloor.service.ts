@@ -123,7 +123,14 @@ export class UnitFloorService {
   }
 
   static async getUnitFloorById(id: string) {
-    return await UnitFloor.findOne({ where: { id }, relations: ["unit"] });
+    return await UnitFloor.findOne({
+      where: { id },
+      relations: {
+        unit: {
+          category: true,
+        },
+      },
+    });
   }
 
   static async updateUnitFloor(
