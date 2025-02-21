@@ -47,7 +47,6 @@ router.post(
 // Update an existing unit
 router.put(
   "/:id",
-
   AuthController.allowedto([UsersRoles.Admin]),
   upload.single("image"),
   validateData(unitFloorValidation),

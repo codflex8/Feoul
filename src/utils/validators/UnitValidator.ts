@@ -108,7 +108,7 @@ export const unitFloorValidation = z.object({
     .nonempty()
     .transform((val) => Number(val)),
   unitId: z.string(),
-  image: z.string(),
+  image: z.string().optional(),
 });
 
 export const unitCategoryFloorUpdate = z.object({

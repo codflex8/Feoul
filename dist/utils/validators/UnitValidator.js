@@ -104,7 +104,7 @@ exports.unitFloorValidation = zod_1.z.object({
         .nonempty()
         .transform((val) => Number(val)),
     unitId: zod_1.z.string(),
-    image: zod_1.z.string(),
+    image: zod_1.z.string().optional(),
 });
 exports.unitCategoryFloorUpdate = zod_1.z.object({
     name: zod_1.z.string(),
