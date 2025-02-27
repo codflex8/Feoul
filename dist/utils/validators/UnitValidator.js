@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitCategoryFloorUpdate = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitIntresetStatusValidator = exports.SetUnitStatusValidator = exports.UpdateUnitNumbersStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = exports.CategoriesImages = exports.UnitCategoriesNames = void 0;
+exports.reverseUnitValidator = exports.unitIntresetValidation = exports.unitCategoryFloorUpdate = exports.unitFloorValidation = exports.unitCategoryValidation = exports.SetUnitIntresetStatusValidator = exports.SetUnitStatusValidator = exports.UpdateUnitNumbersStatusValidator = exports.UnitBuildStatus = exports.UnitTemplates = exports.UnitIntresetStatus = exports.UnitTypes = exports.UnitStatus = exports.CategoriesImages = exports.UnitIntresertSupport = exports.UnitCategoriesNames = void 0;
 const zod_1 = require("zod");
 const enums_1 = require("../types/enums");
 var UnitCategoriesNames;
@@ -9,6 +9,11 @@ var UnitCategoriesNames;
     UnitCategoriesNames["toleeb"] = "\u062A\u0648\u0644\u064A\u0628";
     UnitCategoriesNames["orkeed"] = "\u0627\u0648\u0631\u0643\u064A\u062F";
 })(UnitCategoriesNames || (exports.UnitCategoriesNames = UnitCategoriesNames = {}));
+var UnitIntresertSupport;
+(function (UnitIntresertSupport) {
+    UnitIntresertSupport["supported"] = "supported";
+    UnitIntresertSupport["unsupported"] = "unsupported";
+})(UnitIntresertSupport || (exports.UnitIntresertSupport = UnitIntresertSupport = {}));
 exports.CategoriesImages = {
     yasmeen: [
         "/public/categories/yasmeen/yasmeen-1.jpeg",
@@ -123,6 +128,7 @@ exports.unitIntresetValidation = zod_1.z.object({
     email: zod_1.z.string().optional(),
     notes: zod_1.z.string().optional(),
     unitId: zod_1.z.string(),
+    support: zod_1.z.nativeEnum(UnitIntresertSupport),
 });
 exports.reverseUnitValidator = zod_1.z.object({
     intresetId: zod_1.z.string(),

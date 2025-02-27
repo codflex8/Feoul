@@ -1,7 +1,10 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 import { BaseModel } from "./BaseModel";
 import { Unit } from "./Unit.model";
-import { UnitIntresetStatus } from "../utils/validators/UnitValidator";
+import {
+  UnitIntresetStatus,
+  UnitIntresertSupport,
+} from "../utils/validators/UnitValidator";
 
 @Entity()
 export class UnitIntreset extends BaseModel {
@@ -41,4 +44,7 @@ export class UnitIntreset extends BaseModel {
     onUpdate: "CASCADE",
   })
   unit!: Unit;
+
+  @Column({ type: "enum", enum: UnitIntresertSupport, nullable: true })
+  support?: UnitIntresertSupport;
 }

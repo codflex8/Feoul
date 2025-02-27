@@ -64,6 +64,10 @@ __decorate([
     }),
     __metadata("design:type", Unit_model_1.Unit)
 ], UnitIntreset.prototype, "unit", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "enum", enum: UnitValidator_1.UnitIntresertSupport, nullable: true }),
+    __metadata("design:type", String)
+], UnitIntreset.prototype, "support", void 0);
 exports.UnitIntreset = UnitIntreset = __decorate([
     (0, typeorm_1.Entity)()
 ], UnitIntreset);

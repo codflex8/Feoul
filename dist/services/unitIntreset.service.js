@@ -70,6 +70,7 @@ class UnitInterestService {
                 "unitIntreset.reversePrice",
                 "unitIntreset.buyPrice",
                 "unitIntreset.createdAt",
+                "unitIntreset.support",
             ]);
         }
         return await queryBuilder.getManyAndCount();

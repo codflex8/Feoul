@@ -7,6 +7,11 @@ export enum UnitCategoriesNames {
   orkeed = "اوركيد",
 }
 
+export enum UnitIntresertSupport {
+  supported = "supported",
+  unsupported = "unsupported",
+}
+
 export const CategoriesImages = {
   yasmeen: [
     "/public/categories/yasmeen/yasmeen-1.jpeg",
@@ -129,6 +134,7 @@ export const unitIntresetValidation = z.object({
   email: z.string().optional(),
   notes: z.string().optional(),
   unitId: z.string(),
+  support: z.nativeEnum(UnitIntresertSupport),
 });
 
 export const reverseUnitValidator = z.object({
