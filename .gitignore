@@ -1,29 +1,43 @@
-# npm
-node_modules
-package-lock.json
-npm-shrinkwrap.json
-*.log
-*.gz
-*.env
-# Coveralls
-.nyc_output
-coverage
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-/src/public/images/*
-/src/public/audio/*
-/src/public/documents/*
-/src/public/videos/*
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
+# testing
+/coverage
 
-/dist/public/images/*
-/dist/public/audio/*
-/dist/public/documents/*
-/dist/public/videos/*
+# next.js
+/.next/
+/out/
 
-# Benchmarking
-benchmarks/graphs
+# production
+/build
 
-firebaseAccountKey.json
+# misc
+.DS_Store
+*.pem
 
-# ignore additional files using core.excludesFile
-# https://git-scm.com/docs/gitignore
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*.local
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.qodo
