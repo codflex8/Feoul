@@ -76,6 +76,9 @@ const projectFormSchema = z.object({
   city: z.enum(["jadaa", "Riyadh", "AL Madinah AL Munawwarah"], {
     required_error: "المدينة حقل مطلوب",
   }),
+  type: z.enum(["بنايات سكنية", "عمارات سكنية"], {
+    required_error: "نوع المشروع حقل مطلوب",
+  }),
   status: z.enum(["posted", "draft", "deleted"], {
     required_error: "حالة المشروع حقل مطلوب",
   }),
@@ -100,6 +103,7 @@ const page = () => {
       number: "",
       name: "",
       city: "jadaa",
+      type: "بنايات سكنية",
       status: "draft",
       buildingsNumber: "",
       lng: "",
@@ -189,6 +193,39 @@ const page = () => {
                   </FormControl>
                   <SelectContent className="bg-white ">
                     {["jadaa", "Riyadh"].map((item, i) => (
+                      <SelectItem key={item + i} value={item}>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <p>{item}</p>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-base font-semibold">
+                  نوع المشروع
+                </FormLabel>
+                <Select
+                  dir="rtl"
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl className="bg-white">
+                    <SelectTrigger>
+                      <SelectValue placeholder="بنايات سكنية" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-white">
+                    {["بنايات سكنية", "عمارات سكنية"].map((item, i) => (
                       <SelectItem key={item + i} value={item}>
                         <div className="flex items-center gap-2 cursor-pointer">
                           <p>{item}</p>

@@ -30,6 +30,7 @@ export interface Project {
   number: number;
   name: string;
   status: CommonStatuses;
+  type: "بنايات سكنية" | "عمارات سكنية"; // إضافة نوع المشروع
   projectDocUrl: string | null;
   facilities: facility[];
   city: string;
@@ -98,10 +99,55 @@ export type Unit = {
   category: Categories;
   images: Img[];
 };
+
 export type Img = {
   title: string;
   src:string; 
 }
+
+// إضافة أنواع العمارات السكنية
+export interface BuildingType {
+  id: string;
+  name: string;
+  buildingImage: string;
+  apartmentImages: string[];
+  video?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ResidentialBuilding {
+  id: string;
+  name: string;
+  projectId: string;
+  buildingTypeId: string;
+  buildingType: BuildingType;
+  project: Project;
+  image: string;
+  position: [string, string];
+  status: UnitStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Apartment {
+  id: string;
+  number: number;
+  name: string;
+  buildingId: string;
+  building: ResidentialBuilding;
+  price: number;
+  landSpace: number;
+  buildSpace: number;
+  bedroomNumber: number;
+  bathroomNumber: number;
+  position: [string, string];
+  status: UnitStatus;
+  images: Img[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface UnitsData {
   unitsPriceRange: UnitsPriceRange;
   unitsSpaceRange: UnitsSpaceRange;
@@ -111,6 +157,22 @@ export interface UnitsData {
   saledUnits: Unit[];
   //TODO: should be availableUnits, but we can change this when back-end fix it
   avaliableUnits: Unit[];
+}
+
+export interface BuildingsData {
+  buildingsPriceRange: UnitsPriceRange;
+  buildingsSpaceRange: UnitsSpaceRange;
+  reverseBuildings: ResidentialBuilding[];
+  saledBuildings: ResidentialBuilding[];
+  avaliableBuildings: ResidentialBuilding[];
+}
+
+export interface ApartmentsData {
+  apartmentsPriceRange: UnitsPriceRange;
+  apartmentsSpaceRange: UnitsSpaceRange;
+  reverseApartments: Apartment[];
+  saledApartments: Apartment[];
+  avaliableApartments: Apartment[];
 }
 
 export interface Categories {
@@ -150,4 +212,17 @@ export interface UnitsFilters {
   unitsPriceRange: UnitsPriceRange & { sliderValue: number[] };
   unitsSpaceRange: UnitsSpaceRange & { sliderValue: number[] };
   selectedCategory: string;
+}
+
+export interface BuildingsFilters {
+  buildingStatus: UnitStatus;
+  buildingsPriceRange: UnitsPriceRange & { sliderValue: number[] };
+  buildingsSpaceRange: UnitsSpaceRange & { sliderValue: number[] };
+  selectedBuildingType: string;
+}
+
+export interface ApartmentsFilters {
+  apartmentStatus: UnitStatus;
+  apartmentsPriceRange: UnitsPriceRange & { sliderValue: number[] };
+  apartmentsSpaceRange: UnitsSpaceRange & { sliderValue: number[] };
 }

@@ -7,9 +7,12 @@ export interface Project  {
   location: string;
   city: string;
   status: "مسودة" | "منشور" | "محذوف";
+  type: "بنايات سكنية" | "عمارات سكنية"; // إضافة نوع المشروع
   model: string;
   updatedAt: Date;
   createdAt: Date;
+  buildingsNumber?: string;
+  document?: File[];
 };
 
 export type Interest = {
@@ -47,6 +50,53 @@ export interface Unit  {
   floorsDesign: string[]
 };
 
+// إضافة نوع العمارة السكنية
+export interface BuildingType {
+  id: string;
+  name: string;
+  buildingImage: string;
+  apartmentImages: string[];
+  video?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// إضافة العمارة السكنية
+export interface ResidentialBuilding {
+  id: string;
+  name: string;
+  projectId: string;
+  buildingTypeId: string;
+  buildingType: BuildingType;
+  project: Project;
+  image: string;
+  position_x: number;
+  position_y: number;
+  status: "متاح" | "محجوز" | "مباع";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// إضافة الشقة السكنية
+export interface Apartment {
+  id: string;
+  number: string;
+  name: string;
+  buildingId: string;
+  building: ResidentialBuilding;
+  price: number;
+  landSpace: number;
+  buildSpace: number;
+  bedroomNumber: number;
+  bathroomNumber: number;
+  position_x: number;
+  position_y: number;
+  status: "متاح" | "محجوز" | "مباع";
+  images: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type Operation = {
   number: number;
   name: string;
@@ -57,7 +107,6 @@ export type Operation = {
   date: string; 
   status: string; 
 };
-
 
 export type issues = {
 name: string;

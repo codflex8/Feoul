@@ -101,6 +101,7 @@ export const addProject = async (projectData: Project) => {
   formData.append("name", projectData.name);
   formData.append("number", projectData.number);
   formData.append("city", projectData.city);
+  formData.append("type", projectData.type); // إضافة نوع المشروع
   formData.append("status", projectData.status);
   formData.append("buildingsNumber", projectData.buildingsNumber);
   formData.append("lat", projectData.lat);
@@ -198,6 +199,195 @@ export const deleteProject = async (projectId: string) => {
   }
 };
 // end of projects
+
+// Building Types
+export const getBuildingTypes = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+  try {
+    const response = await fetch(`${API_URL}/dashboard/building-types`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch building types: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "An error occurred while getting building types from the API:",
+      error
+    );
+    throw error;
+  }
+};
+
+export const addBuildingType = async (buildingTypeData: any) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  const formData = new FormData();
+  formData.append("name", buildingTypeData.name);
+  
+  if (buildingTypeData.buildingImage) {
+    formData.append("buildingImage", buildingTypeData.buildingImage);
+  }
+  
+  if (buildingTypeData.apartmentImages) {
+    buildingTypeData.apartmentImages.forEach((file: File) => {
+      formData.append("apartmentImages", file);
+    });
+  }
+  
+  if (buildingTypeData.video) {
+    formData.append("video", buildingTypeData.video);
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/building-types`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add building type: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while adding building type:", error);
+    throw error;
+  }
+};
+
+// Residential Buildings
+export const getResidentialBuildings = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+  try {
+    const response = await fetch(`${API_URL}/dashboard/residential-buildings`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch residential buildings: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "An error occurred while getting residential buildings from the API:",
+      error
+    );
+    throw error;
+  }
+};
+
+export const addResidentialBuilding = async (buildingData: any) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  const formData = new FormData();
+  formData.append("name", buildingData.name);
+  formData.append("projectId", buildingData.projectId);
+  formData.append("buildingTypeId", buildingData.buildingTypeId);
+  formData.append("status", buildingData.status);
+  formData.append("position_x", buildingData.position_x.toString());
+  formData.append("position_y", buildingData.position_y.toString());
+  
+  if (buildingData.image) {
+    formData.append("image", buildingData.image);
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/residential-buildings`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add residential building: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while adding residential building:", error);
+    throw error;
+  }
+};
+
+// Apartments
+export const getApartments = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartments`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch apartments: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "An error occurred while getting apartments from the API:",
+      error
+    );
+    throw error;
+  }
+};
+
+export const addApartment = async (apartmentData: any) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(apartmentData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add apartment: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while adding apartment:", error);
+    throw error;
+  }
+};
 
 // Category
 export const getCategories = async () => {
