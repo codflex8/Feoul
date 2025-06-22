@@ -52,16 +52,23 @@ const formSchema = z.object({
       message: "Phone number must be at most 15 digits.",
     }),
   area: z.string(), // لا نحتاج إلى enum لأنه سيتم تعيينه افتراضيًا
-  unitId: z.string(),
+  unitId: z.string().optional(), // للوحدات السكنية
+  apartmentId: z.string().optional(), // للشقق السكنية
   support: z.enum(["supported", "unsupported"], {
     required_error: "هذا الحقل مطلوب",
   }),
-
 })
 
-const InterestedForm = ({ setOpen, unitId }: { setOpen: (open: boolean) => void; unitId: string }) => {
+interface InterestedFormProps {
+  setOpen: (open: boolean) => void;
+  unitId?: string; // للوحدات السكنية
+  apartmentId?: string; // للشقق السكنية
+}
+
+const InterestedForm = ({ setOpen, unitId, apartmentId }: InterestedFormProps) => {
   const t = useTranslations('BuildingViewPage');
   const { toast } = useToast()
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -69,14 +76,23 @@ const InterestedForm = ({ setOpen, unitId }: { setOpen: (open: boolean) => void;
       lastName: "",
       phoneNumber: "",
       area: "center", // ✅ القيمة الافتراضية
-      unitId, // Hidden field
+      unitId: unitId || undefined,
+      apartmentId: apartmentId || undefined,
       support:"supported"
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await addInterest(values);
+      // إرسال البيانات مع تحديد نوع الاهتمام
+      const interestData = {
+        ...values,
+        // إضافة معرف الوحدة أو الشقة حسب النوع
+        ...(unitId && { unitId }),
+        ...(apartmentId && { apartmentId }),
+      };
+
+      await addInterest(interestData);
       setOpen(false);
       toast({
         title: "نجاح",
@@ -96,8 +112,9 @@ const InterestedForm = ({ setOpen, unitId }: { setOpen: (open: boolean) => void;
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        {/* تسجيل الحقل المخفي unitId */}
-        <input type="hidden" {...form.register("unitId")} value={unitId} />
+        {/* تسجيل الحقول المخفية */}
+        {unitId && <input type="hidden" {...form.register("unitId")} value={unitId} />}
+        {apartmentId && <input type="hidden" {...form.register("apartmentId")} value={apartmentId} />}
         {/* تسجيل الحقل المخفي area بقيمة افتراضية "center" */}
         <input type="hidden" {...form.register("area")} value="center" />
 
@@ -185,7 +202,6 @@ const InterestedForm = ({ setOpen, unitId }: { setOpen: (open: boolean) => void;
               </FormItem>
             )}
           />
-
 
           <Button
             className="block w-full col-span-2 transition-all bg-green-600 hover:bg-green-500 text-lg h-fit"

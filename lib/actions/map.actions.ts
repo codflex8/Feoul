@@ -6,6 +6,10 @@ import {
   Project,
   Unit,
   UnitsData,
+  ResidentialBuilding,
+  Apartment,
+  BuildingsData,
+  ApartmentsData,
 } from "@/types/map.types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -75,7 +79,7 @@ export const getProjectById = async (projectId: string) => {
       throw new Error(`Failed to fetch project: ${response.statusText}`);
     }
 
-    const data: { project: Project; unitsData: UnitsData } =
+    const data: { project: Project; unitsData?: UnitsData; buildingsData?: BuildingsData } =
       await response.json();
 
     return data;
@@ -137,6 +141,59 @@ export const getUnitById = async (unitId: string) => {
     throw error;
   }
 };
+
+// Residential Buildings
+export const getResidentialBuildingById = async (buildingId: string) => {
+  try {
+    const response = await fetch(`${API_URL}/public/residential-buildings/${buildingId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache:"no-cache",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch residential building: ${response.statusText}`);
+    }
+
+    const building: ResidentialBuilding = await response.json();
+    return building;
+  } catch (error) {
+    console.error(
+      "An error occurred while getting the residential building from the API:",
+      error
+    );
+    throw error;
+  }
+};
+
+// Apartments
+export const getApartmentById = async (apartmentId: string) => {
+  try {
+    const response = await fetch(`${API_URL}/public/apartments/${apartmentId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache:"no-cache",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch apartment: ${response.statusText}`);
+    }
+
+    const apartment: Apartment = await response.json();
+    return apartment;
+  } catch (error) {
+    console.error(
+      "An error occurred while getting the apartment from the API:",
+      error
+    );
+    throw error;
+  }
+};
+
  export const getCategories = async () => {
   try {
     const response = await fetch(`${API_URL}/public/unit-category`, {
@@ -191,10 +248,18 @@ export const getPlaces = async () => {
   }
 };
 
-
+// تحديث دالة إضافة الاهتمام لتدعم الوحدات والشقق
 export const addInterest = async (addInterest: any) => {
   try {
-    const response = await fetch(`${API_URL}/public/unit-intreset`, {
+    // تحديد endpoint حسب نوع الاهتمام
+    let endpoint = `${API_URL}/public/unit-intreset`; // للوحدات السكنية
+    
+    // إذا كان الاهتمام للشقق السكنية
+    if (addInterest.apartmentId) {
+      endpoint = `${API_URL}/public/apartment-interest`; // للشقق السكنية
+    }
+
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
