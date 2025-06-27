@@ -8,7 +8,7 @@ import {
   FaBuildingLock,
   FaMoneyBillTransfer,
   FaLayerGroup,
-  FaHome,
+  FaChrome,
 } from "react-icons/fa6";
 import { BiSolidDashboard } from "react-icons/bi";
 import { FaCity } from "react-icons/fa";
@@ -53,7 +53,7 @@ const items: ItemsProps[] = [
   {
     title: "أنواع العمارات السكنية",
     url: "/ar/dashboard/building-types",
-    icon: FaHome,
+    icon: FaChrome,
   },
   {
     title: "العمارات السكنية",
@@ -63,7 +63,7 @@ const items: ItemsProps[] = [
   {
     title: "الشقق السكنية",
     url: "/ar/dashboard/apartments",
-    icon: FaHome,
+    icon: FaChrome,
   },
   {
     title: "الطوابق السكنية",

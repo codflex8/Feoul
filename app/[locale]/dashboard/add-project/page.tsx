@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import "leaflet/dist/leaflet.css";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { addProject } from "@/lib/actions/dashboard.actions";
+import { addProject } from "@/lib/api/api-client";
 
 import { useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
@@ -76,10 +76,10 @@ const projectFormSchema = z.object({
   city: z.enum(["jadaa", "Riyadh", "AL Madinah AL Munawwarah"], {
     required_error: "المدينة حقل مطلوب",
   }),
-  type: z.enum(["بنايات سكنية", "عمارات سكنية"], {
+  type: z.enum(["housing_unit", "apartment_building"], {
     required_error: "نوع المشروع حقل مطلوب",
   }),
-  status: z.enum(["posted", "draft", "deleted"], {
+  status: z.enum(["posted", "deleted"], {
     required_error: "حالة المشروع حقل مطلوب",
   }),
   buildingsNumber: z.string({
@@ -103,8 +103,8 @@ const page = () => {
       number: "",
       name: "",
       city: "jadaa",
-      type: "بنايات سكنية",
-      status: "draft",
+      type: "apartment_building",
+      status: "posted",
       buildingsNumber: "",
       lng: "",
       lat: "",
@@ -122,6 +122,7 @@ const page = () => {
         variant: "default",
       });
     } catch (error) {
+      
       toast({
         title: "خطأ",
         description: "حدث خطأ أثناء إضافة المشروع",
@@ -225,7 +226,7 @@ const page = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white">
-                    {["بنايات سكنية", "عمارات سكنية"].map((item, i) => (
+                    {["housing_unit", "apartment_building"].map((item, i) => (
                       <SelectItem key={item + i} value={item}>
                         <div className="flex items-center gap-2 cursor-pointer">
                           <p>{item}</p>
@@ -258,7 +259,7 @@ const page = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white">
-                    {["posted", "draft", "deleted"].map((item, i) => (
+                    {["posted","deleted"].map((item, i) => (
                       <SelectItem key={item + i} value={item}>
                         <div className="flex items-center gap-2 cursor-pointer">
                           <p>{item}</p>

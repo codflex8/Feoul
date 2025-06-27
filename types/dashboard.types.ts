@@ -7,7 +7,7 @@ export interface Project  {
   location: string;
   city: string;
   status: "مسودة" | "منشور" | "محذوف";
-  type: "بنايات سكنية" | "عمارات سكنية"; // إضافة نوع المشروع
+  type: "housing_unit" | "apartment_building"; // إضافة نوع المشروع
   model: string;
   updatedAt: Date;
   createdAt: Date;

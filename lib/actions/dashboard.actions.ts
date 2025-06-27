@@ -101,13 +101,13 @@ export const addProject = async (projectData: Project) => {
   formData.append("name", projectData.name);
   formData.append("number", projectData.number);
   formData.append("city", projectData.city);
-  formData.append("type", projectData.type); // إضافة نوع المشروع
+  formData.append("type", projectData.type);
   formData.append("status", projectData.status);
   formData.append("buildingsNumber", projectData.buildingsNumber);
   formData.append("lat", projectData.lat);
   formData.append("lng", projectData.lng);
 
-  projectData.document.forEach((file) => {
+  projectData.document.forEach((file: File) => {
     formData.append("document", file);
   });
 
@@ -117,11 +117,13 @@ export const addProject = async (projectData: Project) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      body: formData, // استخدام FormData بدلاً من JSON.stringify
+      body: formData, 
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to add new project: ${response.statusText}`);
+const errorData = await response.json(); // Get more details about the error
+      throw new Error(`Failed to add new project: ${response.statusText} - ${errorData.message || 'Unknown error'}`);
+    
     }
 
     const data = await response.json();

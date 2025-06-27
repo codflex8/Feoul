@@ -18,7 +18,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const Login = async (data: { username: string; password: string; }) => {
   console.log("🚀 ~ Login ~ data:", data)
   try {
-    const response = await fetch(`http://3.24.242.183/api/v1/dashboard/auth/signin`, {
+    const response = await fetch(`http://13.59.197.112/api/v1/dashboard/auth/signin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

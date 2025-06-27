@@ -30,7 +30,7 @@ export interface Project {
   number: number;
   name: string;
   status: CommonStatuses;
-  type: "بنايات سكنية" | "عمارات سكنية"; // إضافة نوع المشروع
+  type: "housing_unit" | "apartment_building"; // إضافة نوع المشروع
   projectDocUrl: string | null;
   facilities: facility[];
   city: string;

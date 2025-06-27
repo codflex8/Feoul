@@ -8,7 +8,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "3.24.242.183",
+        hostname: "13.59.197.112",
         port: "",
         pathname: "/**",
       },
@@ -16,7 +16,10 @@ const nextConfig = {
   },
   typescript:{
     ignoreBuildErrors: true,
-  }
+  },
+  api: {
+    bodyParser: false, 
+  },
 };
 
 export default withNextIntl(nextConfig);
