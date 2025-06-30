@@ -1,29 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
 import clsx from "clsx";
-import ControlFunctions from "@/components/ControlFunctions";
-import WebsiteTitleSec from "@/components/WebsiteTitleSec";
-import BuildingBlocksFiters from "@/components/BuildingBlocksFiters";
-import HelppingTools from "@/components/HelppingTools";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import NeedHelpForm from "@/components/form/NeedHelpForm";
-import {
-  Project,
-  ResidentialBuilding,
-  BuildingsData,
-  BuildingsFilters,
-  UnitStatusEnum,
-} from "@/types/map.types";
-
 import {
   MapContainer,
   ImageOverlay,
@@ -33,145 +11,123 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import ResidentialBuildingMarker from "./ResidentialBuildingMarker";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import WebsiteTitleSec from "@/components/WebsiteTitleSec";
+import ControlFunctions from "@/components/ControlFunctions";
+import HelppingTools from "@/components/HelppingTools";
+import NeedHelpForm from "@/components/form/NeedHelpForm";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { fetchResidentialBuildings } from "@/lib/actions/map.actions";
+import { ResidentialBuilding } from "@/types/map.types";
+import { useParams } from "next/navigation";
 
-const imageUrl = "/assets/images/project.jpg";
+const imageBounds: L.LatLngBoundsExpression = [
+  [0, 0],
+  [450, 800],
+];
 
-const ResidentialBuildingsPage = ({
-  project,
-  buildingTypes,
-  buildingsData,
-}: {
-  project: Project;
-  buildingTypes: string[];
-  buildingsData: BuildingsData;
-}) => {
-  const t = useTranslations("ProjectPage");
+const ResidentialBuildingsPage = () => {
+  const [residentialBuildings, setResidentialBuildings] = useState<ResidentialBuilding[]>([]);
+  const [selectedBuildingType, setSelectedBuildingType] = useState("All");
+  const [buildingTypes, setBuildingTypes] = useState<string[]>([]);
+  const [imageUrl, setImageUrl] = useState<string>("");
+  let [projectId, setProjectId] = useState<string>("معرف غير معروف");
+   const [projectName, setProjectName] = useState<string>("اسم غير معروف");
+  const [openHelpForm, setOpenHelpForm] = useState(false);
+const params = useParams();
+ projectId = params?.projectId as string;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const buildings = await fetchResidentialBuildings(projectId);
+        setResidentialBuildings(buildings);
 
-  let imageBounds: L.LatLngBoundsExpression = [
-    [0, 0],
-    [450, 800],
-  ];
+        if (buildings.length > 0) {
+          const firstProject = buildings[0].project;
+          if (firstProject) {
+            setProjectId(firstProject.id);
+            setProjectName(firstProject.name);
+            if (firstProject.projectDocUrl) {
+              setImageUrl(`http://13.59.197.112${firstProject.projectDocUrl}`);
+            }
+          }
+        }
 
-  const [buildingsFilters, setBuildingsFilters] = useState<BuildingsFilters>({
-    buildingStatus: UnitStatusEnum.available,
-    buildingsPriceRange: {
-      ...buildingsData.buildingsPriceRange,
-      sliderValue: [
-        buildingsData.buildingsPriceRange.minPrice,
-        buildingsData.buildingsPriceRange.maxPrice,
-      ],
-    },
-    buildingsSpaceRange: {
-      ...buildingsData.buildingsSpaceRange,
-      sliderValue: [
-        buildingsData.buildingsSpaceRange.minSpace,
-        buildingsData.buildingsSpaceRange.maxSpace,
-      ],
-    },
-    selectedBuildingType: "All",
-  });
+        const types = Array.from(
+          new Set(buildings.map((b) => b.buildingType?.name).filter(Boolean))
+        );
+        setBuildingTypes(types);
+      } catch (err) {
+        console.error("خطأ في تحميل العمارات:", err);
+      }
+    };
 
-  const getRenderedBuildings = () => {
-    let buildings = buildingsData.avaliableBuildings;
-    const filteredStatus = buildingsFilters.buildingStatus;
-    const filteredPriceRange = buildingsFilters.buildingsPriceRange;
-    const filteredSpaceRange = buildingsFilters.buildingsSpaceRange;
-    const selectedBuildingType = buildingsFilters.selectedBuildingType;
+    fetchData();
+  }, []);
 
-    if (filteredStatus === "reserved") {
-      buildings = buildingsData.reverseBuildings;
-    } else if (filteredStatus === "saled") {
-      buildings = buildingsData.saledBuildings;
-    }
+  const filteredBuildings =
+    selectedBuildingType === "All"
+      ? residentialBuildings
+      : residentialBuildings.filter(
+          (b) => b.buildingType?.name === selectedBuildingType
+        );
 
-    if (selectedBuildingType !== "All") {
-      buildings = buildings.filter((building) => building.buildingType.name === selectedBuildingType);
-    }
-
-    const minPrice = filteredPriceRange.sliderValue[0];
-    const maxPrice = filteredPriceRange.sliderValue[1];
-    const minSpace = filteredSpaceRange.sliderValue[0];
-    const maxSpace = filteredSpaceRange.sliderValue[1] + 100;
-
-    // تطبيق فلاتر السعر والمساحة حسب الحاجة
-    // buildings = buildings.filter(
-    //   (building) => building.price >= minPrice && building.price <= maxPrice
-    // );
-
-    return buildings;
-  };
-
-  const renderedBuildings = getRenderedBuildings();
-  const [showFilters, setShowFilters] = useState<boolean>(false);
-  const [selectedBuildingTypes, setSelectedBuildingTypes] = useState(buildingTypes);
-  const [openHelpForm, setOpenHelpForm] = useState<boolean>(false);
-
-  const handleShowBuildigsFilters = () => {
-    setShowFilters((prev) => !prev);
-  };
-
-  const FitBoundsToImage = ({
-    bounds,
-  }: {
-    bounds: L.LatLngBoundsExpression;
-  }) => {
+  const FitBoundsToImage = ({ bounds }: { bounds: L.LatLngBoundsExpression }) => {
     const map = useMap();
-
-    React.useEffect(() => {
+    useEffect(() => {
       map.fitBounds(bounds, { padding: [20, 20] });
     }, [map, bounds]);
-
     return null;
   };
 
   return (
     <div className="bg-[#544533] relative text-center min-h-[100vh] w-screen flex items-center justify-center overflow-x-hidden">
       <ControlFunctions
-        selectedCategories={selectedBuildingTypes}
-        setSelectedCategories={setSelectedBuildingTypes}
+        selectedCategories={[]}
+        setSelectedCategories={() => {}}
         setOpenHelpForm={setOpenHelpForm}
       />
 
-      <div
-        className={clsx(
-          "absolute top-4 z-[1000]",
-          t("language").toLowerCase() === "en" ? "right-[10px]" : "left-[10px]"
-        )}
-      >
-        <WebsiteTitleSec projectId={project.id} projectName={project.name} />
+      <div className="absolute top-4 z-[1000] right-4">
+        <WebsiteTitleSec
+          projectId={projectId}
+          projectName={projectName}
+        />
 
-        <div className="w-fit">
-          <Button
-            className="w-full !bg-slate-600 text-white !justify-between"
-            onClick={handleShowBuildigsFilters}
+        <div className="w-fit mt-2">
+          <p className="text-white mb-1">نوع العمارة</p>
+          <Select
+            onValueChange={(val) => setSelectedBuildingType(val)}
+            value={selectedBuildingType}
           >
-            <span>فلاتر</span>
-            <Image
-              src="/assets/icons/left-arrow.svg"
-              alt="arrow"
-              width={32}
-              height={32}
-              className={clsx(
-                "transition-all",
-                showFilters ? "rotate-90" : "-rotate-90"
-              )}
-            />
-          </Button>
-
-          {/* Filters block */}
-          <BuildingBlocksFiters
-            className={
-              showFilters ? "max-h-[800] py-2" : "max-h-0"
-            }
-            selectedCategories={selectedBuildingTypes}
-            setSelectedCategories={setSelectedBuildingTypes}
-            unitsFilters={buildingsFilters}
-            setUnitsFilters={setBuildingsFilters}
-            unitsCount={renderedBuildings.length}
-          />
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="اختر النوع" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">الكل</SelectItem>
+              {buildingTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
+
       <HelppingTools />
 
       <div className="w-screen h-[100vh]">
@@ -188,18 +144,33 @@ const ResidentialBuildingsPage = ({
         >
           <ImageOverlay url={imageUrl} bounds={imageBounds} />
           <FitBoundsToImage bounds={imageBounds} />
-          {renderedBuildings.map((building) => (
-            <ResidentialBuildingMarker key={building.id} building={building} />
+
+          {filteredBuildings.map((building) => (
+            <Marker
+              key={building.id}
+              position={[
+                parseFloat(building.position[0]),
+                parseFloat(building.position[1]),
+              ]}
+            >
+              <Popup>
+                <div>
+                  <h2>رقم: {building.number}</h2>
+                  <p>المساحة: {building.size} م²</p>
+                  <p>النوع: {building.buildingType?.name}</p>
+                  <p>المشروع: {building.project?.name}</p>
+                </div>
+              </Popup>
+            </Marker>
           ))}
         </MapContainer>
       </div>
 
-      {/* Need Help Form Popup */}
       <Dialog open={openHelpForm} onOpenChange={setOpenHelpForm}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between text-xl font-extrabold">
-              {t("NeedHelp")}
+            <DialogTitle className="text-xl font-extrabold">
+              هل تحتاج مساعدة؟
             </DialogTitle>
           </DialogHeader>
           <NeedHelpForm setOpen={setOpenHelpForm} />

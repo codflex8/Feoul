@@ -30,8 +30,11 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import {
+  getResidentialBuildings,
+  addApartment,
+} from "@/lib/actions/dashboard.actions";
 
-const imageUrl = "/assets/images/project.jpg";
 const imageBounds: L.LatLngBoundsExpression = [
   [0, 0],
   [450, 800],
@@ -58,6 +61,7 @@ interface AddApartmentFormProps {
 
 const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
   const [buildings, setBuildings] = useState<ResidentialBuilding[]>([]);
+  const [mapImageUrl, setMapImageUrl] = useState("");
   const [position, setPosition] = useState({ lat: 0.0, lng: 0.0 });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,20 +82,30 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
   });
 
   useEffect(() => {
-    // جلب العمارات السكنية
-    setBuildings([
-      { 
-        id: "1", 
-        name: "عمارة الياسمين", 
-        project: { name: "مشروع العمارات الحديثة" }
-      } as ResidentialBuilding,
-      { 
-        id: "2", 
-        name: "عمارة الورد", 
-        project: { name: "مشروع الأبراج السكنية" }
-      } as ResidentialBuilding,
-    ]);
+    const fetchBuildings = async () => {
+      try {
+        const data = await getResidentialBuildings();
+        setBuildings(data);
+      } catch (error) {
+        console.error("فشل في جلب بيانات العمارات:", error);
+      }
+    };
+
+    fetchBuildings();
   }, []);
+
+  useEffect(() => {
+    const selectedBuilding = buildings.find(
+      (b) => b.id === form.watch("buildingId")
+    );
+    if (selectedBuilding?.buildingType?.buildingImage) {
+      setMapImageUrl(
+        `http://13.59.197.112${selectedBuilding.buildingType.buildingImage}`
+      );
+    } else {
+      setMapImageUrl("");
+    }
+  }, [form.watch("buildingId"), buildings]);
 
   const LocationMarker = () => {
     useMapEvents({
@@ -101,36 +115,42 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
         form.setValue("position_y", e.latlng.lng);
       },
     });
-    return position === null ? null : <Marker position={position} />;
+    return <Marker position={position} />;
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const selectedBuilding = buildings.find(b => b.id === values.buildingId);
+      const selectedBuilding = buildings.find(
+        (b) => b.id === values.buildingId
+      );
 
-      const newApartment: Apartment = {
-        id: Date.now().toString(),
-        number: values.number,
-        name: values.name,
-        buildingId: values.buildingId,
-        building: selectedBuilding!,
+      const apartmentPayload = {
+        number: parseInt(values.number),
+        name: values.name || `شقة ${values.number}`,
+        size: values.buildSpace,
         price: values.price,
+        status:
+          values.status === "متاح"
+            ? "avaliable"
+            : values.status === "مباع"
+            ? "sold"
+            : "reserved",
         landSpace: values.landSpace,
         buildSpace: values.buildSpace,
         bedroomNumber: values.bedroomNumber,
         bathroomNumber: values.bathroomNumber,
-        position_x: values.position_x,
-        position_y: values.position_y,
-        status: values.status,
-        images: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        lat: values.position_x.toString(),
+        lng: values.position_y.toString(),
+        buildingId: values.buildingId,
       };
 
-      onAdd(newApartment);
+      const created = await addApartment(apartmentPayload);
+
+      console.log("Apartment added successfully:", created);
+      onAdd(created); 
       setOpen(false);
     } catch (error) {
-      console.error("Failed to add apartment:", error);
+      console.error("فشل في إضافة الشقة:", error);
     }
   };
 
@@ -182,7 +202,8 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
                 <SelectContent>
                   {buildings.map((building) => (
                     <SelectItem key={building.id} value={building.id}>
-                      {building.name} - {building.project.name}
+                      عمارة رقم {building.number} -{" "}
+                      {building.project?.name ?? "بدون مشروع"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -217,7 +238,10 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>حالة الشقة</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="اختر الحالة" />
@@ -325,7 +349,7 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
           maxBounds={imageBounds}
           maxBoundsViscosity={1.0}
         >
-          <ImageOverlay url={imageUrl} bounds={imageBounds} />
+          <ImageOverlay url={mapImageUrl} bounds={imageBounds} />
           <LocationMarker />
         </MapContainer>
 

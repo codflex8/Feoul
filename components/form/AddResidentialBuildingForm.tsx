@@ -32,17 +32,19 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const imageUrl = "/assets/images/project.jpg";
-const imageBounds: L.LatLngBoundsExpression = [
+// استيراد الدوال من actions
+import { getBuildingProjects, getBuildingTypes, addResidentialBuilding } from "@/lib/actions/dashboard.actions";
+
+const defaultImageBounds: L.LatLngBoundsExpression = [
   [0, 0],
   [450, 800],
 ];
 
 const formSchema = z.object({
-  name: z.string().min(2, "اسم العمارة يجب ألا يقل عن حرفين"),
+  number: z.number().min(1, "رقم العمارة مطلوب"),
+  size: z.number().min(1, "حجم العمارة مطلوب"),
   projectId: z.string().min(1, "المشروع مطلوب"),
   buildingTypeId: z.string().min(1, "نوع العمارة مطلوب"),
-  image: z.instanceof(File).array().min(1, "صورة العمارة مطلوبة"),
   position_x: z.number().min(1, "موقع X مطلوب"),
   position_y: z.number().min(1, "موقع Y مطلوب"),
   status: z.enum(["متاح", "محجوز", "مباع"]),
@@ -56,15 +58,17 @@ interface AddResidentialBuildingFormProps {
 const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFormProps) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [buildingTypes, setBuildingTypes] = useState<BuildingType[]>([]);
-  const [position, setPosition] = useState({ lat: 0.0, lng: 0.0 });
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+  const [imageBounds, setImageBounds] = useState<L.LatLngBoundsExpression>(defaultImageBounds);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      number: 0,
+      size: 0,
       projectId: "",
       buildingTypeId: "",
-      image: [],
       position_x: 0,
       position_y: 0,
       status: "متاح",
@@ -72,20 +76,31 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
   });
 
   useEffect(() => {
-    // هنا سيتم جلب المشاريع من نوع "عمارات سكنية" وأنواع العمارات
-    // مؤقتاً سنستخدم بيانات وهمية
-    setProjects([
-      { id: "1", name: "مشروع العمارات الحديثة", type: "عمارات سكنية" } as Project,
-      { id: "2", name: "مشروع الأبراج السكنية", type: "عمارات سكنية" } as Project,
-    ]);
-    
-    setBuildingTypes([
-      { id: "1", name: "نوع A" } as BuildingType,
-      { id: "2", name: "نوع B" } as BuildingType,
-      { id: "3", name: "نوع C" } as BuildingType,
-      { id: "4", name: "نوع D" } as BuildingType,
-    ]);
+    const fetchData = async () => {
+      try {
+        const fetchedProjects = await getBuildingProjects(); // مشاريع apartment_building فقط
+        const fetchedBuildingTypes = await getBuildingTypes();
+
+        setProjects(fetchedProjects);
+        setBuildingTypes(fetchedBuildingTypes.items || fetchedBuildingTypes);
+      } catch (error) {
+        console.error("خطأ في تحميل المشاريع أو أنواع العمارات:", error);
+      }
+    };
+    fetchData();
   }, []);
+
+  // تحديث صورة الخريطة بناءً على المشروع المختار
+  useEffect(() => {
+    const selectedProject = projects.find(p => p.id === form.getValues("projectId"));
+    if (selectedProject && selectedProject.projectDocUrl) {
+      setImageUrl(`http://13.59.197.112${selectedProject.projectDocUrl}`);
+      setImageBounds(defaultImageBounds);
+    } else {
+      setImageUrl(""); // ما تعرض شيء إذا ما في صورة
+      setImageBounds(defaultImageBounds);
+    }
+  }, [form.watch("projectId"), projects]);
 
   const LocationMarker = () => {
     useMapEvents({
@@ -95,52 +110,71 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
         form.setValue("position_y", e.latlng.lng);
       },
     });
-    return position === null ? null : <Marker position={position} />;
+    return <Marker position={position} />;
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const selectedProject = projects.find(p => p.id === values.projectId);
-      const selectedBuildingType = buildingTypes.find(bt => bt.id === values.buildingTypeId);
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  try {
+    const buildingData = {
+      number: Number(values.number),
+      size: Number(values.size),
+      projectId: values.projectId,
+      buildingTypeId: values.buildingTypeId,
+      status: values.status,
+      position_x: values.position_x,
+      position_y: values.position_y,
+     };
 
-      const newBuilding: ResidentialBuilding = {
-        id: Date.now().toString(),
-        name: values.name,
-        projectId: values.projectId,
-        buildingTypeId: values.buildingTypeId,
-        project: selectedProject!,
-        buildingType: selectedBuildingType!,
-        image: URL.createObjectURL(values.image[0]),
-        position_x: values.position_x,
-        position_y: values.position_y,
-        status: values.status,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+    const addedBuilding = await addResidentialBuilding(buildingData);
+    onAdd(addedBuilding);
+    setOpen(false);
+  } catch (error) {
+    console.error("فشل في إضافة العمارة:", error);
+  }
+};
 
-      onAdd(newBuilding);
-      setOpen(false);
-    } catch (error) {
-      console.error("Failed to add residential building:", error);
-    }
-  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>اسم العمارة السكنية</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+       <FormField
+  control={form.control}
+  name="number"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>رقم العمارة</FormLabel>
+      <FormControl>
+        <Input
+          type="number"
+          {...field}
+          onChange={(e) => field.onChange(e.target.valueAsNumber)}
+          value={field.value ?? ""}
         />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+<FormField
+  control={form.control}
+  name="size"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>حجم العمارة (متر مربع)</FormLabel>
+      <FormControl>
+        <Input
+          type="number"
+          {...field}
+          onChange={(e) => field.onChange(e.target.valueAsNumber)}
+          value={field.value ?? ""}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
 
         <FormField
           control={form.control}
@@ -148,7 +182,7 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
           render={({ field }) => (
             <FormItem>
               <FormLabel>اختر المشروع</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="اختر مشروع" />
@@ -173,7 +207,7 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
           render={({ field }) => (
             <FormItem>
               <FormLabel>نوع العمارة</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="اختر نوع العمارة" />
@@ -198,7 +232,7 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
           render={({ field }) => (
             <FormItem>
               <FormLabel>حالة العمارة</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || "متاح"}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="اختر الحالة" />
@@ -217,43 +251,27 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>صورة العمارة</FormLabel>
-              <FormControl>
-                <FileUploader
-                  files={field.value ?? []}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormLabel>تحديد الموقع على الخريطة</FormLabel>
-        <MapContainer
-          center={[225, 400]}
-          zoom={1}
-          minZoom={1}
-          maxZoom={4}
-          scrollWheelZoom={true}
-          style={{ height: "400px", width: "100%" }}
-          crs={L.CRS.Simple}
-          maxBounds={imageBounds}
-          maxBoundsViscosity={1.0}
-        >
-          <ImageOverlay url={imageUrl} bounds={imageBounds} />
-          <LocationMarker />
-        </MapContainer>
+        {imageUrl ? (
+          <MapContainer
+            center={[225, 400]}
+            zoom={1}
+            minZoom={1}
+            maxZoom={4}
+            scrollWheelZoom={true}
+            style={{ height: "400px", width: "100%" }}
+            crs={L.CRS.Simple}
+            maxBounds={imageBounds}
+            maxBoundsViscosity={1.0}
+          >
+            <ImageOverlay url={imageUrl} bounds={imageBounds} />
+            <LocationMarker />
+          </MapContainer>
+        ) : (
+          <p className="text-center text-gray-500">الرجاء اختيار مشروع لعرض الخريطة</p>
+        )}
 
-        <Button
-          className="w-full bg-green-600 hover:bg-green-500"
-          type="submit"
-        >
+        <Button className="w-full bg-green-600 hover:bg-green-500" type="submit">
           إضافة العمارة السكنية
         </Button>
       </form>

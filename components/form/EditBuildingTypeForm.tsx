@@ -15,9 +15,10 @@ import {
 import { Input } from "@/components/ui/input";
 import FileUploader from "@/components/dashboard/fileUploader";
 import { BuildingType } from "@/types/dashboard.types";
+import { editBuildingType as editBuildingTypeAPI } from "@/lib/actions/dashboard.actions";
 
 const formSchema = z.object({
-  name: z.string().min(2, "اسم النوع يجب ألا يقل عن حرفين"),
+  name: z.string().min(1, "اسم النوع يجب ألا يقل عن حرف"),
   buildingImage: z.instanceof(File).array().optional(),
   apartmentImages: z.instanceof(File).array().optional(),
   video: z.instanceof(File).array().optional(),
@@ -40,29 +41,34 @@ const EditBuildingTypeForm = ({ buildingType, setOpen, onEdit }: EditBuildingTyp
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const updatedBuildingType: BuildingType = {
-        ...buildingType,
-        name: values.name,
-        buildingImage: values.buildingImage?.[0] 
-          ? URL.createObjectURL(values.buildingImage[0]) 
-          : buildingType.buildingImage,
-        apartmentImages: values.apartmentImages?.length 
-          ? values.apartmentImages.map(file => URL.createObjectURL(file))
-          : buildingType.apartmentImages,
-        video: values.video?.[0] 
-          ? URL.createObjectURL(values.video[0]) 
-          : buildingType.video,
-        updatedAt: new Date(),
-      };
+  
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  try {
+    const formData = new FormData();
+    formData.append("name", values.name);
 
-      onEdit(updatedBuildingType);
-      setOpen();
-    } catch (error) {
-      console.error("Failed to update building type:", error);
+    if (values.buildingImage?.[0]) {
+      formData.append("buildingImage", values.buildingImage[0]);
     }
-  };
+
+    if (values.apartmentImages?.length) {
+      values.apartmentImages.forEach((file) => {
+        formData.append("apartmentImages", file);
+      });
+    }
+
+    if (values.video?.[0]) {
+      formData.append("video", values.video[0]);
+    }
+
+    const updatedFromServer = await editBuildingTypeAPI(buildingType.id, formData);
+
+    onEdit(updatedFromServer);  
+    setOpen();  
+  } catch (error) {
+    console.error("Failed to update building type:", error);
+  }
+};
 
   return (
     <Form {...form}>

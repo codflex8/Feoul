@@ -129,6 +129,13 @@ export const getProjectsColumns = (
     ),
   },
   {
+    accessorKey: "type",
+    header: () => <div className="text-center font-semibold">نوع المشروع</div>,
+    cell: ({ row }) => (
+      <p className="text-center font-medium text-sm">{row.getValue("type")}</p>
+    ),
+  },
+  {
     accessorKey: "lat",
     header: () => (
       <div className="text-center font-semibold">نقطة خط العرض</div>

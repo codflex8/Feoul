@@ -10,9 +10,8 @@ const AlwaysOpenPopup = ({ position, children, project }: { position: [number, n
   const t = useTranslations("MapPage")
   const language = t("language").toLowerCase() == "en" ? "ar" : "en";
 
-  // تحديد المسار بناءً على نوع المشروع
   const getProjectPath = () => {
-    if (project.type === "عمارات سكنية") {
+    if (project.type === "apartment_building") {
       return `${language}/real-estate/${project.id}/residential-buildings`;
     } else {
       return `${language}/real-estate/${project.id}`;

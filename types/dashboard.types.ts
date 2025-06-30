@@ -61,21 +61,27 @@ export interface BuildingType {
   updatedAt: Date;
 }
 
-// إضافة العمارة السكنية
 export interface ResidentialBuilding {
   id: string;
-  name: string;
-  projectId: string;
-  buildingTypeId: string;
-  buildingType: BuildingType;
-  project: Project;
-  image: string;
-  position_x: number;
-  position_y: number;
-  status: "متاح" | "محجوز" | "مباع";
-  createdAt: Date;
-  updatedAt: Date;
+  number: number;
+  size: number;
+  position: string[];
+  buildingType: {
+    name: string;
+  };
+  project: {
+    name: string;
+  } | null;
+  apartments: {
+    id: string;
+    index: number;
+    size: number;
+    direction: string;
+  }[];
+  createdAt: string;
+  updatedAt: string;
 }
+
 
 // إضافة الشقة السكنية
 export interface Apartment {

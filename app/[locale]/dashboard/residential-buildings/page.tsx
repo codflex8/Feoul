@@ -16,83 +16,28 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ResidentialBuilding } from "@/types/dashboard.types";
 import AddResidentialBuildingForm from "@/components/form/AddResidentialBuildingForm";
 import EditResidentialBuildingForm from "@/components/form/EditResidentialBuildingForm";
-
-const residentialBuildingsColumns: ColumnDef<ResidentialBuilding>[] = [
-  {
-    accessorKey: "name",
-    header: () => <div className="text-center font-semibold">اسم العمارة</div>,
-    cell: ({ row }) => (
-      <p className="text-center font-medium text-sm">{row.getValue("name")}</p>
-    ),
-  },
-  {
-    accessorKey: "project",
-    header: () => <div className="text-center font-semibold">المشروع</div>,
-    cell: ({ row }) => {
-      const project = row.getValue("project") as { name: string };
-      return <p className="text-center font-medium text-sm">{project.name}</p>;
-    },
-  },
-  {
-    accessorKey: "buildingType",
-    header: () => <div className="text-center font-semibold">نوع العمارة</div>,
-    cell: ({ row }) => {
-      const buildingType = row.getValue("buildingType") as { name: string };
-      return <p className="text-center font-medium text-sm">{buildingType.name}</p>;
-    },
-  },
-  {
-    accessorKey: "image",
-    header: () => <div className="text-center font-semibold">صورة العمارة</div>,
-    cell: ({ row }) => (
-      <div className="flex justify-center">
-        <img
-          src={row.getValue("image")}
-          alt="Building"
-          className="w-16 h-16 object-cover rounded"
-        />
-      </div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: () => <div className="text-center font-semibold">الحالة</div>,
-    cell: ({ row }) => (
-      <div className="flex justify-center">
-        <span
-          className={`flex w-fit items-center gap-2 rounded-full px-4 py-1 ${
-            row.getValue("status") === "متاح"
-              ? "bg-green-200 text-green-800"
-              : row.getValue("status") === "محجوز"
-              ? "bg-yellow-200 text-yellow-800"
-              : "bg-red-200 text-red-800"
-          }`}
-        >
-          {row.getValue("status")}
-        </span>
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    header: () => <div className="text-center font-semibold">الإجراءات</div>,
-    cell: ({ row }) => (
-      <div className="flex justify-center items-center gap-1">
-        <Button size="icon" variant="ghost">
-          <MdDelete color="red" className="!w-6 !h-6" />
-        </Button>
-        <Button size="icon" variant="ghost">
-          <FaEdit color="gray" className="!w-6 !h-6" />
-        </Button>
-      </div>
-    ),
-  },
-];
+import {
+  getResidentialBuildings,
+  deleteResidentialBuilding,
+} from "@/lib/actions/dashboard.actions";
 
 const ResidentialBuildingsPage = () => {
   const [buildings, setBuildings] = useState<ResidentialBuilding[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [editBuilding, setEditBuilding] = useState<ResidentialBuilding | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getResidentialBuildings();
+        setBuildings(data);
+      } catch (error) {
+        console.error("Failed to fetch residential buildings:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleAdd = (newBuilding: ResidentialBuilding) => {
     setBuildings((prev) => [...prev, newBuilding]);
@@ -104,14 +49,101 @@ const ResidentialBuildingsPage = () => {
         item.id === updatedBuilding.id ? updatedBuilding : item
       )
     );
+    setEditBuilding(null);
   };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("هل أنت متأكد من حذف هذه العمارة؟")) return;
+    try {
+      await deleteResidentialBuilding(id);
+      setBuildings((prev) => prev.filter((b) => b.id !== id));
+    } catch (error) {
+      console.error("Failed to delete building:", error);
+      alert("حدث خطأ أثناء الحذف، حاول مرة أخرى.");
+    }
+  };
+
+  const residentialBuildingsColumns: ColumnDef<ResidentialBuilding>[] = [
+    {
+      accessorKey: "number",
+      header: () => <div className="text-center font-semibold">رقم العمارة</div>,
+      cell: ({ row }) => (
+        <p className="text-center font-medium text-sm">{row.getValue("number")}</p>
+      ),
+    },
+    {
+      accessorKey: "project",
+      header: () => <div className="text-center font-semibold">المشروع</div>,
+      cell: ({ row }) => {
+        const project = row.getValue("project") as { name: string } | null;
+        return (
+          <p className="text-center font-medium text-sm">
+            {project?.name ?? "غير مرتبط"}
+          </p>
+        );
+      },
+    },
+    {
+      accessorKey: "buildingType",
+      header: () => <div className="text-center font-semibold">نوع العمارة</div>,
+      cell: ({ row }) => {
+        const buildingType = row.getValue("buildingType") as { name: string };
+        return (
+          <p className="text-center font-medium text-sm">
+            {buildingType?.name ?? "غير محدد"}
+          </p>
+        );
+      },
+    },
+    {
+      accessorKey: "size",
+      header: () => <div className="text-center font-semibold">المساحة</div>,
+      cell: ({ row }) => (
+        <p className="text-center font-medium text-sm">{row.getValue("size")} م²</p>
+      ),
+    },
+    {
+      accessorKey: "position",
+      header: () => <div className="text-center font-semibold">الموقع</div>,
+      cell: ({ row }) => {
+        const position = row.getValue("position") as string[];
+        return (
+          <p className="text-center font-medium text-sm">
+            {position?.join(" - ") || "غير معروف"}
+          </p>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: () => <div className="text-center font-semibold">الإجراءات</div>,
+      cell: ({ row }) => (
+        <div className="flex justify-center items-center gap-1">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => handleDelete(row.original.id)}
+            aria-label="حذف العمارة"
+          >
+            <MdDelete color="red" className="!w-6 !h-6" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setEditBuilding(row.original)}
+            aria-label="تعديل العمارة"
+          >
+            <FaEdit color="gray" className="!w-6 !h-6" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-100 flex-1 p-6">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">
-          العمارات السكنية
-        </h1>
+        <h1 className="text-2xl font-semibold text-gray-800">العمارات السكنية</h1>
         <Button
           onClick={() => setOpenAddDialog(true)}
           className="bg-slate-600 hover:bg-slate-700 text-white"
@@ -133,10 +165,7 @@ const ResidentialBuildingsPage = () => {
       </Dialog>
 
       {editBuilding && (
-        <Dialog
-          open={Boolean(editBuilding)}
-          onOpenChange={() => setEditBuilding(null)}
-        >
+        <Dialog open={Boolean(editBuilding)} onOpenChange={() => setEditBuilding(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-extrabold">

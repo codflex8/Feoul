@@ -15,9 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import FileUploader from "@/components/dashboard/fileUploader";
 import { BuildingType } from "@/types/dashboard.types";
-
+import {addBuildingType} from "@/lib/actions/dashboard.actions"
 const formSchema = z.object({
-  name: z.string().min(2, "اسم النوع يجب ألا يقل عن حرفين"),
+  name: z.string().min(1, "اسم النوع يجب ألا يقل عن حرف"),
   buildingImage: z.instanceof(File).array().min(1, "صورة العمارة مطلوبة"),
   apartmentImages: z.instanceof(File).array().min(1, "صور الشقق مطلوبة"),
   video: z.instanceof(File).array().optional(),
@@ -39,25 +39,35 @@ const AddBuildingTypeForm = ({ setOpen, onAdd }: AddBuildingTypeFormProps) => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      // هنا سيتم إرسال البيانات للـ API
-      const newBuildingType: BuildingType = {
-        id: Date.now().toString(),
-        name: values.name,
-        buildingImage: URL.createObjectURL(values.buildingImage[0]),
-        apartmentImages: values.apartmentImages.map(file => URL.createObjectURL(file)),
-        video: values.video?.[0] ? URL.createObjectURL(values.video[0]) : undefined,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+ const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  try {
+    const formData = new FormData();
+    formData.append("name", values.name);
 
-      onAdd(newBuildingType);
-      setOpen(false);
-    } catch (error) {
-      console.error("Failed to add building type:", error);
+     if (values.buildingImage?.[0]) {
+      formData.append("buildingImage", values.buildingImage[0]);
     }
-  };
+
+     if (values.apartmentImages?.length) {
+      values.apartmentImages.forEach((file) => {
+        formData.append("apartmentImages", file); // backend لازم يتعامل مع array
+      });
+    }
+
+     if (values.video?.[0]) {
+      formData.append("video", values.video[0]);
+    }
+
+     const createdBuildingType = await addBuildingType(formData);
+
+     onAdd(createdBuildingType);
+    setOpen(false);
+  } catch (error) {
+    console.error("Failed to add building type:", error);
+  }
+};
+
+
 
   return (
     <Form {...form}>

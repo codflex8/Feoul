@@ -143,6 +143,16 @@ export const getUnitById = async (unitId: string) => {
 };
 
 // Residential Buildings
+// lib/api.ts
+
+export const fetchResidentialBuildings = async (id:string) => {
+  const res = await fetch(`${API_URL}/public//apartment-buildings?projectId=${id}`);  
+  if (!res.ok) throw new Error("فشل في جلب العمارات السكنية");
+  const data = await res.json();
+  return data.items; // فقط العمارات
+};
+
+
 export const getResidentialBuildingById = async (buildingId: string) => {
   try {
     const response = await fetch(`${API_URL}/public/residential-buildings/${buildingId}`, {

@@ -49,6 +49,7 @@ const ProjectsPageClient = ({ projects }: { projects: Project[] }) => {
  
   const updateFields: { key: keyof Project; label: string }[] = [
     { key: "name", label: "اسم المشروع" },
+    { key: "type", label: "نوع المشروع" },
     { key: "location", label: "موقع المشروع" },
     { key: "city", label: "المدينة" },
   ];

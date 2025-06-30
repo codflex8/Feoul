@@ -118,17 +118,19 @@ export interface BuildingType {
 
 export interface ResidentialBuilding {
   id: string;
-  name: string;
-  projectId: string;
-  buildingTypeId: string;
-  buildingType: BuildingType;
-  project: Project;
-  image: string;
-  position: [string, string];
-  status: UnitStatus;
-  createdAt: string;
-  updatedAt: string;
+  number: number;
+  size: number;
+  position: [string, string];  
+  buildingType: {
+    id: string;
+    name: string;
+  };
+  project: {
+    id: string;
+    name: string;
+  };
 }
+
 
 export interface Apartment {
   id: string;

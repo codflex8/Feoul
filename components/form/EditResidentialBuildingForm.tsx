@@ -23,13 +23,32 @@ import {
 import { Input } from "@/components/ui/input";
 import FileUploader from "@/components/dashboard/fileUploader";
 import { ResidentialBuilding, Project, BuildingType } from "@/types/dashboard.types";
+import {
+  MapContainer,
+  ImageOverlay,
+  Marker,
+  useMapEvents,
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import {
+  getBuildingProjects,
+  getBuildingTypes,
+  updateResidentialBuilding,
+} from "@/lib/actions/dashboard.actions";
+
+const defaultImageBounds: L.LatLngBoundsExpression = [
+  [0, 0],
+  [450, 800],
+];
 
 const formSchema = z.object({
-  name: z.string().min(2, "اسم العمارة يجب ألا يقل عن حرفين"),
+  number: z.number().min(1, "رقم العمارة مطلوب"),
+  size: z.number().min(1, "حجم العمارة مطلوب"),
   projectId: z.string().min(1, "المشروع مطلوب"),
   buildingTypeId: z.string().min(1, "نوع العمارة مطلوب"),
-  image: z.instanceof(File).array().optional(),
-  status: z.enum(["متاح", "محجوز", "مباع"]),
+  position_x: z.number().min(1, "موقع X مطلوب"),
+  position_y: z.number().min(1, "موقع Y مطلوب"),
 });
 
 interface EditResidentialBuildingFormProps {
@@ -41,68 +60,116 @@ interface EditResidentialBuildingFormProps {
 const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResidentialBuildingFormProps) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [buildingTypes, setBuildingTypes] = useState<BuildingType[]>([]);
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({
+    lat: building.position?.[0] ?? 0,
+    lng: building.position?.[1] ?? 0,
+  });
+  const [imageBounds, setImageBounds] = useState<L.LatLngBoundsExpression>(defaultImageBounds);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: building.name,
-      projectId: building.projectId,
-      buildingTypeId: building.buildingTypeId,
-      image: [],
-      status: building.status,
+      number: building.number,
+      size: building.size,
+      projectId: building.project?.id || building.projectId,
+      buildingTypeId: building.buildingType?.id || building.buildingTypeId,
+      position_x: building.position?.[0] ?? 0,
+      position_y: building.position?.[1] ?? 0,
     },
   });
 
   useEffect(() => {
-    // جلب المشاريع وأنواع العمارات
-    setProjects([
-      { id: "1", name: "مشروع العمارات الحديثة", type: "عمارات سكنية" } as Project,
-      { id: "2", name: "مشروع الأبراج السكنية", type: "عمارات سكنية" } as Project,
-    ]);
-    
-    setBuildingTypes([
-      { id: "1", name: "نوع A" } as BuildingType,
-      { id: "2", name: "نوع B" } as BuildingType,
-      { id: "3", name: "نوع C" } as BuildingType,
-      { id: "4", name: "نوع D" } as BuildingType,
-    ]);
+    const fetchData = async () => {
+      try {
+        const fetchedProjects = await getBuildingProjects();
+        const fetchedBuildingTypes = await getBuildingTypes();
+
+        setProjects(fetchedProjects);
+        setBuildingTypes(fetchedBuildingTypes.items || fetchedBuildingTypes);
+      } catch (error) {
+        console.error("خطأ في تحميل المشاريع أو الأنواع:", error);
+      }
+    };
+    fetchData();
   }, []);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const selectedProject = projects.find(p => p.id === values.projectId);
-      const selectedBuildingType = buildingTypes.find(bt => bt.id === values.buildingTypeId);
-
-      const updatedBuilding: ResidentialBuilding = {
-        ...building,
-        name: values.name,
-        projectId: values.projectId,
-        buildingTypeId: values.buildingTypeId,
-        project: selectedProject!,
-        buildingType: selectedBuildingType!,
-        image: values.image?.[0] ? URL.createObjectURL(values.image[0]) : building.image,
-        status: values.status,
-        updatedAt: new Date(),
-      };
-
-      onEdit(updatedBuilding);
-      setOpen();
-    } catch (error) {
-      console.error("Failed to update residential building:", error);
+    useEffect(() => {
+    const selectedProject = projects.find(p => p.id === form.watch("projectId"));
+    if (selectedProject?.projectDocUrl) {
+      setImageUrl(`http://13.59.197.112${selectedProject.projectDocUrl}`);
+      setImageBounds(defaultImageBounds);
+    } else {
+      setImageUrl("");
     }
+  }, [form.watch("projectId"), projects]);
+
+  const LocationMarker = () => {
+    useMapEvents({
+      click(e) {
+        setPosition(e.latlng);
+        form.setValue("position_x", e.latlng.lat);
+        form.setValue("position_y", e.latlng.lng);
+      },
+    });
+    return <Marker position={position} />;
   };
+
+ 
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  console.log("تم الضغط على الزر", values);
+  try {
+    const updated = await updateResidentialBuilding(building.id, {
+      number: values.number,
+      size: values.size,
+      project: values.projectId,         // هنا تغير الاسم
+      buildingType: values.buildingTypeId, // هنا تغير الاسم
+      position: [values.position_x, values.position_y],
+    });
+    console.log(updated);
+    onEdit(updated);
+    setOpen();
+  } catch (err) {
+    console.error("فشل في التعديل:", err);
+  }
+};
+
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <FormField
           control={form.control}
-          name="name"
+          name="number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>اسم العمارة السكنية</FormLabel>
+              <FormLabel>رقم العمارة</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="size"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>حجم العمارة (متر مربع)</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,7 +182,7 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
           render={({ field }) => (
             <FormItem>
               <FormLabel>اختر المشروع</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="اختر مشروع" />
@@ -140,7 +207,7 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
           render={({ field }) => (
             <FormItem>
               <FormLabel>نوع العمارة</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="اختر نوع العمارة" />
@@ -159,63 +226,28 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>حالة العمارة</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="اختر الحالة" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {["متاح", "محجوز", "مباع"].map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+       
+        <FormLabel>تحديد الموقع على الخريطة</FormLabel>
+        {imageUrl ? (
+          <MapContainer
+            center={[position.lat, position.lng]}
+            zoom={1}
+            minZoom={1}
+            maxZoom={4}
+            scrollWheelZoom={true}
+            style={{ height: "400px", width: "100%" }}
+            crs={L.CRS.Simple}
+            maxBounds={imageBounds}
+            maxBoundsViscosity={1.0}
+          >
+            <ImageOverlay url={imageUrl} bounds={imageBounds} />
+            <LocationMarker />
+          </MapContainer>
+        ) : (
+          <p className="text-center text-gray-500">الرجاء اختيار مشروع لعرض الخريطة</p>
+        )}
 
-        <div className="grid gap-4">
-          <div>
-            <p className="font-semibold text-base mb-2">صورة العمارة الحالية</p>
-            <img 
-              src={building.image} 
-              alt="Current building" 
-              className="w-32 h-32 object-cover rounded"
-            />
-          </div>
-          
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>تحديث صورة العمارة</FormLabel>
-                <FormControl>
-                  <FileUploader
-                    files={field.value ?? []}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <Button
-          className="w-full bg-blue-600 hover:bg-blue-500"
-          type="submit"
-        >
+        <Button className="w-full bg-blue-600 hover:bg-blue-500" type="submit">
           تحديث العمارة السكنية
         </Button>
       </form>

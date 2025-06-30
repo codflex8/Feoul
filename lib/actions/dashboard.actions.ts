@@ -62,6 +62,36 @@ export const getProjects = async () => {
     throw error;
   }
 };
+export const getBuildingProjects = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/projects`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch projects: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const items = data.items || data;
+    const filtered = items.filter((p: any) => p.type === "apartment_building");
+
+    return filtered;
+  } catch (error) {
+    console.error(
+      "An error occurred while getting projects from the API:",
+      error
+    );
+    throw error;
+  }
+};
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -117,13 +147,16 @@ export const addProject = async (projectData: Project) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      body: formData, 
+      body: formData,
     });
 
     if (!response.ok) {
-const errorData = await response.json(); // Get more details about the error
-      throw new Error(`Failed to add new project: ${response.statusText} - ${errorData.message || 'Unknown error'}`);
-    
+      const errorData = await response.json(); // Get more details about the error
+      throw new Error(
+        `Failed to add new project: ${response.statusText} - ${
+          errorData.message || "Unknown error"
+        }`
+      );
     }
 
     const data = await response.json();
@@ -230,38 +263,23 @@ export const getBuildingTypes = async () => {
   }
 };
 
-export const addBuildingType = async (buildingTypeData: any) => {
+export const addBuildingType = async (formData: FormData) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
-
-  const formData = new FormData();
-  formData.append("name", buildingTypeData.name);
-  
-  if (buildingTypeData.buildingImage) {
-    formData.append("buildingImage", buildingTypeData.buildingImage);
-  }
-  
-  if (buildingTypeData.apartmentImages) {
-    buildingTypeData.apartmentImages.forEach((file: File) => {
-      formData.append("apartmentImages", file);
-    });
-  }
-  
-  if (buildingTypeData.video) {
-    formData.append("video", buildingTypeData.video);
-  }
 
   try {
     const response = await fetch(`${API_URL}/dashboard/building-types`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        // لا تضيف Content-Type هنا، المتصفح بيضبطه لحاله عند استخدام FormData
       },
       body: formData,
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to add building type: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Failed to add building type: ${errorText}`);
     }
 
     const data = await response.json();
@@ -272,53 +290,36 @@ export const addBuildingType = async (buildingTypeData: any) => {
   }
 };
 
-// Residential Buildings
-export const getResidentialBuildings = async () => {
+export const deleteBuildingType = async (id: string) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
+
   try {
-    const response = await fetch(`${API_URL}/dashboard/residential-buildings`, {
-      method: "GET",
+    const response = await fetch(`${API_URL}/dashboard/building-types/${id}`, {
+      method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch residential buildings: ${response.statusText}`);
+      throw new Error(`Failed to delete building type: ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data;
+    return true;
   } catch (error) {
-    console.error(
-      "An error occurred while getting residential buildings from the API:",
-      error
-    );
+    console.error("Error deleting building type:", error);
     throw error;
   }
 };
 
-export const addResidentialBuilding = async (buildingData: any) => {
+export const editBuildingType = async (id: string, formData: FormData) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
 
-  const formData = new FormData();
-  formData.append("name", buildingData.name);
-  formData.append("projectId", buildingData.projectId);
-  formData.append("buildingTypeId", buildingData.buildingTypeId);
-  formData.append("status", buildingData.status);
-  formData.append("position_x", buildingData.position_x.toString());
-  formData.append("position_y", buildingData.position_y.toString());
-  
-  if (buildingData.image) {
-    formData.append("image", buildingData.image);
-  }
-
   try {
-    const response = await fetch(`${API_URL}/dashboard/residential-buildings`, {
-      method: "POST",
+    const response = await fetch(`${API_URL}/dashboard/building-types/${id}`, {
+      method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -326,15 +327,142 @@ export const addResidentialBuilding = async (buildingData: any) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to add residential building: ${response.statusText}`);
+      throw new Error(`Edit failed: ${response.statusText}`);
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("An error occurred while adding residential building:", error);
+    console.error("Edit error:", error);
     throw error;
   }
+};
+
+export const getResidentialBuildings = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-building`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store", // أو "force-cache" حسب الحالة
+    });
+
+    if (!response.ok) {
+      throw new Error("فشل في جلب بيانات العمارات السكنية");
+    }
+
+    const data = await response.json();
+    return data.items; // فقط نحتاج items من الـ response
+  } catch (error) {
+    console.error("Error fetching residential buildings:", error);
+    return [];
+  }
+};
+
+// Residential Buildings
+
+export const addResidentialBuilding = async (buildingData: any) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  // بناء body حسب ما طلبت
+  const body = {
+    number: Number(buildingData.number), // رقم العمارة (عدد)
+    size: Number(buildingData.size), // حجم العمارة (عدد)
+    position: [
+      Number(buildingData.position_x),
+      Number(buildingData.position_y),
+    ], // مصفوفة أرقام
+    buildingType: buildingData.buildingTypeId,
+    project: buildingData.projectId,
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-building`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to add residential building: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "An error occurred while adding residential building:",
+      error
+    );
+    throw error;
+  }
+};
+
+export const updateResidentialBuilding = async (
+  buildingId: string,
+  buildingData: {
+    number: number;
+    size: number;
+    projectId: string;
+    buildingTypeId: string;
+    position: [],
+  }
+) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-building/${buildingId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(buildingData),
+    });
+
+    const resText = await response.text(); // ✅ اطبع رد السيرفر كـ نص
+    console.log("🧾 Server response:", resText);
+
+    if (!response.ok) {
+      throw new Error(`Failed to update building: ${response.statusText}`);
+    }
+
+    return JSON.parse(resText); // ✅ رجع البيانات
+  } catch (error) {
+    console.error("❌ Error updating residential building:", error);
+    throw error;
+  }
+};
+
+export const deleteResidentialBuilding = async (id: string) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  const response = await fetch(
+    `${API_URL}/dashboard/apartment-building/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete residential building");
+  }
+  return true;
 };
 
 // Apartments
@@ -390,6 +518,58 @@ export const addApartment = async (apartmentData: any) => {
     throw error;
   }
 };
+
+export const deleteApartment = async (id: string) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartments/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete apartment: ${response.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("An error occurred while deleting apartment:", error);
+    throw error;
+  }
+};
+export const updateApartment = async (id: string, payload: any) => {
+  console.log("🚀 ~ updateApartment ~ payload:", payload);
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+  try {
+    const res = await fetch(`${API_URL}/dashboard/apartments/${id}`, {
+      method: "PUT",
+      headers: {
+         "Content-Type": "application/json",
+           Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const responseData = await res.json();
+
+    if (!res.ok) {
+      console.error("فشل التحديث:", responseData);
+      throw new Error(responseData?.message || "فشل تحديث الشقة");
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error("Update Error:", error);
+    throw error;
+  }
+};
+
+
 
 // Category
 export const getCategories = async () => {
