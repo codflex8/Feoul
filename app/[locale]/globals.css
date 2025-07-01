@@ -121,6 +121,32 @@ body {
   scrollbar-width: none;
 }
 
+/* تحسينات للماركرز المخصصة */
+.custom-building-icon {
+  transition: all 0.3s ease !important;
+}
+
+.custom-building-icon:hover {
+  transform: scale(1.1) !important;
+  z-index: 1000 !important;
+}
+
+.custom-apartment-icon {
+  transition: all 0.3s ease !important;
+}
+
+.custom-apartment-icon:hover {
+  transform: scale(1.15) !important;
+  z-index: 1000 !important;
+}
+
+/* تأثيرات إضافية للماركرز */
+.leaflet-marker-icon.custom-building-icon,
+.leaflet-marker-icon.custom-apartment-icon {
+  border: none !important;
+  background: transparent !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
