@@ -15,29 +15,56 @@ import WebsiteTitleSec from "@/components/WebsiteTitleSec";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NeedHelpForm from "@/components/form/NeedHelpForm";
-
-import {
-  MapContainer,
-  ImageOverlay,
-  Marker,
-  useMap,
-} from "react-leaflet";
+import { useParams, useSearchParams } from "next/navigation";
+import { getApartment } from "@/lib/actions/map.actions";
+import { Apartment } from "@/types/map.types";
+import { MapContainer, ImageOverlay, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ResidentialBuilding } from "@/types/map.types";
 import ApartmentMarker from "./ApartmentMarker";
+import BuildingBlocksFiters from "@/components/BuildingBlocksFiters";
+import { UnitsFilters, UnitStatusEnum } from "@/types/map.types";
+import React from "react";
 
 const imageUrl = "/assets/images/project.jpg";
 
-const ResidentialBuildingViewPage = ({ building }: { building: ResidentialBuilding }) => {
+const ResidentialBuildingViewPage = ({
+  building,
+}: {
+  building: ResidentialBuilding;
+}) => {
   const t = useTranslations("BuildingViewPage");
-
+  const searchParams = useSearchParams();
+  const [apartments, setApartments] = useState<Apartment[]>([]);
   const [scale, setScale] = useState<number>(1);
   const [openHelpForm, setOpenHelpForm] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
+  const params = useParams();
   const zoomStep = 0.1;
+
+  const projectName = searchParams.get("projectName");
+  const projectId = searchParams.get("projectId");
+  const imageBuilding = searchParams.get("image");
+  const buildingId = params.buildingId as string;
+
+  const [unitsFilters, setUnitsFilters] = useState<UnitsFilters>({
+    unitStatus: UnitStatusEnum.available,
+    unitsPriceRange: {
+      minPrice: 0,
+      maxPrice: 10000,
+      sliderValue: [0, 10000],
+    },
+    unitsSpaceRange: {
+      minSpace: 0,
+      maxSpace: 1000,
+      sliderValue: [0, 1000],
+    },
+    selectedCategory: "All",
+  });
 
   const zoomIn = () => {
     if (scale <= 1) {
@@ -70,44 +97,39 @@ const ResidentialBuildingViewPage = ({ building }: { building: ResidentialBuildi
     return null;
   };
 
-  // بيانات وهمية للشقق - في التطبيق الحقيقي ستأتي من الـ API
-  const apartments = [
-    {
-      id: "1",
-      number: 101,
-      name: "شقة 101",
-      position: [200, 300],
-      status: "available",
-      price: 500000,
-      bedroomNumber: 3,
-      bathroomNumber: 2,
-      buildSpace: 120,
-      landSpace: 150,
-    },
-    {
-      id: "2", 
-      number: 102,
-      name: "شقة 102",
-      position: [250, 350],
-      status: "reserved",
-      price: 550000,
-      bedroomNumber: 4,
-      bathroomNumber: 3,
-      buildSpace: 140,
-      landSpace: 170,
-    },
-  ];
+  const getFilteredApartments = () => {
+    let filtered = [...apartments];
+    const minPrice = unitsFilters.unitsPriceRange.sliderValue[0];
+    const maxPrice = unitsFilters.unitsPriceRange.sliderValue[1];
+    const minSpace = unitsFilters.unitsSpaceRange.sliderValue[0];
+    const maxSpace = unitsFilters.unitsSpaceRange.sliderValue[1];
+
+    filtered = filtered.filter((ap) => ap.price >= minPrice && ap.price <= maxPrice);
+    filtered = filtered.filter((ap) => ap.buildSpace >= minSpace && ap.buildSpace <= maxSpace);
+    return filtered;
+  };
+
+  useEffect(() => {
+    const fetchApartments = async () => {
+      if (!buildingId) return;
+      try {
+        const data = await getApartment(buildingId);
+        setApartments(data);
+      } catch (error) {
+        console.error("فشل في جلب الشقق:", error);
+      }
+    };
+    fetchApartments();
+  }, [buildingId]);
 
   return (
     <div className="bg-[#4b5d6e75] relative text-center min-h-[100vh] w-screen flex items-center justify-center py-2 overflow-x-hidden">
-      {/* Website Control Functions */}
       <ControlFunctions
         zoomIn={zoomIn}
         zoomOut={zoomOut}
         setOpenHelpForm={setOpenHelpForm}
       />
 
-      {/* Website Title Section */}
       <div
         className={clsx(
           "absolute top-4 z-[1000]",
@@ -115,82 +137,69 @@ const ResidentialBuildingViewPage = ({ building }: { building: ResidentialBuildi
         )}
       >
         <WebsiteTitleSec
-          projectName={building.project.name}
-          projectId={building.project.id}
-          blockNumber={Number(building.name.split(' ')[1]) || 0}
+          projectName={projectName}
+          projectId={projectId}
+          blockNumber={apartments.length > 0 ? Number(apartments[0].building.number) : 'no'}
         />
-      </div>
-
-      {/* Building Info Card */}
-      <div
-        className={clsx(
-          "absolute top-24 z-[1000] hidden md:block",
-          t("language").toLowerCase() === "en" ? "right-[10px]" : "left-[10px]"
-        )}
-      >
-        <div className="w-64 bg-white shadow-md rounded-md overflow-hidden">
-          <div className="bg-slate-600 text-white p-2 flex justify-between items-center rounded-t-md">
-            <h3 className="text-sm font-semibold">{building.name}</h3>
-            <span className="text-xs">{building.buildingType?.name}</span>
-          </div>
-          <div className="p-4">
-            <img 
-              src={building.image} 
-              alt={building.name}
-              className="w-full h-32 object-cover rounded mb-2"
+        <div className="w-fit">
+          <Button
+            className="w-full !bg-slate-600 text-white !justify-between"
+            onClick={() => setShowFilters((prev) => !prev)}
+          >
+            <span>فلاتر</span>
+            <Image
+              src="/assets/icons/left-arrow.svg"
+              alt="arrow"
+              width={32}
+              height={32}
+              className={clsx(
+                "transition-all",
+                showFilters ? "rotate-90" : "-rotate-90"
+              )}
             />
-            <p className="text-sm text-gray-600">
-              المشروع: {building.project.name}
-            </p>
-            <p className="text-sm text-gray-600">
-              الحالة: {building.status}
-            </p>
-          </div>
+          </Button>
+
+          <BuildingBlocksFiters
+            className={showFilters ? "max-h-[800] py-2" : "max-h-0"}
+            selectedCategories={[]}
+            setSelectedCategories={() => {}}
+            unitsFilters={unitsFilters}
+            setUnitsFilters={setUnitsFilters}
+            unitsCount={getFilteredApartments().length}
+          />
         </div>
       </div>
 
-      {/* Building View */}
       <div className="mx-auto mt-auto md:m-auto relative">
-        <div className="w-[500px] max-w-[90%] m-auto h-full rounded-md"
+        <div
+          className="fixed inset-0 z-0"
           style={{
             transform: `scale(${scale})`,
             transition: "transform 0.3s ease-in-out",
           }}
         >
-          <div className="min-h-[300px] h-[100vh] md:h-[80vh] rounded-md max-w-[90%] m-auto">
-            <MapContainer
-              center={[225, 400]}
-              zoom={1}
-              minZoom={1}
-              maxZoom={4}
-              scrollWheelZoom={true}
-              style={{ height: "100%", width: "100%" }}
-              crs={L.CRS.Simple}
-              maxBounds={imageBounds}
-              maxBoundsViscosity={1.0}
-            >
-              <ImageOverlay url={building.image} bounds={imageBounds} />
-              <FitBoundsToImage bounds={imageBounds} />
-              {apartments.map((apartment) => (
-                <ApartmentMarker key={apartment.id} apartment={apartment} />
-              ))}
-            </MapContainer>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-center gap-4 mt-4 md:mt-8">
-          <Link href={`/ar/real-estate/${building.project.id}/residential-buildings`}>
-            <Button className="font-semibold">
-              العودة إلى المشروع
-            </Button>
-          </Link>
-          <Button variant="outline" className="font-semibold">
-            عرض معلومات العمارة
-          </Button>
+          <MapContainer
+            center={[225, 400]}
+            zoom={1}
+            minZoom={1}
+            maxZoom={4}
+            scrollWheelZoom={true}
+            style={{ height: "100vh", width: "100vw" }}
+            crs={L.CRS.Simple}
+            maxBounds={imageBounds}
+            maxBoundsViscosity={1.0}
+          >
+            {imageBuilding && (
+              <ImageOverlay url={imageBuilding} bounds={imageBounds} />
+            )}
+            <FitBoundsToImage bounds={imageBounds} />
+            {getFilteredApartments().map((apartment) => (
+              <ApartmentMarker key={apartment.id} apartment={apartment} />
+            ))}
+          </MapContainer>
         </div>
       </div>
 
-      {/* Need Help Form Popup */}
       <Dialog open={openHelpForm} onOpenChange={setOpenHelpForm}>
         <DialogContent className="max-w-lg">
           <DialogHeader>

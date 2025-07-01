@@ -15,8 +15,8 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
   });
 
   const iconSize = [
-    40 * (zoomLevel / 2),
-    40 * (zoomLevel / 2),
+    200 * (zoomLevel / 2),
+    50 * (zoomLevel / 2),
   ];
 
   const getStatusColor = (status: string) => {
@@ -55,7 +55,7 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
 
   return (
     <Marker
-      position={[Number(apartment.position[0]), Number(apartment.position[1])]}
+      position={[Number(apartment.lat), Number(apartment.lng)]}
       icon={icon}
       title={`${apartment.name} - ${t(`${apartment.status}`)}`}
     >

@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import InterestedForm from "@/components/form/InterestedForm";
 import NeedHelpForm from "@/components/form/NeedHelpForm";
 import { Apartment } from "@/types/map.types";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
   const t = useTranslations("BuildingViewPage");
@@ -36,7 +37,9 @@ const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState<number>(0);
   const zoomStep = 0.1;
-
+const searchParams = useSearchParams();
+const projectName = searchParams.get("projectName") ?? "No Name";
+const projectId = searchParams.get("projectId") ?? "No ID";
   const images = apartment.images || [];
 
   const zoomIn = () => {
@@ -80,8 +83,8 @@ const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
         )}
       >
         <WebsiteTitleSec
-          projectName={apartment.building.project.name}
-          projectId={apartment.building.project.id}
+          projectName={projectName}
+          projectId={projectId}
           blockNumber={apartment.number}
         />
       </div>
@@ -210,12 +213,12 @@ const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
         </Carousel>
 
         <div className="flex items-center justify-center gap-4 mt-4 md:mt-8">
-          <Link href={`/ar/real-estate/${apartment.building.project.id}/residential-buildings`}>
+          <Link href={`/ar/real-estate/${projectId}/residential-buildings`}>
             <Button className="font-semibold">
               العودة إلى المشروع
             </Button>
           </Link>
-          <Link href={`/ar/real-estate/${apartment.building.project.id}/residential-buildings/building-view/${apartment.building.id}`}>
+          <Link href={`/ar/real-estate/${projectId}/residential-buildings/building-view/${apartment.building.id}`}>
             <Button variant="outline" className="font-semibold">
               العودة إلى العمارة
             </Button>

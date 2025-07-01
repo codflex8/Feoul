@@ -146,16 +146,16 @@ export const getUnitById = async (unitId: string) => {
 // lib/api.ts
 
 export const fetchResidentialBuildings = async (id:string) => {
-  const res = await fetch(`${API_URL}/public//apartment-buildings?projectId=${id}`);  
+  const res = await fetch(`${API_URL}/public/apartment-buildings?projectId=${id}`);  
   if (!res.ok) throw new Error("فشل في جلب العمارات السكنية");
   const data = await res.json();
-  return data.items; // فقط العمارات
+  return data.items; 
 };
 
 
 export const getResidentialBuildingById = async (buildingId: string) => {
   try {
-    const response = await fetch(`${API_URL}/public/residential-buildings/${buildingId}`, {
+    const response = await fetch(`${API_URL}/public/apartments?buildingId=${buildingId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -202,6 +202,13 @@ export const getApartmentById = async (apartmentId: string) => {
     );
     throw error;
   }
+};
+export const getApartment = async (id:string) => {
+  const res = await fetch(`${API_URL}/public/apartments?buildingId=${id}`);  
+  if (!res.ok) throw new Error("فشل في جلب الشقق السكنية");
+  const data = await res.json();
+  console.log("🚀 ~ getApartment ~ data:", data)
+  return data.items; 
 };
 
  export const getCategories = async () => {

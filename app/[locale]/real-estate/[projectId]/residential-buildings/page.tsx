@@ -33,6 +33,7 @@ import {
 import { fetchResidentialBuildings } from "@/lib/actions/map.actions";
 import { ResidentialBuilding } from "@/types/map.types";
 import { useParams } from "next/navigation";
+import ResidentialBuildingMarker from "./ResidentialBuildingMarker";
 
 const imageBounds: L.LatLngBoundsExpression = [
   [0, 0],
@@ -146,22 +147,7 @@ const params = useParams();
           <FitBoundsToImage bounds={imageBounds} />
 
           {filteredBuildings.map((building) => (
-            <Marker
-              key={building.id}
-              position={[
-                parseFloat(building.position[0]),
-                parseFloat(building.position[1]),
-              ]}
-            >
-              <Popup>
-                <div>
-                  <h2>رقم: {building.number}</h2>
-                  <p>المساحة: {building.size} م²</p>
-                  <p>النوع: {building.buildingType?.name}</p>
-                  <p>المشروع: {building.project?.name}</p>
-                </div>
-              </Popup>
-            </Marker>
+             <ResidentialBuildingMarker key={building.id} building={building} />
           ))}
         </MapContainer>
       </div>

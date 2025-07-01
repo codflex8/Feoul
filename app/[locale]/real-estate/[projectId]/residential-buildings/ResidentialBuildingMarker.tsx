@@ -16,8 +16,8 @@ const ResidentialBuildingMarker = ({ building }: { building: ResidentialBuilding
   });
 
   const iconSize = [
-    50 * (zoomLevel / 2),
-    50 * (zoomLevel / 2),
+    100 * (zoomLevel / 2),
+    100 * (zoomLevel / 2),
   ];
 
   const icon = L.divIcon({
@@ -37,7 +37,7 @@ const ResidentialBuildingMarker = ({ building }: { building: ResidentialBuilding
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
     ">
-      ${building.name}
+      ${building.number}
     </div>`,
   });
 
@@ -45,7 +45,7 @@ const ResidentialBuildingMarker = ({ building }: { building: ResidentialBuilding
     <Marker
       position={[Number(building.position[0]), Number(building.position[1])]}
       icon={icon}
-      title={`${building.name} - ${building.buildingType?.name || ""} - ${t(`${building.status}`)}`}
+      title={`بناية رقم : ${building.number} - نوع : ${building.buildingType?.name || ""} `}
     >
       <ResidentialBuildingPopup building={building} />
     </Marker>
