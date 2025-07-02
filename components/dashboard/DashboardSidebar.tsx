@@ -9,6 +9,7 @@ import {
   FaMoneyBillTransfer,
   FaLayerGroup,
   FaChrome,
+  FaHome,
 } from "react-icons/fa6";
 import { BiSolidDashboard } from "react-icons/bi";
 import { FaCity } from "react-icons/fa";
