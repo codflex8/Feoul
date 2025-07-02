@@ -204,14 +204,15 @@ const ResidentialBuildingsPage = () => {
         onImportSuccess={handleImportSuccess}
         importType="residentialBuildings"
         title="استيراد العمارات السكنية من Excel"
-        templateColumns={[
-          "رقم العمارة",
-          "المساحة",
-          "معرف نوع العمارة",
-          "معرف المشروع",
-          "موقع X (position_x)",
-          "موقع Y (position_y)"
-        ]}
+       templateColumns={[
+  "Building Number",
+  "Area",
+  "Building Type ID",
+  "Project ID",
+  "X Position (position_x)",
+  "Y Position (position_y)"
+]}
+
       />
 
       <DataTable columns={residentialBuildingsColumns} data={buildings} />

@@ -183,11 +183,12 @@ const BuildingTypesPage = () => {
         onImportSuccess={handleImportSuccess}
         importType="buildingTypes"
         title="استيراد أنواع العمارات السكنية من Excel"
-        templateColumns={[
-          "اسم النوع",
-          "صورة العمارة (رابط)",
-          "فيديو (رابط اختياري)"
-        ]}
+       templateColumns={[
+  "Type Name",
+  "Building Image (URL)",
+  "Video (Optional URL)"
+]}
+
       />
 
       <DataTable columns={buildingTypesColumns} data={buildingTypes} />
