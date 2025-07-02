@@ -21,7 +21,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Apartment, ResidentialBuilding } from "@/types/dashboard.types";
+import { Apartment, ResidentialBuilding, ApartmentType } from "@/types/dashboard.types";
 import {
   MapContainer,
   ImageOverlay,
@@ -32,6 +32,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
   getResidentialBuildings,
+  getApartmentTypes,
   addApartment,
 } from "@/lib/actions/dashboard.actions";
 
@@ -42,15 +43,11 @@ const imageBounds: L.LatLngBoundsExpression = [
 
 const formSchema = z.object({
   number: z.string().min(1, "رقم الشقة مطلوب"),
-  name: z.string().min(2, "اسم الشقة يجب ألا يقل عن حرفين"),
-  buildingId: z.string().min(1, "العمارة مطلوبة"),
-  price: z.number().min(1, "السعر مطلوب"),
-  landSpace: z.number().min(1, "مساحة الأرض مطلوبة"),
-  buildSpace: z.number().min(1, "مساحة البناء مطلوبة"),
-  bedroomNumber: z.number().min(1, "عدد غرف النوم مطلوب"),
-  bathroomNumber: z.number().min(1, "عدد دورات المياه مطلوب"),
-  position_x: z.number().min(1, "موقع X مطلوب"),
-  position_y: z.number().min(1, "موقع Y مطلوب"),
+  apartmentTypeId: z.string().min(1, "نوع الشقة مطلوب"),
+  floorNumber: z.number().min(1, "رقم الدور مطلوب"),
+  buildingId: z.string().min(1, "العمارة السكنية مطلوبة"),
+  lat: z.number().min(-90).max(90, "خط العرض غير صالح"),
+  lng: z.number().min(-180).max(180, "خط الطول غير صالح"),
   status: z.enum(["متاح", "محجوز", "مباع"]),
 });
 
@@ -61,49 +58,49 @@ interface AddApartmentFormProps {
 
 const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
   const [buildings, setBuildings] = useState<ResidentialBuilding[]>([]);
+  const [apartmentTypes, setApartmentTypes] = useState<ApartmentType[]>([]);
   const [mapImageUrl, setMapImageUrl] = useState("");
-  const [position, setPosition] = useState({ lat: 0.0, lng: 0.0 });
+  const [position, setPosition] = useState({
+    lat: 225,
+    lng: 400,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       number: "",
-      name: "",
+      apartmentTypeId: "",
+      floorNumber: 1,
       buildingId: "",
-      price: 0,
-      landSpace: 0,
-      buildSpace: 0,
-      bedroomNumber: 1,
-      bathroomNumber: 1,
-      position_x: 0,
-      position_y: 0,
+      lat: 225,
+      lng: 400,
       status: "متاح",
     },
   });
 
   useEffect(() => {
-    const fetchBuildings = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getResidentialBuildings();
-        setBuildings(data);
+        const [buildingsData, apartmentTypesData] = await Promise.all([
+          getResidentialBuildings(),
+          getApartmentTypes(),
+        ]);
+        setBuildings(buildingsData);
+        setApartmentTypes(apartmentTypesData.items || []);
       } catch (error) {
-        console.error("فشل في جلب بيانات العمارات:", error);
+        console.error("فشل في جلب البيانات:", error);
       }
     };
-
-    fetchBuildings();
+    fetchData();
   }, []);
 
   useEffect(() => {
-    const selectedBuilding = buildings.find(
-      (b) => b.id === form.watch("buildingId")
-    );
-    if (selectedBuilding?.buildingType?.buildingImage) {
-      setMapImageUrl(
-        `http://13.59.197.112${selectedBuilding.buildingType.buildingImage}`
-      );
-    } else {
-      setMapImageUrl("");
+    const selectedBuildingId = form.watch("buildingId");
+    if (selectedBuildingId && buildings.length > 0) {
+      const selectedBuilding = buildings.find(b => b.id === selectedBuildingId);
+      if (selectedBuilding?.buildingType?.buildingImage) {
+        setMapImageUrl(`http://13.59.197.112${selectedBuilding.buildingType.buildingImage}`);
+      }
     }
   }, [form.watch("buildingId"), buildings]);
 
@@ -111,8 +108,8 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
     useMapEvents({
       click(e) {
         setPosition(e.latlng);
-        form.setValue("position_x", e.latlng.lat);
-        form.setValue("position_y", e.latlng.lng);
+        form.setValue("lat", e.latlng.lat);
+        form.setValue("lng", e.latlng.lng);
       },
     });
     return <Marker position={position} />;
@@ -120,34 +117,18 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const selectedBuilding = buildings.find(
-        (b) => b.id === values.buildingId
-      );
-
       const apartmentPayload = {
-        number: parseInt(values.number),
-        name: values.name || `شقة ${values.number}`,
-        size: values.buildSpace,
-        price: values.price,
-        status:
-          values.status === "متاح"
-            ? "avaliable"
-            : values.status === "مباع"
-            ? "sold"
-            : "reserved",
-        landSpace: values.landSpace,
-        buildSpace: values.buildSpace,
-        bedroomNumber: values.bedroomNumber,
-        bathroomNumber: values.bathroomNumber,
-        lat: values.position_x.toString(),
-        lng: values.position_y.toString(),
+        number: values.number,
+        apartmentTypeId: values.apartmentTypeId,
+        floorNumber: values.floorNumber,
         buildingId: values.buildingId,
+        lat: values.lat,
+        lng: values.lng,
+        status: values.status === "متاح" ? "avaliable" : values.status === "مباع" ? "sold" : "reserved",
       };
 
-      const created = await addApartment(apartmentPayload);
-
-      console.log("Apartment added successfully:", created);
-      onAdd(created); 
+      const newApartment = await addApartment(apartmentPayload);
+      onAdd(newApartment);
       setOpen(false);
     } catch (error) {
       console.error("فشل في إضافة الشقة:", error);
@@ -165,7 +146,7 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
               <FormItem>
                 <FormLabel>رقم الشقة</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} placeholder="101" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -174,12 +155,17 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
 
           <FormField
             control={form.control}
-            name="name"
+            name="floorNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>اسم الشقة</FormLabel>
+                <FormLabel>رقم الدور</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    placeholder="1"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -189,21 +175,20 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
 
         <FormField
           control={form.control}
-          name="buildingId"
+          name="apartmentTypeId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>اختر العمارة السكنية</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormLabel>نوع الشقة</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="اختر عمارة سكنية" />
+                    <SelectValue placeholder="اختر نوع الشقة" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {buildings.map((building) => (
-                    <SelectItem key={building.id} value={building.id}>
-                      عمارة رقم {building.number} -{" "}
-                      {building.project?.name ?? "بدون مشروع"}
+                  {apartmentTypes.map((type) => (
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.name} - {type.bedroomNumber} غرف - {type.price} ريال
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -213,145 +198,73 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>السعر</FormLabel>
+        <FormField
+          control={form.control}
+          name="buildingId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>العمارة السكنية</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
+                  <SelectTrigger>
+                    <SelectValue placeholder="اختر العمارة السكنية" />
+                  </SelectTrigger>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <SelectContent>
+                  {buildings.map((building) => (
+                    <SelectItem key={building.id} value={building.id}>
+                      عمارة رقم {building.number} - {building.project?.name ?? "بدون مشروع"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>حالة الشقة</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="اختر الحالة" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {["متاح", "محجوز", "مباع"].map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="landSpace"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>مساحة الأرض</FormLabel>
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>حالة الشقة</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
+                  <SelectTrigger>
+                    <SelectValue placeholder="اختر الحالة" />
+                  </SelectTrigger>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="buildSpace"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>مساحة البناء</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="bedroomNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>عدد غرف النوم</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="bathroomNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>عدد دورات المياه</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+                <SelectContent>
+                  {["متاح", "محجوز", "مباع"].map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormLabel>تحديد موقع الشقة على العمارة</FormLabel>
-        <MapContainer
-          center={[225, 400]}
-          zoom={1}
-          minZoom={1}
-          maxZoom={4}
-          scrollWheelZoom={true}
-          style={{ height: "400px", width: "100%" }}
-          crs={L.CRS.Simple}
-          maxBounds={imageBounds}
-          maxBoundsViscosity={1.0}
-        >
-          <ImageOverlay url={mapImageUrl} bounds={imageBounds} />
-          <LocationMarker />
-        </MapContainer>
+        {mapImageUrl && (
+          <MapContainer
+            center={[225, 400]}
+            zoom={1}
+            minZoom={1}
+            maxZoom={4}
+            scrollWheelZoom={true}
+            style={{ height: "400px", width: "100%" }}
+            crs={L.CRS.Simple}
+            maxBounds={imageBounds}
+            maxBoundsViscosity={1.0}
+          >
+            <ImageOverlay url={mapImageUrl} bounds={imageBounds} />
+            <LocationMarker />
+          </MapContainer>
+        )}
 
         <Button
           className="w-full bg-green-600 hover:bg-green-500"

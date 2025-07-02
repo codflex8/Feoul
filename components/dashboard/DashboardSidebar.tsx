@@ -61,6 +61,11 @@ const items: ItemsProps[] = [
     icon: FaBuilding,
   },
   {
+    title: "أنواع الشقق السكنية",
+    url: "/ar/dashboard/apartment-types",
+    icon: FaChrome,
+  },
+  {
     title: "الشقق السكنية",
     url: "/ar/dashboard/apartments",
     icon: FaChrome,

@@ -21,7 +21,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Apartment, ResidentialBuilding } from "@/types/dashboard.types";
+import { Apartment, ResidentialBuilding, ApartmentType } from "@/types/dashboard.types";
 import {
   MapContainer,
   ImageOverlay,
@@ -32,6 +32,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
   getResidentialBuildings,
+  getApartmentTypes,
   updateApartment,
 } from "@/lib/actions/dashboard.actions";
 
@@ -42,82 +43,73 @@ const imageBounds: L.LatLngBoundsExpression = [
 
 const formSchema = z.object({
   number: z.string().min(1, "رقم الشقة مطلوب"),
-  name: z.string().min(2, "اسم الشقة يجب ألا يقل عن حرفين"),
-  buildingId: z.string().min(1, "العمارة مطلوبة"),
-  price: z.number().min(1, "السعر مطلوب"),
-  landSpace: z.number().min(1, "مساحة الأرض مطلوبة"),
-  buildSpace: z.number().min(1, "مساحة البناء مطلوبة"),
-  bedroomNumber: z.number().min(1, "عدد غرف النوم مطلوب"),
-  bathroomNumber: z.number().min(1, "عدد دورات المياه مطلوب"),
-  position_x: z.number().min(1, "موقع X مطلوب"),
-  position_y: z.number().min(1, "موقع Y مطلوب"),
+  apartmentTypeId: z.string().min(1, "نوع الشقة مطلوب"),
+  floorNumber: z.number().min(1, "رقم الدور مطلوب"),
+  buildingId: z.string().min(1, "العمارة السكنية مطلوبة"),
+  lat: z.number().min(-90).max(90, "خط العرض غير صالح"),
+  lng: z.number().min(-180).max(180, "خط الطول غير صالح"),
   status: z.enum(["متاح", "محجوز", "مباع"]),
 });
 
 interface EditApartmentFormProps {
   apartment: Apartment;
   setOpen: (open: boolean) => void;
-  onAdd: (apartment: Apartment) => void;
+  onEdit: (apartment: Apartment) => void;
 }
 
-const EditApartmentForm = ({ apartment, setOpen, onAdd }: EditApartmentFormProps) => {
+const EditApartmentForm = ({ apartment, setOpen, onEdit }: EditApartmentFormProps) => {
   const [buildings, setBuildings] = useState<ResidentialBuilding[]>([]);
+  const [apartmentTypes, setApartmentTypes] = useState<ApartmentType[]>([]);
   const [mapImageUrl, setMapImageUrl] = useState("");
   const [position, setPosition] = useState({
-    lat: Number(apartment.lat) || 0,
-    lng: Number(apartment.lng) || 0,
+    lat: apartment.lat || 225,
+    lng: apartment.lng || 400,
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       number: apartment.number?.toString() || "",
-      name: apartment.name || "",
+      apartmentTypeId: apartment.apartmentType?.id ?? "",
+      floorNumber: apartment.floorNumber || 1,
       buildingId: apartment.building?.id ?? "",
-      price: apartment.price || 0,
-      landSpace: apartment.landSpace || 0,
-      buildSpace: apartment.buildSpace || 0,
-      bedroomNumber: apartment.bedroomNumber || 1,
-      bathroomNumber: apartment.bathroomNumber || 1,
-      position_x: Number(apartment.lat) || 0,
-      position_y: Number(apartment.lng) || 0,
-      status:
-        apartment.status === "avaliable"
-          ? "متاح"
-          : apartment.status === "reserved"
-          ? "محجوز"
-          : "مباع",
+      lat: apartment.lat || 225,
+      lng: apartment.lng || 400,
+      status: apartment.status === "avaliable" ? "متاح" : apartment.status === "reserved" ? "محجوز" : "مباع",
     },
   });
 
   useEffect(() => {
-    const fetchBuildings = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getResidentialBuildings();
-        setBuildings(data);
+        const [buildingsData, apartmentTypesData] = await Promise.all([
+          getResidentialBuildings(),
+          getApartmentTypes(),
+        ]);
+        setBuildings(buildingsData);
+        setApartmentTypes(apartmentTypesData.items || []);
       } catch (error) {
-        console.error("فشل في جلب بيانات العمارات:", error);
+        console.error("فشل في جلب البيانات:", error);
       }
     };
-    fetchBuildings();
+    fetchData();
   }, []);
 
-useEffect(() => {
-  if (buildings.length > 0 && apartment.building?.id) {
-    const selectedBuilding = buildings.find(b => b.id === apartment.building!.id);
-    if (selectedBuilding?.buildingType?.buildingImage) {
-      setMapImageUrl(`http://13.59.197.112${selectedBuilding.buildingType.buildingImage}`);
+  useEffect(() => {
+    if (buildings.length > 0 && apartment.building?.id) {
+      const selectedBuilding = buildings.find(b => b.id === apartment.building!.id);
+      if (selectedBuilding?.buildingType?.buildingImage) {
+        setMapImageUrl(`http://13.59.197.112${selectedBuilding.buildingType.buildingImage}`);
+      }
     }
-  }
-}, [buildings, apartment.building]);
-
+  }, [buildings, apartment.building]);
 
   const LocationMarker = () => {
     useMapEvents({
       click(e) {
         setPosition(e.latlng);
-        form.setValue("position_x", e.latlng.lat);
-        form.setValue("position_y", e.latlng.lng);
+        form.setValue("lat", e.latlng.lat);
+        form.setValue("lng", e.latlng.lng);
       },
     });
     return <Marker position={position} />;
@@ -127,31 +119,23 @@ useEffect(() => {
     try {
       const apartmentPayload = {
         id: apartment.id,
-        number: parseInt(values.number),
-        name: values.name || `شقة ${values.number}`,
-        size: values.buildSpace,
-        price: values.price,
-        status:
-          values.status === "متاح"
-            ? "avaliable"
-            : values.status === "مباع"
-            ? "sold"
-            : "reserved",
-        landSpace: values.landSpace,
-        buildSpace: values.buildSpace,
-        bedroomNumber: values.bedroomNumber,
-        bathroomNumber: values.bathroomNumber,
-        lat: values.position_x.toString(),
-        lng: values.position_y.toString(),
+        number: values.number,
+        apartmentTypeId: values.apartmentTypeId,
+        floorNumber: values.floorNumber,
         buildingId: values.buildingId,
+        lat: values.lat,
+        lng: values.lng,
+        status: values.status === "متاح" ? "avaliable" : values.status === "مباع" ? "sold" : "reserved",
       };
- 
-      const updated = await updateApartment(apartmentPayload.id,apartmentPayload);
+
+      const updated = await updateApartment(apartmentPayload.id, apartmentPayload);
+      onEdit(updated);
       setOpen(false);
     } catch (error) {
       console.error("فشل في تعديل الشقة:", error);
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
@@ -172,28 +156,58 @@ useEffect(() => {
 
           <FormField
             control={form.control}
-            name="name"
+            name="floorNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>اسم الشقة</FormLabel>
+                <FormLabel>رقم الدور</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="apartmentTypeId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>نوع الشقة</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="اختر نوع الشقة" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {apartmentTypes.map((type) => (
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.name} - {type.bedroomNumber} غرف - {type.price} ريال
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="buildingId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>اختر العمارة السكنية</FormLabel>
+              <FormLabel>العمارة السكنية</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="اختر عمارة سكنية" />
+                    <SelectValue placeholder="اختر العمارة السكنية" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -209,147 +223,48 @@ useEffect(() => {
           )}
         />
 
-
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>السعر</FormLabel>
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>حالة الشقة</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
+                  <SelectTrigger>
+                    <SelectValue placeholder="اختر الحالة" />
+                  </SelectTrigger>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>حالة الشقة</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="اختر الحالة" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {["متاح", "محجوز", "مباع"].map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="landSpace"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>مساحة الأرض</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="buildSpace"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>مساحة البناء</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="bedroomNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>عدد غرف النوم</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="bathroomNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>عدد دورات المياه</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+                <SelectContent>
+                  {["متاح", "محجوز", "مباع"].map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormLabel>تحديد موقع الشقة على العمارة</FormLabel>
-        <MapContainer
-          center={[225, 400]}
-          zoom={1}
-          minZoom={1}
-          maxZoom={4}
-          scrollWheelZoom={true}
-          style={{ height: "400px", width: "100%" }}
-          crs={L.CRS.Simple}
-          maxBounds={imageBounds}
-          maxBoundsViscosity={1.0}
-        >
-          <ImageOverlay url={mapImageUrl} bounds={imageBounds} />
-          <LocationMarker />
-        </MapContainer>
+        {mapImageUrl && (
+          <MapContainer
+            center={[position.lat, position.lng]}
+            zoom={1}
+            minZoom={1}
+            maxZoom={4}
+            scrollWheelZoom={true}
+            style={{ height: "400px", width: "100%" }}
+            crs={L.CRS.Simple}
+            maxBounds={imageBounds}
+            maxBoundsViscosity={1.0}
+          >
+            <ImageOverlay url={mapImageUrl} bounds={imageBounds} />
+            <LocationMarker />
+          </MapContainer>
+        )}
 
         <Button
           className="w-full bg-green-600 hover:bg-green-500"

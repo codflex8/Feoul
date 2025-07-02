@@ -20,7 +20,6 @@ import { editBuildingType as editBuildingTypeAPI } from "@/lib/actions/dashboard
 const formSchema = z.object({
   name: z.string().min(1, "اسم النوع يجب ألا يقل عن حرف"),
   buildingImage: z.instanceof(File).array().optional(),
-  apartmentImages: z.instanceof(File).array().optional(),
   video: z.instanceof(File).array().optional(),
 });
 
@@ -30,45 +29,44 @@ interface EditBuildingTypeFormProps {
   onEdit: (buildingType: BuildingType) => void;
 }
 
-const EditBuildingTypeForm = ({ buildingType, setOpen, onEdit }: EditBuildingTypeFormProps) => {
+const EditBuildingTypeForm = ({
+  buildingType,
+  setOpen,
+  onEdit,
+}: EditBuildingTypeFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: buildingType.name,
       buildingImage: [],
-      apartmentImages: [],
       video: [],
     },
   });
 
-  
-const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  try {
-    const formData = new FormData();
-    formData.append("name", values.name);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
 
-    if (values.buildingImage?.[0]) {
-      formData.append("buildingImage", values.buildingImage[0]);
+      if (values.buildingImage?.[0]) {
+        formData.append("buildingImage", values.buildingImage[0]);
+      }
+
+      if (values.video?.[0]) {
+        formData.append("video", values.video[0]);
+      }
+
+      const updatedFromServer = await editBuildingTypeAPI(
+        buildingType.id,
+        formData
+      );
+
+      onEdit(updatedFromServer);
+      setOpen();
+    } catch (error) {
+      console.error("Failed to update building type:", error);
     }
-
-    if (values.apartmentImages?.length) {
-      values.apartmentImages.forEach((file) => {
-        formData.append("apartmentImages", file);
-      });
-    }
-
-    if (values.video?.[0]) {
-      formData.append("video", values.video[0]);
-    }
-
-    const updatedFromServer = await editBuildingTypeAPI(buildingType.id, formData);
-
-    onEdit(updatedFromServer);  
-    setOpen();  
-  } catch (error) {
-    console.error("Failed to update building type:", error);
-  }
-};
+  };
 
   return (
     <Form {...form}>
@@ -92,13 +90,13 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
         <div className="grid gap-4">
           <div>
             <p className="font-semibold text-base mb-2">صورة العمارة الحالية</p>
-            <img 
-              src={buildingType.buildingImage} 
-              alt="Current building" 
+            <img
+              src={buildingType.buildingImage}
+              alt="Current building"
               className="w-32 h-32 object-cover rounded"
             />
           </div>
-          
+
           <FormField
             control={form.control}
             name="buildingImage"
@@ -106,41 +104,6 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
               <FormItem>
                 <FormLabel className="font-semibold text-base">
                   تحديث صورة العمارة
-                </FormLabel>
-                <FormControl>
-                  <FileUploader
-                    files={field.value ?? []}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid gap-4">
-          <div>
-            <p className="font-semibold text-base mb-2">صور الشقق الحالية</p>
-            <div className="flex gap-2">
-              {buildingType.apartmentImages.map((img, index) => (
-                <img 
-                  key={index}
-                  src={img} 
-                  alt={`Apartment ${index + 1}`} 
-                  className="w-16 h-16 object-cover rounded"
-                />
-              ))}
-            </div>
-          </div>
-          
-          <FormField
-            control={form.control}
-            name="apartmentImages"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-semibold text-base">
-                  تحديث صور الشقق
                 </FormLabel>
                 <FormControl>
                   <FileUploader

@@ -82,23 +82,29 @@ export interface ResidentialBuilding {
   updatedAt: string;
 }
 
+// ✅ إضافة نوع الشقق السكنية الجديد
+export interface ApartmentType {
+  id: string;
+  name: string; // اسم النموذج
+  price: number; // السعر
+  bathroomNumber: number; // عدد دورات المياه
+  bedroomNumber: number; // عدد غرف النوم
+  netArea: number; // المساحة الصافية للشقة
+  images: string[]; // صور النموذج
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-// إضافة الشقة السكنية
+// ✅ تحديث الشقة السكنية
 export interface Apartment {
   id: string;
-  number: string;
-  name: string;
-  buildingId: string;
-  building: ResidentialBuilding;
-  price: number;
-  landSpace: number;
-  buildSpace: number;
-  bedroomNumber: number;
-  bathroomNumber: number;
-  position_x: number;
-  position_y: number;
+  number: string; // رقم الشقة
+  apartmentType: ApartmentType; // نوع الشقة (النموذج)
+  floorNumber: number; // رقم الدور
+  building: ResidentialBuilding; // العمارة السكنية
+  lat: number; // الموقع lat
+  lng: number; // الموقع lng
   status: "متاح" | "محجوز" | "مباع";
-  images: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -118,4 +124,19 @@ export type issues = {
 name: string;
 phoneNumber: string;
 description: string;
+}
+
+// ✅ إضافة أنواع للاستيراد من Excel
+export interface ExcelImportData {
+  buildingTypes?: BuildingType[];
+  residentialBuildings?: ResidentialBuilding[];
+  apartmentTypes?: ApartmentType[];
+  apartments?: Apartment[];
+}
+
+export interface ExcelImportResult {
+  success: boolean;
+  message: string;
+  importedCount: number;
+  errors?: string[];
 }

@@ -15,11 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import FileUploader from "@/components/dashboard/fileUploader";
 import { BuildingType } from "@/types/dashboard.types";
-import {addBuildingType} from "@/lib/actions/dashboard.actions"
+import { addBuildingType } from "@/lib/actions/dashboard.actions";
+
 const formSchema = z.object({
   name: z.string().min(1, "اسم النوع يجب ألا يقل عن حرف"),
   buildingImage: z.instanceof(File).array().min(1, "صورة العمارة مطلوبة"),
-  apartmentImages: z.instanceof(File).array().min(1, "صور الشقق مطلوبة"),
   video: z.instanceof(File).array().optional(),
 });
 
@@ -34,40 +34,30 @@ const AddBuildingTypeForm = ({ setOpen, onAdd }: AddBuildingTypeFormProps) => {
     defaultValues: {
       name: "",
       buildingImage: [],
-      apartmentImages: [],
       video: [],
     },
   });
 
- const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  try {
-    const formData = new FormData();
-    formData.append("name", values.name);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
 
-     if (values.buildingImage?.[0]) {
-      formData.append("buildingImage", values.buildingImage[0]);
+      if (values.buildingImage?.[0]) {
+        formData.append("buildingImage", values.buildingImage[0]);
+      }
+
+      if (values.video?.[0]) {
+        formData.append("video", values.video[0]);
+      }
+
+      const createdBuildingType = await addBuildingType(formData);
+      onAdd(createdBuildingType);
+      setOpen(false);
+    } catch (error) {
+      console.error("Failed to add building type:", error);
     }
-
-     if (values.apartmentImages?.length) {
-      values.apartmentImages.forEach((file) => {
-        formData.append("apartmentImages", file); // backend لازم يتعامل مع array
-      });
-    }
-
-     if (values.video?.[0]) {
-      formData.append("video", values.video[0]);
-    }
-
-     const createdBuildingType = await addBuildingType(formData);
-
-     onAdd(createdBuildingType);
-    setOpen(false);
-  } catch (error) {
-    console.error("Failed to add building type:", error);
-  }
-};
-
-
+  };
 
   return (
     <Form {...form}>
@@ -95,25 +85,6 @@ const AddBuildingTypeForm = ({ setOpen, onAdd }: AddBuildingTypeFormProps) => {
             <FormItem>
               <FormLabel className="font-semibold text-base">
                 صورة العمارة السكنية
-              </FormLabel>
-              <FormControl>
-                <FileUploader
-                  files={field.value ?? []}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="apartmentImages"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-semibold text-base">
-                صور الشقق السكنية
               </FormLabel>
               <FormControl>
                 <FileUploader

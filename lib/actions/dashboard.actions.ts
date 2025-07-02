@@ -465,6 +465,108 @@ export const deleteResidentialBuilding = async (id: string) => {
   return true;
 };
 
+// ✅ Apartment Types Functions
+export const getApartmentTypes = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-types`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch apartment types: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "An error occurred while getting apartment types from the API:",
+      error
+    );
+    throw error;
+  }
+};
+
+export const addApartmentType = async (formData: FormData) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-types`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to add apartment type: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while adding apartment type:", error);
+    throw error;
+  }
+};
+
+export const editApartmentType = async (id: string, formData: FormData) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-types/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Edit failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Edit error:", error);
+    throw error;
+  }
+};
+
+export const deleteApartmentType = async (id: string) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-types/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete apartment type: ${response.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting apartment type:", error);
+    throw error;
+  }
+};
+
 // Apartments
 export const getApartments = async () => {
   const cookieStore = await cookies();
@@ -569,7 +671,118 @@ export const updateApartment = async (id: string, payload: any) => {
   }
 };
 
+// ✅ Excel Import Functions
+export const importBuildingTypesFromExcel = async (file: File) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
 
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/building-types/import`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to import building types: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while importing building types:", error);
+    throw error;
+  }
+};
+
+export const importResidentialBuildingsFromExcel = async (file: File) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-building/import`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to import residential buildings: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while importing residential buildings:", error);
+    throw error;
+  }
+};
+
+export const importApartmentTypesFromExcel = async (file: File) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartment-types/import`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to import apartment types: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while importing apartment types:", error);
+    throw error;
+  }
+};
+
+export const importApartmentsFromExcel = async (file: File) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${API_URL}/dashboard/apartments/import`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to import apartments: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("An error occurred while importing apartments:", error);
+    throw error;
+  }
+};
 
 // Category
 export const getCategories = async () => {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaFileExcel } from "react-icons/fa6";
 import {
   Dialog,
   DialogContent,
@@ -16,15 +16,18 @@ import { ColumnDef } from "@tanstack/react-table";
 import { BuildingType } from "@/types/dashboard.types";
 import AddBuildingTypeForm from "@/components/form/AddBuildingTypeForm";
 import EditBuildingTypeForm from "@/components/form/EditBuildingTypeForm";
+import ExcelImportDialog from "@/components/dashboard/ExcelImportDialog";
 import {
   getBuildingTypes,
   deleteBuildingType,
+  importBuildingTypesFromExcel,
 } from "@/lib/actions/dashboard.actions";
 
 const BuildingTypesPage = () => {
   const [buildingTypes, setBuildingTypes] = useState<BuildingType[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [editBuildingType, setEditBuildingType] = useState<BuildingType | null>(null);
+  const [openImportDialog, setOpenImportDialog] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +67,11 @@ const BuildingTypesPage = () => {
     }
   };
 
+  const handleImportSuccess = (importedData: BuildingType[]) => {
+    setBuildingTypes((prev) => [...prev, ...importedData]);
+    setOpenImportDialog(false);
+  };
+
   const buildingTypesColumns: ColumnDef<BuildingType>[] = [
     {
       accessorKey: "name",
@@ -84,28 +92,6 @@ const BuildingTypesPage = () => {
           />
         </div>
       ),
-    },
-    {
-      accessorKey: "apartmentImages",
-      header: () => <div className="text-center font-semibold">صور الشقق</div>,
-      cell: ({ row }) => {
-        const images = (row.getValue("apartmentImages") as string[]) ?? [];
-        return (
-          <div className="flex justify-center gap-1">
-            {images.slice(0, 3).map((img, index) => (
-              <img
-                key={index}
-                src={`http://13.59.197.112${img}`}
-                alt={`Apartment ${index + 1}`}
-                className="w-8 h-8 object-cover rounded"
-              />
-            ))}
-            {images.length > 3 && (
-              <span className="text-xs text-gray-500">+{images.length - 3}</span>
-            )}
-          </div>
-        );
-      },
     },
     {
       accessorKey: "video",
@@ -146,13 +132,22 @@ const BuildingTypesPage = () => {
     <div className="min-h-screen bg-gray-100 flex-1 p-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">أنواع العمارات السكنية</h1>
-        <Button
-          onClick={() => setOpenAddDialog(true)}
-          className="bg-slate-600 hover:bg-slate-700 text-white"
-        >
-          إضافة نوع عمارة
-          <FaPlus />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setOpenImportDialog(true)}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            استيراد من Excel
+            <FaFileExcel />
+          </Button>
+          <Button
+            onClick={() => setOpenAddDialog(true)}
+            className="bg-slate-600 hover:bg-slate-700 text-white"
+          >
+            إضافة نوع عمارة
+            <FaPlus />
+          </Button>
+        </div>
       </div>
 
       <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
@@ -181,6 +176,19 @@ const BuildingTypesPage = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      <ExcelImportDialog
+        isOpen={openImportDialog}
+        onClose={() => setOpenImportDialog(false)}
+        onImportSuccess={handleImportSuccess}
+        importType="buildingTypes"
+        title="استيراد أنواع العمارات السكنية من Excel"
+        templateColumns={[
+          "اسم النوع",
+          "صورة العمارة (رابط)",
+          "فيديو (رابط اختياري)"
+        ]}
+      />
 
       <DataTable columns={buildingTypesColumns} data={buildingTypes} />
     </div>
