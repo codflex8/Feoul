@@ -121,6 +121,7 @@ export interface ResidentialBuilding {
   number: number;
   size: number;
   position: [string, string];  
+  polygon?: number[][]; // إضافة polygon للعمارات
   buildingType: {
     id: string;
     name: string;
@@ -144,6 +145,9 @@ export interface Apartment {
   bedroomNumber: number;
   bathroomNumber: number;
   position: [string, string];
+  polygon?: number[][]; // إضافة polygon للشقق
+  lat?: number; // للتوافق مع البيانات القديمة
+  lng?: number; // للتوافق مع البيانات القديمة
   status: UnitStatus;
   images: Img[];
   createdAt: string;

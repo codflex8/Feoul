@@ -66,6 +66,7 @@ export interface ResidentialBuilding {
   number: number;
   size: number;
   position: string[];
+  polygon?: number[][]; // إضافة polygon للعمارات
   buildingType: {
     name: string;
   };
@@ -102,8 +103,9 @@ export interface Apartment {
   apartmentType: ApartmentType; // نوع الشقة (النموذج)
   floorNumber: number; // رقم الدور
   building: ResidentialBuilding; // العمارة السكنية
-  lat: number; // الموقع lat
-  lng: number; // الموقع lng
+  lat: number; // الموقع lat (للتوافق مع البيانات القديمة)
+  lng: number; // الموقع lng (للتوافق مع البيانات القديمة)
+  polygon?: number[][]; // إضافة polygon للشقق
   status: "متاح" | "محجوز" | "مباع";
   createdAt: Date;
   updatedAt: Date;

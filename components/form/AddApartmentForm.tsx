@@ -25,7 +25,7 @@ import { Apartment, ResidentialBuilding, ApartmentType } from "@/types/dashboard
 import {
   MapContainer,
   ImageOverlay,
-  Marker,
+  Polygon,
   useMapEvents,
 } from "react-leaflet";
 import L from "leaflet";
@@ -46,8 +46,7 @@ const formSchema = z.object({
   apartmentTypeId: z.string().min(1, "نوع الشقة مطلوب"),
   floorNumber: z.number().min(1, "رقم الدور مطلوب"),
   buildingId: z.string().min(1, "العمارة السكنية مطلوبة"),
-  lat: z.number().min(-90).max(90, "خط العرض غير صالح"),
-  lng: z.number().min(-180).max(180, "خط الطول غير صالح"),
+  polygon: z.array(z.array(z.number())).min(4, "يجب تحديد 4 نقاط على الأقل لتكوين المستطيل"),
   status: z.enum(["متاح", "محجوز", "مباع"]),
 });
 
@@ -60,10 +59,8 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
   const [buildings, setBuildings] = useState<ResidentialBuilding[]>([]);
   const [apartmentTypes, setApartmentTypes] = useState<ApartmentType[]>([]);
   const [mapImageUrl, setMapImageUrl] = useState("");
-  const [position, setPosition] = useState({
-    lat: 225,
-    lng: 400,
-  });
+  const [polygon, setPolygon] = useState<number[][]>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,8 +69,7 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
       apartmentTypeId: "",
       floorNumber: 1,
       buildingId: "",
-      lat: 225,
-      lng: 400,
+      polygon: [],
       status: "متاح",
     },
   });
@@ -104,15 +100,34 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
     }
   }, [form.watch("buildingId"), buildings]);
 
-  const LocationMarker = () => {
+  const MapClickHandler = () => {
     useMapEvents({
       click(e) {
-        setPosition(e.latlng);
-        form.setValue("lat", e.latlng.lat);
-        form.setValue("lng", e.latlng.lng);
+        if (isDrawing && polygon.length < 4) {
+          const newPoint = [e.latlng.lat, e.latlng.lng];
+          const newPolygon = [...polygon, newPoint];
+          setPolygon(newPolygon);
+          form.setValue("polygon", newPolygon);
+          
+          if (newPolygon.length === 4) {
+            setIsDrawing(false);
+          }
+        }
       },
     });
-    return <Marker position={position} />;
+    return null;
+  };
+
+  const startDrawing = () => {
+    setIsDrawing(true);
+    setPolygon([]);
+    form.setValue("polygon", []);
+  };
+
+  const clearPolygon = () => {
+    setPolygon([]);
+    form.setValue("polygon", []);
+    setIsDrawing(false);
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -122,8 +137,7 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
         apartmentTypeId: values.apartmentTypeId,
         floorNumber: values.floorNumber,
         buildingId: values.buildingId,
-        lat: values.lat,
-        lng: values.lng,
+        polygon: values.polygon,
         status: values.status === "متاح" ? "avaliable" : values.status === "مباع" ? "sold" : "reserved",
       };
 
@@ -248,7 +262,21 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
           )}
         />
 
-        <FormLabel>تحديد موقع الشقة على العمارة</FormLabel>
+        <div className="space-y-2">
+          <FormLabel>تحديد موقع الشقة على العمارة</FormLabel>
+          <div className="flex gap-2 mb-2">
+            <Button type="button" onClick={startDrawing} disabled={isDrawing}>
+              {isDrawing ? "انقر على 4 نقاط لرسم المستطيل" : "ابدأ الرسم"}
+            </Button>
+            <Button type="button" onClick={clearPolygon} variant="outline">
+              مسح التحديد
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600">
+            النقاط المحددة: {polygon.length}/4
+          </p>
+        </div>
+
         {mapImageUrl && (
           <MapContainer
             center={[225, 400]}
@@ -262,13 +290,26 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
             maxBoundsViscosity={1.0}
           >
             <ImageOverlay url={mapImageUrl} bounds={imageBounds} />
-            <LocationMarker />
+            <MapClickHandler />
+            
+            {polygon.length >= 3 && (
+              <Polygon
+                positions={polygon}
+                pathOptions={{
+                  color: "#10B981",
+                  fillColor: "#10B981",
+                  fillOpacity: 0.3,
+                  weight: 2,
+                }}
+              />
+            )}
           </MapContainer>
         )}
 
         <Button
           className="w-full bg-green-600 hover:bg-green-500"
           type="submit"
+          disabled={polygon.length < 4}
         >
           إضافة الشقة السكنية
         </Button>
