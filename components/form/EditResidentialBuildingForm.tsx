@@ -323,6 +323,24 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
           </p>
         </div>
 
+        <div className="space-y-2">
+          <FormLabel>تحديد موقع العمارة على الخريطة</FormLabel>
+          <div className="flex gap-2 mb-2">
+            <Button type="button" onClick={startDrawing} disabled={isDrawing}>
+              {isDrawing ? "انقر على 4 نقاط لرسم المستطيل" : "إعادة رسم"}
+            </Button>
+            <Button type="button" onClick={clearPolygon} variant="outline">
+              مسح التحديد
+            </Button>
+            <Button type="button" onClick={resetToOriginal} variant="outline">
+              العودة للأصل
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600">
+            النقاط المحددة: {polygon.length}/4
+          </p>
+        </div>
+
         <MapContainer
           center={[225, 400]}
           zoom={1}

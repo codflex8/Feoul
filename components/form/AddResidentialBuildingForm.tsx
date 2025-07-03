@@ -30,16 +30,10 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import {
-  getBuildingProjects,
-  getBuildingTypes,
-  addResidentialBuilding,
-} from "@/lib/actions/dashboard.actions";
 
-const imageBounds: L.LatLngBoundsExpression = [
-  [0, 0],
-  [450, 800],
-];
+// استيراد الدوال من actions
+import { getBuildingProjects, getBuildingTypes, addResidentialBuilding } from "@/lib/actions/dashboard.actions";
+
 const defaultImageBounds: L.LatLngBoundsExpression = [
   [0, 0],
   [450, 800],
@@ -49,8 +43,9 @@ const formSchema = z.object({
   size: z.number().min(1, "المساحة مطلوبة"),
   projectId: z.string().min(1, "المشروع مطلوب"),
   buildingTypeId: z.string().min(1, "نوع العمارة مطلوب"),
-  polygon: z.array(z.array(z.number())).min(4, "يجب تحديد 4 نقاط على الأقل لتكوين المستطيل"),
-  status: z.enum(["avaliable", "reserved", "saled"]),
+  position_x: z.number().min(1, "موقع X مطلوب"),
+  position_y: z.number().min(1, "موقع Y مطلوب"),
+  status: z.enum(["متاح", "محجوز", "مباع"]),
 });
 
 interface AddResidentialBuildingFormProps {
@@ -61,10 +56,10 @@ interface AddResidentialBuildingFormProps {
 const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFormProps) => {
   const [projects, setProjects] = useState<any[]>([]);
   const [buildingTypes, setBuildingTypes] = useState<BuildingType[]>([]);
-  const [polygon, setPolygon] = useState<number[][]>([]);
-  const [isDrawing, setIsDrawing] = useState(false);
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
   const [imageBounds, setImageBounds] = useState<L.LatLngBoundsExpression>(defaultImageBounds);
   const [imageUrl, setImageUrl] = useState<string>("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,8 +67,9 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
       size: 100,
       projectId: "",
       buildingTypeId: "",
-      polygon: [],
-      status: "avaliable",
+      position_x: 0,
+      position_y: 0,
+      status: "متاح",
     },
   });
 
@@ -93,8 +89,8 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
     fetchData();
   }, []);
 
-
-   useEffect(() => {
+  // تحديث صورة الخريطة بناءً على المشروع المختار
+  useEffect(() => {
     const selectedProject = projects.find(p => p.id === form.getValues("projectId"));
     if (selectedProject && selectedProject.projectDocUrl) {
       setImageUrl(`http://13.59.197.112${selectedProject.projectDocUrl}`);
@@ -105,8 +101,7 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
     }
   }, [form.watch("projectId"), projects]);
 
-
-  const MapClickHandler = () => {
+  const LocationMarker = () => {
     useMapEvents({
       click(e) {
         if (isDrawing && polygon.length < 4) {
@@ -136,17 +131,17 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
     setIsDrawing(false);
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("🚀 ~ onSubmit ~ values:", values)
-    try {
-      const buildingPayload = {
-        number: values.number,
-        size: values.size,
-        projectId: values.projectId,
-        buildingTypeId: values.buildingTypeId,
-        status: values.status,
-        polygon: values.polygon,
-      };
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  try {
+    const buildingData = {
+      number: Number(values.number),
+      size: Number(values.size),
+      projectId: values.projectId,
+      buildingTypeId: values.buildingTypeId,
+      status: values.status,
+      position_x: values.position_x,
+      position_y: values.position_y,
+     };
 
       const newBuilding = await addResidentialBuilding(buildingPayload);
       onAdd(newBuilding);
