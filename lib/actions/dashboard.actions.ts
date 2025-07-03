@@ -470,7 +470,7 @@ export const getApartmentTypes = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
   try {
-    const response = await fetch(`${API_URL}/dashboard/apartment-types`, {
+    const response = await fetch(`${API_URL}/dashboard/aprtments-types`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -498,7 +498,7 @@ export const addApartmentType = async (formData: FormData) => {
   const token = cookieStore.get("authToken")?.value;
 
   try {
-    const response = await fetch(`${API_URL}/dashboard/apartment-types`, {
+    const response = await fetch(`${API_URL}/dashboard/aprtments-types`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -524,7 +524,7 @@ export const editApartmentType = async (id: string, formData: FormData) => {
   const token = cookieStore.get("authToken")?.value;
 
   try {
-    const response = await fetch(`${API_URL}/dashboard/apartment-types/${id}`, {
+    const response = await fetch(`${API_URL}/dashboard/aprtments-types/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -549,7 +549,7 @@ export const deleteApartmentType = async (id: string) => {
   const token = cookieStore.get("authToken")?.value;
 
   try {
-    const response = await fetch(`${API_URL}/dashboard/apartment-types/${id}`, {
+    const response = await fetch(`${API_URL}/dashboard/aprtments-types/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -736,7 +736,7 @@ export const importApartmentTypesFromExcel = async (file: File) => {
   formData.append("file", file);
 
   try {
-    const response = await fetch(`${API_URL}/dashboard/apartment-types/import`, {
+    const response = await fetch(`${API_URL}/dashboard/aprtments-types/import`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

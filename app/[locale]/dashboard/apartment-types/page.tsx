@@ -212,16 +212,14 @@ const ApartmentTypesPage = () => {
         importType="apartmentTypes"
         title="استيراد أنواع الشقق السكنية من Excel"
         templateColumns={[
-  "Model Name",
-  "Price",
-  "Number of Bedrooms",
-  "Number of Bathrooms",
-  "Net Area",
-  "Model Images (comma-separated)"
-]}
-
+          "Model Name",
+          "Price",
+          "Number of Bedrooms",
+          "Number of Bathrooms",
+          "Net Area",
+          "Model Images (comma-separated)"
+        ]}
       />
-
       <DataTable columns={apartmentTypesColumns} data={apartmentTypes} />
     </div>
   );

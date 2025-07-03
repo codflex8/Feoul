@@ -21,33 +21,36 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import FileUploader from "@/components/dashboard/fileUploader";
-import { ResidentialBuilding, Project, BuildingType } from "@/types/dashboard.types";
+import { ResidentialBuilding, BuildingType } from "@/types/dashboard.types";
 import {
   MapContainer,
   ImageOverlay,
-  Marker,
+  Polygon,
   useMapEvents,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import {
+  getBuildingProjects,
+  getBuildingTypes,
+  addResidentialBuilding,
+} from "@/lib/actions/dashboard.actions";
 
-// استيراد الدوال من actions
-import { getBuildingProjects, getBuildingTypes, addResidentialBuilding } from "@/lib/actions/dashboard.actions";
-
+const imageBounds: L.LatLngBoundsExpression = [
+  [0, 0],
+  [450, 800],
+];
 const defaultImageBounds: L.LatLngBoundsExpression = [
   [0, 0],
   [450, 800],
 ];
-
 const formSchema = z.object({
   number: z.number().min(1, "رقم العمارة مطلوب"),
-  size: z.number().min(1, "حجم العمارة مطلوب"),
+  size: z.number().min(1, "المساحة مطلوبة"),
   projectId: z.string().min(1, "المشروع مطلوب"),
   buildingTypeId: z.string().min(1, "نوع العمارة مطلوب"),
-  position_x: z.number().min(1, "موقع X مطلوب"),
-  position_y: z.number().min(1, "موقع Y مطلوب"),
-  status: z.enum(["متاح", "محجوز", "مباع"]),
+  polygon: z.array(z.array(z.number())).min(4, "يجب تحديد 4 نقاط على الأقل لتكوين المستطيل"),
+  status: z.enum(["avaliable", "reserved", "saled"]),
 });
 
 interface AddResidentialBuildingFormProps {
@@ -56,42 +59,42 @@ interface AddResidentialBuildingFormProps {
 }
 
 const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFormProps) => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [buildingTypes, setBuildingTypes] = useState<BuildingType[]>([]);
-  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+  const [polygon, setPolygon] = useState<number[][]>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
   const [imageBounds, setImageBounds] = useState<L.LatLngBoundsExpression>(defaultImageBounds);
   const [imageUrl, setImageUrl] = useState<string>("");
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      number: 0,
-      size: 0,
+      number: 1,
+      size: 100,
       projectId: "",
       buildingTypeId: "",
-      position_x: 0,
-      position_y: 0,
-      status: "متاح",
+      polygon: [],
+      status: "avaliable",
     },
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedProjects = await getBuildingProjects(); // مشاريع apartment_building فقط
-        const fetchedBuildingTypes = await getBuildingTypes();
-
-        setProjects(fetchedProjects);
-        setBuildingTypes(fetchedBuildingTypes.items || fetchedBuildingTypes);
+        const [projectsData, buildingTypesData] = await Promise.all([
+          getBuildingProjects(),
+          getBuildingTypes(),
+        ]);
+        setProjects(projectsData);
+        setBuildingTypes(buildingTypesData.items || []);
       } catch (error) {
-        console.error("خطأ في تحميل المشاريع أو أنواع العمارات:", error);
+        console.error("فشل في جلب البيانات:", error);
       }
     };
     fetchData();
   }, []);
 
-  // تحديث صورة الخريطة بناءً على المشروع المختار
-  useEffect(() => {
+
+   useEffect(() => {
     const selectedProject = projects.find(p => p.id === form.getValues("projectId"));
     if (selectedProject && selectedProject.projectDocUrl) {
       setImageUrl(`http://13.59.197.112${selectedProject.projectDocUrl}`);
@@ -102,90 +105,110 @@ const AddResidentialBuildingForm = ({ setOpen, onAdd }: AddResidentialBuildingFo
     }
   }, [form.watch("projectId"), projects]);
 
-  const LocationMarker = () => {
+
+  const MapClickHandler = () => {
     useMapEvents({
       click(e) {
-        setPosition(e.latlng);
-        form.setValue("position_x", e.latlng.lat);
-        form.setValue("position_y", e.latlng.lng);
+        if (isDrawing && polygon.length < 4) {
+          const newPoint = [e.latlng.lat, e.latlng.lng];
+          const newPolygon = [...polygon, newPoint];
+          setPolygon(newPolygon);
+          form.setValue("polygon", newPolygon);
+          
+          if (newPolygon.length === 4) {
+            setIsDrawing(false);
+          }
+        }
       },
     });
-    return <Marker position={position} />;
+    return null;
   };
 
-const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  try {
-    const buildingData = {
-      number: Number(values.number),
-      size: Number(values.size),
-      projectId: values.projectId,
-      buildingTypeId: values.buildingTypeId,
-      status: values.status,
-      position_x: values.position_x,
-      position_y: values.position_y,
-     };
+  const startDrawing = () => {
+    setIsDrawing(true);
+    setPolygon([]);
+    form.setValue("polygon", []);
+  };
 
-    const addedBuilding = await addResidentialBuilding(buildingData);
-    onAdd(addedBuilding);
-    setOpen(false);
-  } catch (error) {
-    console.error("فشل في إضافة العمارة:", error);
-  }
-};
+  const clearPolygon = () => {
+    setPolygon([]);
+    form.setValue("polygon", []);
+    setIsDrawing(false);
+  };
 
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("🚀 ~ onSubmit ~ values:", values)
+    try {
+      const buildingPayload = {
+        number: values.number,
+        size: values.size,
+        projectId: values.projectId,
+        buildingTypeId: values.buildingTypeId,
+        status: values.status,
+        polygon: values.polygon,
+      };
+
+      const newBuilding = await addResidentialBuilding(buildingPayload);
+      onAdd(newBuilding);
+      setOpen(false);
+    } catch (error) {
+      console.error("فشل في إضافة العمارة:", error);
+    }
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-       <FormField
-  control={form.control}
-  name="number"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>رقم العمارة</FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          {...field}
-          onChange={(e) => field.onChange(e.target.valueAsNumber)}
-          value={field.value ?? ""}
-        />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>رقم العمارة</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    placeholder="1"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-<FormField
-  control={form.control}
-  name="size"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>حجم العمارة (متر مربع)</FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          {...field}
-          onChange={(e) => field.onChange(e.target.valueAsNumber)}
-          value={field.value ?? ""}
-        />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-
+          <FormField
+            control={form.control}
+            name="size"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>المساحة (م²)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    placeholder="100"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
           name="projectId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>اختر المشروع</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ""}>
+              <FormLabel>المشروع</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="اختر مشروع" />
+                    <SelectValue placeholder="اختر المشروع" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -207,7 +230,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>نوع العمارة</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ""}>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="اختر نوع العمارة" />
@@ -225,21 +248,20 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
             </FormItem>
           )}
         />
-
-        <FormField
+   <FormField
           control={form.control}
           name="status"
           render={({ field }) => (
             <FormItem>
               <FormLabel>حالة العمارة</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || "متاح"}>
+              <Select onValueChange={field.onChange} value={field.value || "avaliable"}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="اختر الحالة" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {["متاح", "محجوز", "مباع"].map((status) => (
+                  {["avaliable", "reserved", "saled"].map((status) => (
                     <SelectItem key={status} value={status}>
                       {status}
                     </SelectItem>
@@ -250,28 +272,53 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
             </FormItem>
           )}
         />
+        <div className="space-y-2">
+          <FormLabel>تحديد موقع العمارة على الخريطة</FormLabel>
+          <div className="flex gap-2 mb-2">
+            <Button type="button" onClick={startDrawing} disabled={isDrawing}>
+              {isDrawing ? "انقر على 4 نقاط لرسم المستطيل" : "ابدأ الرسم"}
+            </Button>
+            <Button type="button" onClick={clearPolygon} variant="outline">
+              مسح التحديد
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600">
+            النقاط المحددة: {polygon.length}/4
+          </p>
+        </div>
 
-        <FormLabel>تحديد الموقع على الخريطة</FormLabel>
-        {imageUrl ? (
-          <MapContainer
-            center={[225, 400]}
-            zoom={1}
-            minZoom={1}
-            maxZoom={4}
-            scrollWheelZoom={true}
-            style={{ height: "400px", width: "100%" }}
-            crs={L.CRS.Simple}
-            maxBounds={imageBounds}
-            maxBoundsViscosity={1.0}
-          >
-            <ImageOverlay url={imageUrl} bounds={imageBounds} />
-            <LocationMarker />
-          </MapContainer>
-        ) : (
-          <p className="text-center text-gray-500">الرجاء اختيار مشروع لعرض الخريطة</p>
-        )}
+        <MapContainer
+          center={[225, 400]}
+          zoom={1}
+          minZoom={1}
+          maxZoom={4}
+          scrollWheelZoom={true}
+          style={{ height: "400px", width: "100%" }}
+          crs={L.CRS.Simple}
+          maxBounds={imageBounds}
+          maxBoundsViscosity={1.0}
+        >
+          <ImageOverlay url={imageUrl} bounds={imageBounds} />
+          <MapClickHandler />
+          
+          {polygon.length >= 3 && (
+            <Polygon
+              positions={polygon}
+              pathOptions={{
+                color: "#3B82F6",
+                fillColor: "#3B82F6",
+                fillOpacity: 0.3,
+                weight: 2,
+              }}
+            />
+          )}
+        </MapContainer>
 
-        <Button className="w-full bg-green-600 hover:bg-green-500" type="submit">
+        <Button
+          className="w-full bg-green-600 hover:bg-green-500"
+          type="submit"
+          disabled={polygon.length < 4}
+        >
           إضافة العمارة السكنية
         </Button>
       </form>
