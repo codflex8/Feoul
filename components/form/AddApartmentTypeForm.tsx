@@ -45,17 +45,18 @@ const AddApartmentTypeForm = ({ setOpen, onAdd }: AddApartmentTypeFormProps) => 
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("🚀 ~ onSubmit ~ values:", values)
     try {
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("price", values.price.toString());
-      formData.append("bedroomNumber", values.bedroomNumber.toString());
-      formData.append("bathroomNumber", values.bathroomNumber.toString());
-      formData.append("netArea", values.netArea.toString());
+      formData.append("bedroomsNumber", values.bedroomNumber.toString());
+      formData.append("bathroomsNumber", values.bathroomNumber.toString());
+      formData.append("area", values.netArea.toString());
 
       values.images.forEach((file) => {
-        formData.append("images", file);
-      });
+          formData.append("images", file);  
+        });
 
       const newApartmentType = await addApartmentType(formData);
       onAdd(newApartmentType);

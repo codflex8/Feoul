@@ -19,7 +19,7 @@ const ResidentialBuildingPopup = ({ building }: Props) => {
     if (building.buildingType?.buildingImage) {
       setImageUrl(`http://13.59.197.112${building.buildingType.buildingImage}`);
     }
-  }, [building.buildingType?.buildingImage]);
+  }, [building.buildingType?.buildingType]);
 
   return (
     <Popup className="min-w-64">

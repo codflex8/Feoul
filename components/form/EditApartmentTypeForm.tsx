@@ -20,9 +20,9 @@ import { editApartmentType } from "@/lib/actions/dashboard.actions";
 const formSchema = z.object({
   name: z.string().min(1, "اسم النموذج مطلوب"),
   price: z.number().min(1, "السعر مطلوب"),
-  bedroomNumber: z.number().min(1, "عدد غرف النوم مطلوب"),
-  bathroomNumber: z.number().min(1, "عدد دورات المياه مطلوب"),
-  netArea: z.number().min(1, "المساحة الصافية مطلوبة"),
+  bedroomsNumber: z.number().min(1, "عدد غرف النوم مطلوب"),
+  bathroomsNumber: z.number().min(1, "عدد دورات المياه مطلوب"),
+  area: z.number().min(1, "المساحة الصافية مطلوبة"),
   images: z.instanceof(File).array().optional(),
 });
 
@@ -38,9 +38,9 @@ const EditApartmentTypeForm = ({ apartmentType, setOpen, onEdit }: EditApartment
     defaultValues: {
       name: apartmentType.name,
       price: apartmentType.price,
-      bedroomNumber: apartmentType.bedroomNumber,
-      bathroomNumber: apartmentType.bathroomNumber,
-      netArea: apartmentType.netArea,
+      bedroomsNumber: apartmentType.bedroomsNumber,
+      bathroomsNumber: apartmentType.bathroomsNumber,
+      area: apartmentType.area,
       images: [],
     },
   });
@@ -50,9 +50,9 @@ const EditApartmentTypeForm = ({ apartmentType, setOpen, onEdit }: EditApartment
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("price", values.price.toString());
-      formData.append("bedroomNumber", values.bedroomNumber.toString());
-      formData.append("bathroomNumber", values.bathroomNumber.toString());
-      formData.append("netArea", values.netArea.toString());
+      formData.append("bedroomsNumber", values.bedroomsNumber.toString());
+      formData.append("bathroomsNumber", values.bathroomsNumber.toString());
+      formData.append("area", values.area.toString());
 
       if (values.images?.length) {
         values.images.forEach((file) => {
@@ -108,7 +108,7 @@ const EditApartmentTypeForm = ({ apartmentType, setOpen, onEdit }: EditApartment
 
           <FormField
             control={form.control}
-            name="netArea"
+            name="area"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-semibold text-base">
@@ -130,7 +130,7 @@ const EditApartmentTypeForm = ({ apartmentType, setOpen, onEdit }: EditApartment
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="bedroomNumber"
+            name="bedroomsNumber"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-semibold text-base">
@@ -150,7 +150,7 @@ const EditApartmentTypeForm = ({ apartmentType, setOpen, onEdit }: EditApartment
 
           <FormField
             control={form.control}
-            name="bathroomNumber"
+            name="bathroomsNumber"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-semibold text-base">

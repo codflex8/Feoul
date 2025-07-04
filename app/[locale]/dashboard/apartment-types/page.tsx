@@ -28,19 +28,23 @@ const ApartmentTypesPage = () => {
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [editApartmentType, setEditApartmentType] = useState<ApartmentType | null>(null);
   const [openImportDialog, setOpenImportDialog] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getApartmentTypes();
-        setApartmentTypes(data.items || []);
-      } catch (error) {
-        console.error("Failed to fetch apartment types:", error);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const data = await getApartmentTypes(page);
+      setApartmentTypes(data.items || []);
+      setTotalPages(data.pages || 1); // من الريسبونس
+    } catch (error) {
+      console.error("Failed to fetch apartment types:", error);
+    }
+  };
 
-    fetchData();
-  }, []);
+  fetchData();
+}, [page]);
+
 
   const handleAdd = (newApartmentType: ApartmentType) => {
     setApartmentTypes((prev) => [...prev, newApartmentType]);
@@ -87,24 +91,24 @@ const ApartmentTypesPage = () => {
       ),
     },
     {
-      accessorKey: "bedroomNumber",
+      accessorKey: "bedroomsNumber",
       header: () => <div className="text-center font-semibold">غرف النوم</div>,
       cell: ({ row }) => (
-        <p className="text-center font-medium text-sm">{row.getValue("bedroomNumber")}</p>
+        <p className="text-center font-medium text-sm">{row.getValue("bedroomsNumber")}</p>
       ),
     },
     {
-      accessorKey: "bathroomNumber",
+      accessorKey: "bathroomsNumber",
       header: () => <div className="text-center font-semibold">دورات المياه</div>,
       cell: ({ row }) => (
-        <p className="text-center font-medium text-sm">{row.getValue("bathroomNumber")}</p>
+        <p className="text-center font-medium text-sm">{row.getValue("bathroomsNumber")}</p>
       ),
     },
     {
-      accessorKey: "netArea",
+      accessorKey: "area",
       header: () => <div className="text-center font-semibold">المساحة الصافية</div>,
       cell: ({ row }) => (
-        <p className="text-center font-medium text-sm">{row.getValue("netArea")} م²</p>
+        <p className="text-center font-medium text-sm">{row.getValue("area")} م²</p>
       ),
     },
     {
@@ -204,23 +208,27 @@ const ApartmentTypesPage = () => {
           </DialogContent>
         </Dialog>
       )}
-
-      <ExcelImportDialog
-        isOpen={openImportDialog}
-        onClose={() => setOpenImportDialog(false)}
-        onImportSuccess={handleImportSuccess}
-        importType="apartmentTypes"
-        title="استيراد أنواع الشقق السكنية من Excel"
-        templateColumns={[
-          "Model Name",
-          "Price",
-          "Number of Bedrooms",
-          "Number of Bathrooms",
-          "Net Area",
-          "Model Images (comma-separated)"
-        ]}
-      />
       <DataTable columns={apartmentTypesColumns} data={apartmentTypes} />
+      <div className="flex justify-center items-center gap-4 mt-4">
+  <Button
+    variant="outline"
+    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+    disabled={page === 1}
+  >
+    السابق
+  </Button>
+
+  <span className="text-sm text-gray-700">صفحة {page} من {totalPages}</span>
+
+  <Button
+    variant="outline"
+    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+    disabled={page === totalPages}
+  >
+    التالي
+  </Button>
+</div>
+
     </div>
   );
 };

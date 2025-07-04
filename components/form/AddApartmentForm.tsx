@@ -134,8 +134,8 @@ const AddApartmentForm = ({ setOpen, onAdd }: AddApartmentFormProps) => {
     try {
       const apartmentPayload = {
         number: values.number,
-        apartmentTypeId: values.apartmentTypeId,
-        floorNumber: values.floorNumber,
+        typeId: values.apartmentTypeId,
+        index: values.floorNumber,
         buildingId: values.buildingId,
         polygon: values.polygon,
         status: values.status === "avaliable" ? "avaliable" : values.status === "saled" ? "sold" : "reserved",

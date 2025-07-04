@@ -92,8 +92,8 @@ const EditApartmentForm = ({ apartment, setOpen, onEdit }: EditApartmentFormProp
     resolver: zodResolver(formSchema),
     defaultValues: {
       number: apartment.number?.toString() || "",
-      apartmentTypeId: apartment.apartmentType?.id ?? "",
-      floorNumber: apartment.floorNumber || 1,
+      apartmentTypeId: apartment.type?.id ?? "",
+      floorNumber: apartment.index || 1,
       buildingId: apartment.building?.id ?? "",
       polygon: getInitialPolygon(),
       status: apartment.status === "avaliable" ? "avaliable" : apartment.status === "reserved" ? "reserved" : "saled",
@@ -173,8 +173,8 @@ const EditApartmentForm = ({ apartment, setOpen, onEdit }: EditApartmentFormProp
       const apartmentPayload = {
         id: apartment.id,
         number: values.number,
-        apartmentTypeId: values.apartmentTypeId,
-        floorNumber: values.floorNumber,
+        typeId: values.apartmentTypeId,
+        index: values.floorNumber,
         buildingId: values.buildingId,
         polygon: values.polygon,
         status: values.status === "avaliable" ? "avaliable" : values.status === "saled" ? "sold" : "reserved",

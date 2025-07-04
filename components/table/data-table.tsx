@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [date, setDate] = useState<Date | string>("");
   const [currentPage, setCurrentPage] = useState(0);
-  const [rowsPerPage] = useState(5);
+  const [rowsPerPage] = useState(10);
 
   const table = useReactTable({
     data,
@@ -284,6 +284,10 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
+
+
+
+            
       {/* {!page && (
         <div className="flex items-center justify-strat !space-x-4 py-4">
           <Button

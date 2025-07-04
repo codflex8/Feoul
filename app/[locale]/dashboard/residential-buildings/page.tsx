@@ -26,7 +26,9 @@ import {
 const ResidentialBuildingsPage = () => {
   const [buildings, setBuildings] = useState<ResidentialBuilding[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
-  const [editBuilding, setEditBuilding] = useState<ResidentialBuilding | null>(null);
+  const [editBuilding, setEditBuilding] = useState<ResidentialBuilding | null>(
+    null
+  );
   const [openImportDialog, setOpenImportDialog] = useState<boolean>(false);
 
   useEffect(() => {
@@ -74,9 +76,13 @@ const ResidentialBuildingsPage = () => {
   const residentialBuildingsColumns: ColumnDef<ResidentialBuilding>[] = [
     {
       accessorKey: "number",
-      header: () => <div className="text-center font-semibold">رقم العمارة</div>,
+      header: () => (
+        <div className="text-center font-semibold">رقم العمارة</div>
+      ),
       cell: ({ row }) => (
-        <p className="text-center font-medium text-sm">{row.getValue("number")}</p>
+        <p className="text-center font-medium text-sm">
+          {row.getValue("number")}
+        </p>
       ),
     },
     {
@@ -93,7 +99,9 @@ const ResidentialBuildingsPage = () => {
     },
     {
       accessorKey: "buildingType",
-      header: () => <div className="text-center font-semibold">نوع العمارة</div>,
+      header: () => (
+        <div className="text-center font-semibold">نوع العمارة</div>
+      ),
       cell: ({ row }) => {
         const buildingType = row.getValue("buildingType") as { name: string };
         return (
@@ -107,20 +115,10 @@ const ResidentialBuildingsPage = () => {
       accessorKey: "size",
       header: () => <div className="text-center font-semibold">المساحة</div>,
       cell: ({ row }) => (
-        <p className="text-center font-medium text-sm">{row.getValue("size")} م²</p>
+        <p className="text-center font-medium text-sm">
+          {row.getValue("size")} م²
+        </p>
       ),
-    },
-    {
-      accessorKey: "position",
-      header: () => <div className="text-center font-semibold">الموقع</div>,
-      cell: ({ row }) => {
-        const position = row.getValue("position") as string[];
-        return (
-          <p className="text-center font-medium text-sm">
-            {position?.join(" - ") || "غير معروف"}
-          </p>
-        );
-      },
     },
     {
       id: "actions",
@@ -151,7 +149,9 @@ const ResidentialBuildingsPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex-1 p-6">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">العمارات السكنية</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">
+          العمارات السكنية
+        </h1>
         <div className="flex gap-2">
           <Button
             onClick={() => setOpenImportDialog(true)}
@@ -177,12 +177,18 @@ const ResidentialBuildingsPage = () => {
               إضافة عمارة سكنية
             </DialogTitle>
           </DialogHeader>
-          <AddResidentialBuildingForm setOpen={setOpenAddDialog} onAdd={handleAdd} />
+          <AddResidentialBuildingForm
+            setOpen={setOpenAddDialog}
+            onAdd={handleAdd}
+          />
         </DialogContent>
       </Dialog>
 
       {editBuilding && (
-        <Dialog open={Boolean(editBuilding)} onOpenChange={() => setEditBuilding(null)}>
+        <Dialog
+          open={Boolean(editBuilding)}
+          onOpenChange={() => setEditBuilding(null)}
+        >
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-extrabold">
@@ -198,22 +204,7 @@ const ResidentialBuildingsPage = () => {
         </Dialog>
       )}
 
-      <ExcelImportDialog
-        isOpen={openImportDialog}
-        onClose={() => setOpenImportDialog(false)}
-        onImportSuccess={handleImportSuccess}
-        importType="residentialBuildings"
-        title="استيراد العمارات السكنية من Excel"
-       templateColumns={[
-  "Building Number",
-  "Area",
-  "Building Type ID",
-  "Project ID",
-  "X Position (position_x)",
-  "Y Position (position_y)"
-]}
-
-      />
+   
 
       <DataTable columns={residentialBuildingsColumns} data={buildings} />
     </div>

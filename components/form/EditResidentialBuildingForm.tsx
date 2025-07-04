@@ -46,7 +46,7 @@ const defaultImageBounds: L.LatLngBoundsExpression = [
 ];
 
 const formSchema = z.object({
-  number: z.number().min(1, "رقم العمارة مطلوب"),
+  number: z.string().min(1, "رقم العمارة مطلوب"),
   size: z.number().min(1, "المساحة مطلوبة"),
   projectId: z.string().min(1, "المشروع مطلوب"),
   buildingTypeId: z.string().min(1, "نوع العمارة مطلوب"),
@@ -203,9 +203,9 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
                 <FormLabel>رقم العمارة</FormLabel>
                 <FormControl>
                   <Input
-                    type="number"
+                    type="text"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={(e) => field.onChange(e.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -352,7 +352,7 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
           maxBounds={imageBounds}
           maxBoundsViscosity={1.0}
         >
-          <ImageOverlay url="/assets/images/project.jpg" bounds={imageBounds} />
+          <ImageOverlay url={imageUrl} bounds={imageBounds} />
           <MapClickHandler />
           
           {polygon.length >= 3 && (

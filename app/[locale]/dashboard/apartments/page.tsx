@@ -64,114 +64,123 @@ const ApartmentsPage = () => {
     setOpenImportDialog(false);
   };
 
-  const apartmentsColumns: ColumnDef<Apartment>[] = [
-    {
-      accessorKey: "number",
-      header: () => <div className="text-center font-semibold">رقم الشقة</div>,
-      cell: ({ row }) => (
-        <p className="text-center font-medium text-sm">{row.getValue("number")}</p>
-      ),
+const apartmentsColumns: ColumnDef<Apartment>[] = [
+  {
+    accessorKey: "number",
+    header: () => <div className="text-center font-semibold">رقم الشقة</div>,
+    cell: ({ row }) => (
+      <p className="text-center font-medium text-sm">{row.getValue("number")}</p>
+    ),
+  },
+  {
+    accessorKey: "type",
+    header: () => <div className="text-center font-semibold">نوع الشقة</div>,
+    cell: ({ row }) => {
+      const apartmentType = row.getValue("type") as { name: string; price: number };
+      return (
+        <div className="text-center">
+          <p className="font-medium text-sm">{apartmentType?.name}</p>
+        </div>
+      );
     },
-    {
-      accessorKey: "apartmentType",
-      header: () => <div className="text-center font-semibold">نوع الشقة</div>,
-      cell: ({ row }) => {
-        const apartmentType = row.getValue("apartmentType") as { name: string; price: number };
-        return (
-          <div className="text-center">
-            <p className="font-medium text-sm">{apartmentType?.name}</p>
-            <p className="text-xs text-gray-500">{apartmentType?.price} ريال</p>
-          </div>
-        );
-      },
+  },
+  {
+    accessorKey: "index",
+    header: () => <div className="text-center font-semibold">رقم الدور</div>,
+    cell: ({row}) => <p className="text-center font-medium text-sm">{row.getValue("index")}</p>,  
+  },
+  {
+    accessorKey: "building",
+    header: () => <div className="text-center font-semibold">العمارة</div>,
+    cell: ({ row }) => {
+      const building = row.getValue("building") as { number?: string | number };
+      return <p className="text-center font-medium text-sm"> {building?.number || "-"}</p>;
     },
-    {
-      accessorKey: "floorNumber",
-      header: () => <div className="text-center font-semibold">رقم الدور</div>,
-      cell: ({ row }) => (
-        <p className="text-center font-medium text-sm">{row.getValue("floorNumber")}</p>
-      ),
+  },
+  {
+    accessorKey: "type",
+    header: () => <div className="text-center font-semibold">غرف النوم</div>,
+    cell: ({ row }) => {
+      const apartmentType = row.getValue("type") as { bedroomsNumber: number };
+      return (
+        <p className="text-center font-medium text-sm">{apartmentType?.bedroomsNumber}</p>
+      );
     },
-    {
-      accessorKey: "building",
-      header: () => <div className="text-center font-semibold">العمارة</div>,
-      cell: ({ row }) => {
-        const building = row.getValue("building") as { number?: string | number };
-        return <p className="text-center font-medium text-sm">عمارة {building?.number || "-"}</p>;
-      },
+  },
+  {
+    accessorKey: "type",
+    header: () => <div className="text-center font-semibold">دورات المياه</div>,
+    cell: ({ row }) => {
+      const apartmentType = row.getValue("type") as { bathroomsNumber: number };
+      return (
+        <p className="text-center font-medium text-sm">{apartmentType?.bathroomsNumber}</p>
+      );
     },
-    {
-      accessorKey: "apartmentType",
-      header: () => <div className="text-center font-semibold">غرف النوم</div>,
-      cell: ({ row }) => {
-        const apartmentType = row.getValue("apartmentType") as { bedroomNumber: number };
-        return (
-          <p className="text-center font-medium text-sm">{apartmentType?.bedroomNumber}</p>
-        );
-      },
+  },
+  {
+    accessorKey: "type",
+    header: () => <div className="text-center font-semibold">المساحة الصافية</div>,
+    cell: ({ row }) => {
+      const apartmentType = row.getValue("type") as { area: number };
+      return (
+        <p className="text-center font-medium text-sm">{apartmentType?.area} م²</p>
+      );
     },
-    {
-      accessorKey: "apartmentType",
-      header: () => <div className="text-center font-semibold">دورات المياه</div>,
-      cell: ({ row }) => {
-        const apartmentType = row.getValue("apartmentType") as { bathroomNumber: number };
-        return (
-          <p className="text-center font-medium text-sm">{apartmentType?.bathroomNumber}</p>
-        );
-      },
-    },
-    {
-      accessorKey: "apartmentType",
-      header: () => <div className="text-center font-semibold">المساحة الصافية</div>,
-      cell: ({ row }) => {
-        const apartmentType = row.getValue("apartmentType") as { netArea: number };
-        return (
-          <p className="text-center font-medium text-sm">{apartmentType?.netArea} م²</p>
-        );
-      },
-    },
-    {
-      accessorKey: "status",
-      header: () => <div className="text-center font-semibold">الحالة</div>,
-      cell: ({ row }) => (
+  },
+  {
+    accessorKey: "status",
+    header: () => <div className="text-center font-semibold">الحالة</div>,
+    cell: ({ row }) => {
+      // تحويل الحالة من الانجليزي للعربي
+      const statusMap: Record<string, string> = {
+        "avaliable": "متاح",
+        "reserved": "محجوز",
+        "sold": "مباع",
+      };
+      const status = row.getValue("status") as string;
+      const statusText = statusMap[status.toLowerCase()] || status;
+
+      return (
         <div className="flex justify-center">
           <span
             className={`flex w-fit items-center gap-2 rounded-full px-4 py-1 ${
-              row.getValue("status") === "متاح"
+              statusText === "متاح"
                 ? "bg-green-200 text-green-800"
-                : row.getValue("status") === "محجوز"
+                : statusText === "محجوز"
                 ? "bg-yellow-200 text-yellow-800"
                 : "bg-red-200 text-red-800"
             }`}
           >
-            {row.getValue("status")}
+            {statusText}
           </span>
         </div>
-      ),
+      );
     },
-    {
-      id: "actions",
-      header: () => <div className="text-center font-semibold">الإجراءات</div>,
-      cell: ({ row }) => (
-        <div className="flex justify-center items-center gap-1">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <MdDelete color="red" className="!w-6 !h-6" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => setEditApartment(row.original)}
-          >
-            <FaEdit color="gray" className="!w-6 !h-6" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  },
+  {
+    id: "actions",
+    header: () => <div className="text-center font-semibold">الإجراءات</div>,
+    cell: ({ row }) => (
+      <div className="flex justify-center items-center gap-1">
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => handleDelete(row.original.id)}
+        >
+          <MdDelete color="red" className="!w-6 !h-6" />
+        </Button>
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => setEditApartment(row.original)}
+        >
+          <FaEdit color="gray" className="!w-6 !h-6" />
+        </Button>
+      </div>
+    ),
+  },
+];
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex-1 p-6">

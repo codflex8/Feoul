@@ -369,14 +369,10 @@ export const addResidentialBuilding = async (buildingData: any) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
 
-  // بناء body حسب ما طلبت
   const body = {
-    number: Number(buildingData.number), // رقم العمارة (عدد)
-    size: Number(buildingData.size), // حجم العمارة (عدد)
-    position: [
-      Number(buildingData.position_x),
-      Number(buildingData.position_y),
-    ], // مصفوفة أرقام
+    number: buildingData.number, 
+    size: Number(buildingData.size),
+    polygon:buildingData.polygon,
     buildingType: buildingData.buildingTypeId,
     project: buildingData.projectId,
   };
@@ -415,11 +411,20 @@ export const updateResidentialBuilding = async (
     size: number;
     projectId: string;
     buildingTypeId: string;
-    position: [],
+    polygon: []; // بدل position
   }
 ) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
+
+  // بناء الجسم بنفس نمط دالة الإضافة
+  const body = {
+    number: buildingData.number,
+    size: Number(buildingData.size),
+    polygon: buildingData.polygon,
+    buildingType: buildingData.buildingTypeId,
+    project: buildingData.projectId,
+  };
 
   try {
     const response = await fetch(`${API_URL}/dashboard/apartment-building/${buildingId}`, {
@@ -428,17 +433,17 @@ export const updateResidentialBuilding = async (
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(buildingData),
+      body: JSON.stringify(body),
     });
 
-    const resText = await response.text(); // ✅ اطبع رد السيرفر كـ نص
+    const resText = await response.text(); // استلام الرد كنص
     console.log("🧾 Server response:", resText);
 
     if (!response.ok) {
       throw new Error(`Failed to update building: ${response.statusText}`);
     }
 
-    return JSON.parse(resText); // ✅ رجع البيانات
+    return JSON.parse(resText); // إعادة البيانات بصيغة JSON
   } catch (error) {
     console.error("❌ Error updating residential building:", error);
     throw error;
@@ -466,11 +471,12 @@ export const deleteResidentialBuilding = async (id: string) => {
 };
 
 // ✅ Apartment Types Functions
-export const getApartmentTypes = async () => {
+export const getApartmentTypes = async (page: number = 1) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
+
   try {
-    const response = await fetch(`${API_URL}/dashboard/aprtments-types`, {
+    const response = await fetch(`${API_URL}/dashboard/aprtments-types?page=${page}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -483,7 +489,46 @@ export const getApartmentTypes = async () => {
     }
 
     const data = await response.json();
-    return data;
+    return data; // يجب أن يحتوي على { items, pages, page }
+  } catch (error) {
+    console.error("An error occurred while getting apartment types from the API:", error);
+    throw error;
+  }
+};
+export const getAllApartmentTypes = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  const allItems: any[] = [];
+  let page = 1;
+  let totalPages = 1;
+
+  try {
+    do {
+      const response = await fetch(`${API_URL}/dashboard/aprtments-types?page=${page}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch apartment types: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      // تأكد أن فيه items و pages
+      if (Array.isArray(data.items)) {
+        allItems.push(...data.items);
+      }
+
+      totalPages = data.pages || 1;
+      page++;
+    } while (page <= totalPages);
+
+    return allItems;
   } catch (error) {
     console.error(
       "An error occurred while getting apartment types from the API:",
@@ -492,6 +537,7 @@ export const getApartmentTypes = async () => {
     throw error;
   }
 };
+
 
 export const addApartmentType = async (formData: FormData) => {
   const cookieStore = await cookies();
