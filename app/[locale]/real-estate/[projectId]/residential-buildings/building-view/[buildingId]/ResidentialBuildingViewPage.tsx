@@ -14,22 +14,19 @@ import clsx from "clsx";
 import WebsiteTitleSec from "@/components/WebsiteTitleSec";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import NeedHelpForm from "@/components/form/NeedHelpForm";
 import { useParams, useSearchParams } from "next/navigation";
 import { getApartment } from "@/lib/actions/map.actions";
 import { Apartment } from "@/types/map.types";
-import { MapContainer, ImageOverlay, Marker, useMap } from "react-leaflet";
+import { MapContainer, ImageOverlay, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ResidentialBuilding } from "@/types/map.types";
 import ApartmentMarker from "./ApartmentMarker";
-import BuildingBlocksFiters from "@/components/BuildingBlocksFiters";
-import { UnitsFilters, UnitStatusEnum } from "@/types/map.types";
 import React from "react";
 
-const imageUrl = "/assets/images/project.jpg";
+const imageUrl = "";
 
 const ResidentialBuildingViewPage = ({
   building,
@@ -50,21 +47,6 @@ const ResidentialBuildingViewPage = ({
   const projectId = searchParams.get("projectId");
   const imageBuilding = searchParams.get("image");
   const buildingId = params.buildingId as string;
-
-  const [unitsFilters, setUnitsFilters] = useState<UnitsFilters>({
-    unitStatus: UnitStatusEnum.available,
-    unitsPriceRange: {
-      minPrice: 0,
-      maxPrice: 10000,
-      sliderValue: [0, 10000],
-    },
-    unitsSpaceRange: {
-      minSpace: 0,
-      maxSpace: 1000,
-      sliderValue: [0, 1000],
-    },
-    selectedCategory: "All",
-  });
 
   const zoomIn = () => {
     if (scale <= 1) {
@@ -97,16 +79,9 @@ const ResidentialBuildingViewPage = ({
     return null;
   };
 
+  // بدل دالة الفلترة، هنعرض كل الشقق بدون تصفية
   const getFilteredApartments = () => {
-    let filtered = [...apartments];
-    const minPrice = unitsFilters.unitsPriceRange.sliderValue[0];
-    const maxPrice = unitsFilters.unitsPriceRange.sliderValue[1];
-    const minSpace = unitsFilters.unitsSpaceRange.sliderValue[0];
-    const maxSpace = unitsFilters.unitsSpaceRange.sliderValue[1];
-
-    filtered = filtered.filter((ap) => ap.price >= minPrice && ap.price <= maxPrice);
-    filtered = filtered.filter((ap) => ap.buildSpace >= minSpace && ap.buildSpace <= maxSpace);
-    return filtered;
+    return apartments;
   };
 
   useEffect(() => {
@@ -114,21 +89,18 @@ const ResidentialBuildingViewPage = ({
       if (!buildingId) return;
       try {
         const data = await getApartment(buildingId);
+        console.log("🚀 ~ fetchApartments:", data);
         setApartments(data);
       } catch (error) {
-        console.error("فشل في جلب الشقق:", error);
+        console.error(t("LoadingData"), error);
       }
     };
     fetchApartments();
-  }, [buildingId]);
+  }, [buildingId, t]);
 
   return (
     <div className="bg-[#4b5d6e75] relative text-center min-h-[100vh] w-screen flex items-center justify-center py-2 overflow-x-hidden">
-      <ControlFunctions
-        zoomIn={zoomIn}
-        zoomOut={zoomOut}
-        setOpenHelpForm={setOpenHelpForm}
-      />
+      <ControlFunctions zoomIn={zoomIn} zoomOut={zoomOut} setOpenHelpForm={setOpenHelpForm} />
 
       <div
         className={clsx(
@@ -141,33 +113,6 @@ const ResidentialBuildingViewPage = ({
           projectId={projectId}
           blockNumber={apartments.length > 0 ? Number(apartments[0].building.number) : 'no'}
         />
-        <div className="w-fit">
-          <Button
-            className="w-full !bg-slate-600 text-white !justify-between"
-            onClick={() => setShowFilters((prev) => !prev)}
-          >
-            <span>فلاتر</span>
-            <Image
-              src="/assets/icons/left-arrow.svg"
-              alt="arrow"
-              width={32}
-              height={32}
-              className={clsx(
-                "transition-all",
-                showFilters ? "rotate-90" : "-rotate-90"
-              )}
-            />
-          </Button>
-
-          <BuildingBlocksFiters
-            className={showFilters ? "max-h-[800] py-2" : "max-h-0"}
-            selectedCategories={[]}
-            setSelectedCategories={() => {}}
-            unitsFilters={unitsFilters}
-            setUnitsFilters={setUnitsFilters}
-            unitsCount={getFilteredApartments().length}
-          />
-        </div>
       </div>
 
       <div className="mx-auto mt-auto md:m-auto relative">
@@ -189,9 +134,7 @@ const ResidentialBuildingViewPage = ({
             maxBounds={imageBounds}
             maxBoundsViscosity={1.0}
           >
-            {imageBuilding && (
-              <ImageOverlay url={imageBuilding} bounds={imageBounds} />
-            )}
+            {imageBuilding && <ImageOverlay url={imageBuilding} bounds={imageBounds} />}
             <FitBoundsToImage bounds={imageBounds} />
             {getFilteredApartments().map((apartment) => (
               <ApartmentMarker key={apartment.id} apartment={apartment} />

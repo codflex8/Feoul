@@ -24,7 +24,7 @@ const AlwaysOpenPopup = ({ position, children, project }: { position: [number, n
       .setContent(`<a href=${getProjectPath()} style="font-size:14px; display:flex;flex-direction:column;gap:5px; max-width:70px; align-items:center; justify-content:center;">
                        <span style="font-size:14px">   <img src="/assets/icons/sarah-logo.png" style="width:60px;height:40px" /></span>
                        <span style="font-size:10px">${project.name}</span>
-                       <span style="font-size:8px; color: #666;">${project.type}</span>
+                       <span style="font-size:8px; color: #666;">${t(`${project.type}`)}</span>
                   </a>`)
       .openOn(map);
 

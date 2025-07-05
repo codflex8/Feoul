@@ -104,6 +104,7 @@
     "StartFrom": "Start From",
     "BuildingProperties": "Properties Window",
     "Gallery": "Gallery",
-    "ExploreUnit": "Explore the unit"
+    "ExploreUnit": "Explore the unit",
+     "apartment_building":"apartment_building"
   }
 }

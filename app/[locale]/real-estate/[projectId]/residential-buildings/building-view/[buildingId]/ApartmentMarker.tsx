@@ -13,32 +13,38 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
     setZoomLevel(map.getZoom());
   });
 
-  // تحويل polygon من البيانات المحفوظة
-  const getPolygonPositions = () => {
-    if (apartment.polygon && Array.isArray(apartment.polygon)) {
-      return apartment.polygon.map(point => [Number(point[0]), Number(point[1])]);
-    }
-    
-    // fallback للبيانات القديمة التي تستخدم lat/lng
-    if (apartment.lat && apartment.lng) {
-      const centerLat = Number(apartment.lat);
-      const centerLng = Number(apartment.lng);
-      const buildSpace = apartment.buildSpace || 80;
-      
-      // إنشاء مستطيل حول النقطة المركزية بناءً على المساحة
-      const halfWidth = Math.sqrt(buildSpace) * 0.3;
-      const halfHeight = Math.sqrt(buildSpace) * 0.2;
-      
-      return [
-        [centerLat - halfHeight, centerLng - halfWidth],
-        [centerLat - halfHeight, centerLng + halfWidth],
-        [centerLat + halfHeight, centerLng + halfWidth],
-        [centerLat + halfHeight, centerLng - halfWidth],
-      ];
-    }
-    
-    return [];
-  };
+ const getPolygonPositions = () => {
+  console.log("🔷 apartment.polygon:", apartment.polygon);
+
+  if (apartment.polygon && Array.isArray(apartment.polygon)) {
+    const converted = apartment.polygon.map(point => [Number(point[0]), Number(point[1])]);
+    console.log("✅ Polygon to draw:", converted);
+    return converted;
+  }
+
+  if (apartment.lat && apartment.lng) {
+    const centerLat = Number(apartment.lat);
+    const centerLng = Number(apartment.lng);
+    const buildSpace = apartment.buildSpace || 80;
+
+    const halfWidth = Math.sqrt(buildSpace) * 0.3;
+    const halfHeight = Math.sqrt(buildSpace) * 0.2;
+
+    const fallback = [
+      [centerLat - halfHeight, centerLng - halfWidth],
+      [centerLat - halfHeight, centerLng + halfWidth],
+      [centerLat + halfHeight, centerLng + halfWidth],
+      [centerLat + halfHeight, centerLng - halfWidth],
+    ];
+
+    console.log("🟡 Fallback rectangle:", fallback);
+    return fallback;
+  }
+
+  console.warn("❌ No polygon or lat/lng found.");
+  return [];
+};
+
 
   const polygonPositions = getPolygonPositions();
 
@@ -46,18 +52,22 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
     return null;
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "available":
-        return "#10B981"; // أخضر
-      case "reserved":
-        return "#F59E0B"; // برتقالي
-      case "saled":
-        return "#EF4444"; // أحمر
-      default:
-        return "#6B7280"; // رمادي
-    }
-  };
+ const getStatusColor = (status: string) => {
+  const normalized = status.toLowerCase().trim();
+
+  switch (normalized) {
+    case "available":
+    case "avaliable":  
+      return "#10B981"; // أخضر
+    case "reserved":
+      return "#F59E0B"; // برتقالي
+    case "saled":
+      return "#EF4444"; // أحمر
+    default:
+      return "#6B7280"; // رمادي
+  }
+};
+
 
   const statusColor = getStatusColor(apartment.status);
 

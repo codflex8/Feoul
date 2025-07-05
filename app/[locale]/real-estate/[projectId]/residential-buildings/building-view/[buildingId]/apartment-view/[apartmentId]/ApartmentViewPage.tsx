@@ -37,11 +37,11 @@ const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState<number>(0);
   const zoomStep = 0.1;
-const searchParams = useSearchParams();
-const projectName = searchParams.get("projectName") ?? "No Name";
-const projectId = searchParams.get("projectId") ?? "No ID";
-  const images = apartment.images || [];
-
+  const searchParams = useSearchParams();
+  const projectName = searchParams.get("projectName") ?? "No Name";
+  const projectId = searchParams.get("projectId") ?? "No ID";
+  const images = apartment.type.images || [];
+  const background = apartment.building.buildingType.buildingImage;
   const zoomIn = () => {
     if (scale <= 1) {
       setScale((prev) => prev + zoomStep);
@@ -68,6 +68,17 @@ const projectId = searchParams.get("projectId") ?? "No ID";
 
   return (
     <div className="bg-[#4b5d6e75] relative text-center min-h-[100vh] w-screen flex items-center justify-center py-2 overflow-x-hidden">
+     
+      {/* Blurred Background Image */}
+    <div className="absolute inset-0 z-0">
+      <Image
+        src={`http://13.59.197.112${background}`}
+        alt="Background"
+        fill
+        className="object-cover w-full h-full filter blur-md opacity-30"
+      />
+    </div>
+
       {/* Website Control Functions */}
       <ControlFunctions
         zoomIn={zoomIn}
@@ -106,45 +117,55 @@ const projectId = searchParams.get("projectId") ?? "No ID";
             <div className="bg-gray-100 rounded-md p-1 shadow-sm">
               <span className="block text-xs text-gray-500">{t("Rooms")}</span>
               <span className="block text-sm font-bold text-gray-800">
-                {apartment.bedroomNumber}
+                {apartment.type.bedroomsNumber}
               </span>
             </div>
 
             <div className="bg-gray-100 rounded-md p-1 shadow-sm">
-              <span className="block text-xs text-gray-500">{t("Bathrooms")}</span>
+              <span className="block text-xs text-gray-500">
+                {t("Bathrooms")}
+              </span>
               <span className="block text-sm font-bold text-gray-800">
-                {apartment.bathroomNumber}
+                {apartment.type.bathroomsNumber}
               </span>
             </div>
 
             <div className="bg-gray-100 rounded-md p-1 shadow-sm">
-              <span className="block text-xs text-gray-500">{t("BuidingArea")}</span>
+              <span className="block text-xs text-gray-500">
+                {t("BuidingArea")}
+              </span>
               <span className="block text-sm font-bold text-gray-800">
-                {apartment.buildSpace} {t("Meter")}
+                {apartment.type.area} {t("Meter")}
               </span>
             </div>
 
             <div className="bg-gray-100 rounded-md p-1 shadow-sm">
-              <span className="block text-xs text-gray-500">{t("LandArea")}</span>
+              <span className="block text-xs text-gray-500">
+                {t("LandArea")}
+              </span>
               <span className="block text-sm font-bold text-gray-800">
-                {apartment.landSpace} {t("Meter")}
+                {apartment.type.area} {t("Meter")}
               </span>
             </div>
 
             <div className="bg-green-100 rounded-md p-1 shadow-sm col-span-2">
               <span className="block text-xs text-gray-600">{t("Price")}</span>
               <span className="block font-semibold text-green-600 space-x-1">
-                <span className="text-sm text-gray-500 ml-1">{t("StartFrom")}</span>
-                {apartment.price}
+                <span className="text-sm text-gray-500 ml-1">
+                  {t("StartFrom")}
+                </span>
+                {apartment.type.price}
                 <span className="text-sm text-gray-500 mr-1">{t("Riyal")}</span>
               </span>
             </div>
           </div>
 
           <div className="p-3 pt-0">
-            <Button 
-              onClick={() => setOpenInterestedForm(true)} 
-              disabled={apartment.status === "saled" || apartment.status === "reserved"} 
+            <Button
+              onClick={() => setOpenInterestedForm(true)}
+              disabled={
+                apartment.status === "saled" || apartment.status === "reserved"
+              }
               className="block w-full bg-green-600 hover:bg-green-700"
             >
               {t("AddInterest")}
@@ -155,7 +176,7 @@ const projectId = searchParams.get("projectId") ?? "No ID";
 
       {/* Apartment Images Carousel */}
       <div className="mx-auto mt-auto md:m-auto relative">
-        <Carousel
+        {/* <Carousel
           orientation="vertical"
           opts={{ loop: true }}
           setApi={setApi}
@@ -168,10 +189,10 @@ const projectId = searchParams.get("projectId") ?? "No ID";
         >
           <CarouselContent className="min-h-[300px] h-[100vh] md:h-[80vh] rounded-md max-w-[90%] m-auto">
             {images.length > 0 ? (
-              images.map(({ src, title }, index) => (
+               images.map(({ src, title }, index) => (
                 <CarouselItem key={index}>
                   <Image
-                    src={`http://3.24.242.183${src}`}
+                    src={`http://13.59.197.112${src}`}
                     alt={title}
                     className="h-full w-full rounded-md object-cover"
                     width={400}
@@ -210,15 +231,22 @@ const projectId = searchParams.get("projectId") ?? "No ID";
               className="transform rotate-180"
             />
           </Button>
-        </Carousel>
+        </Carousel> */}
+
+        <Image
+          src={`http://13.59.197.112${images[0]}`}
+          className="h-full w-full rounded-md object-cover"
+          width={400}
+          height={1000}
+        />
 
         <div className="flex items-center justify-center gap-4 mt-4 md:mt-8">
           <Link href={`/ar/real-estate/${projectId}/residential-buildings`}>
-            <Button className="font-semibold">
-              العودة إلى المشروع
-            </Button>
+            <Button className="font-semibold">العودة إلى المشروع</Button>
           </Link>
-          <Link href={`/ar/real-estate/${projectId}/residential-buildings/building-view/${apartment.building.id}`}>
+          <Link
+            href={`/ar/real-estate/${projectId}/residential-buildings/building-view/${apartment.building.id}`}
+          >
             <Button variant="outline" className="font-semibold">
               العودة إلى العمارة
             </Button>
@@ -238,25 +266,31 @@ const projectId = searchParams.get("projectId") ?? "No ID";
             <div className="bg-gray-100 rounded-md p-1 shadow-sm">
               <span className="block text-xs text-gray-500">{t("Rooms")}</span>
               <span className="block text-sm font-bold text-gray-800">
-                {apartment.bedroomNumber}
+                {apartment.type.bedroomNumber}
               </span>
             </div>
 
             <div className="bg-gray-100 rounded-md p-1 shadow-sm">
-              <span className="block text-xs text-gray-500">{t("Bathrooms")}</span>
+              <span className="block text-xs text-gray-500">
+                {t("Bathrooms")}
+              </span>
               <span className="block text-sm font-bold text-gray-800">
-                {apartment.bathroomNumber}
+                {apartment.type.bathroomNumber}
               </span>
             </div>
 
             <div className="bg-gray-100 rounded-md p-1 shadow-sm">
               <span className="block text-xs text-gray-500">{t("Price")}</span>
               <span className="font-bold gray-800">
-                {apartment.price} <span className="text-sm">{t("Riyal")}</span>
+                {apartment.type.price}{" "}
+                <span className="text-sm">{t("Riyal")}</span>
               </span>
             </div>
           </div>
-          <InterestedForm setOpen={setOpenInterestedForm} apartmentId={apartment.id} />
+          <InterestedForm
+            setOpen={setOpenInterestedForm}
+            apartmentId={apartment.id}
+          />
         </DialogContent>
       </Dialog>
 

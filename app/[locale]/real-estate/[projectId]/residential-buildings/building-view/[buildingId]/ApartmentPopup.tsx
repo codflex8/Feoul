@@ -36,26 +36,26 @@ const ApartmentPopup = ({ apartment }: Props) => {
             </span>
           </h6>
           <p className="flex items-center justify-between !my-0 mb-2">
-            {apartment.bedroomNumber} {t("Bedrooms")},{" "}
-            {apartment.bathroomNumber} {t("Bathrooms")}
+            {apartment.type.bedroomNumber} {t("Bedrooms")},{" "}
+            {apartment.type.bathroomNumber} {t("Bathrooms")}
           </p>
           <p className="flex items-center justify-between !my-0">
             <span>{t("BuidingArea")}:</span>
             <span>
-              {apartment.buildSpace} {t("Meter")}
+              {apartment.type.area} {t("Meter")}
             </span>
           </p>
           <p className="flex items-center justify-between !my-0">
             <span>{t("LandArea")}:</span>
             <span>
-              {apartment.landSpace} {t("Meter")}
+              {apartment.type.area} {t("Meter")}
             </span>
           </p>
           <p className="flex items-center justify-between !my-0">
             <span>{t("Price")}:</span>
             <span className="text-sm text-gray-500 ml-1">{t("StartFrom")}</span>
             <span>
-              {apartment.price} {t("Riyal")}
+              {apartment.type.price} {t("Riyal")}
             </span>
           </p>
         </div>

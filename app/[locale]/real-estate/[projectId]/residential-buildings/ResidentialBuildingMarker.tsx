@@ -14,20 +14,17 @@ const ResidentialBuildingMarker = ({ building }: { building: ResidentialBuilding
     setZoomLevel(map.getZoom());
   });
 
-  // تحويل polygon من البيانات المحفوظة
-  const getPolygonPositions = () => {
+   const getPolygonPositions = () => {
     if (building.polygon && Array.isArray(building.polygon)) {
       return building.polygon.map(point => [Number(point[0]), Number(point[1])]);
     }
     
-    // fallback للبيانات القديمة التي تستخدم position
-    if (building.position && Array.isArray(building.position)) {
+     if (building.position && Array.isArray(building.position)) {
       const centerLat = Number(building.position[0]);
       const centerLng = Number(building.position[1]);
       const size = building.size || 100;
       
-      // إنشاء مستطيل حول النقطة المركزية
-      const halfWidth = Math.sqrt(size) * 0.5;
+       const halfWidth = Math.sqrt(size) * 0.5;
       const halfHeight = Math.sqrt(size) * 0.3;
       
       return [
@@ -48,9 +45,15 @@ const ResidentialBuildingMarker = ({ building }: { building: ResidentialBuilding
   }
 
   const getStatusColor = () => {
-    // يمكن إضافة منطق لتحديد اللون حسب حالة العمارة
-    return "#4A90E2";
-  };
+  const typeName = building.buildingType?.name?.toUpperCase() ?? "";
+  if (typeName === "A") return "#FDD492"; 
+  if (typeName === "BA") return "#A5ADEC";  
+  if (typeName === "BB") return "#C97F72";  
+  if (typeName === "C") return "#EAB3E1";  
+  if (typeName === "D") return "#BCC96D";  
+
+  return "#4A90E2"; 
+};
 
   return (
     <Polygon
