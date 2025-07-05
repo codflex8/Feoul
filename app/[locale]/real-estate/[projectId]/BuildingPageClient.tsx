@@ -193,7 +193,7 @@ const page = ({
             className="w-full !bg-slate-600 text-white !justify-between"
             onClick={handleShowBuildigsFilters}
           >
-            <span>فلاتر</span>
+            <span>{t("Filters")}</span>
             <Image
               src="/assets/icons/left-arrow.svg"
               alt="arrow"
@@ -261,5 +261,3 @@ const page = ({
 };
 
 export default page;
-
-

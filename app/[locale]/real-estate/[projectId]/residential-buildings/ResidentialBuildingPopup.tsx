@@ -13,13 +13,14 @@ type Props = {
 const ResidentialBuildingPopup = ({ building }: Props) => {
   const pathname = usePathname();
   const { push } = useRouter();
+  const t = useTranslations("BuildingViewPage");
   const [imageUrl, setImageUrl] = useState<string>("");
 
   useEffect(() => {
     if (building.buildingType?.buildingImage) {
       setImageUrl(`http://13.59.197.112${building.buildingType.buildingImage}`);
     }
-  }, [building.buildingType?.buildingType]);
+  }, [building.buildingType?.buildingImage]);
 
   return (
     <Popup className="min-w-64">
@@ -38,11 +39,11 @@ const ResidentialBuildingPopup = ({ building }: Props) => {
         </h6>
 
         <p className="flex items-center justify-between  mb-2">
-         <span> نوع العمارة: {building.buildingType?.name || "غير محدد"}</span>
-         <span> المساحة: {building.size} م</span>
+         <span> {t("BuildingType")}: {building.buildingType?.name || t("NotSpecified")}</span>
+         <span> {t("Area")}: {building.size} {t("Meter")}</span>
         </p>
         <p className="flex items-center justify-between mb-2">
-          <span>المشروع:</span>
+          <span>{t("Project")}:</span>
           <span>{building.project.name}</span>
         </p>
       </div>
@@ -56,7 +57,7 @@ const ResidentialBuildingPopup = ({ building }: Props) => {
     )
   }
 >
-  عرض العمارة السكنية
+  {t("ViewResidentialBuilding")}
 </Button>
 
     </Popup>

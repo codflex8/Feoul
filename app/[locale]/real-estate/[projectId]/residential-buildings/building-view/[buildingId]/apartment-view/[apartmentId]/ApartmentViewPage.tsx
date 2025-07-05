@@ -203,7 +203,7 @@ const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
             ) : (
               <CarouselItem>
                 <div className="h-full w-full rounded-md bg-gray-200 flex items-center justify-center">
-                  <p className="text-gray-500">لا توجد صور متاحة</p>
+                  <p className="text-gray-500">{t("NoImagesAvailable")}</p>
                 </div>
               </CarouselItem>
             )}
@@ -248,7 +248,7 @@ const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
             href={`/ar/real-estate/${projectId}/residential-buildings/building-view/${apartment.building.id}`}
           >
             <Button variant="outline" className="font-semibold">
-              العودة إلى العمارة
+              {t("BackToBuilding")}
             </Button>
           </Link>
         </div>

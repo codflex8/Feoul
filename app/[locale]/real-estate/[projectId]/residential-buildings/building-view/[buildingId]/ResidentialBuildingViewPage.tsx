@@ -84,6 +84,7 @@ const ResidentialBuildingViewPage = ({
     return apartments;
   };
 
+  // ✅ تحديث نطاقات الفلاتر عند تحميل البيانات
   useEffect(() => {
     const fetchApartments = async () => {
       if (!buildingId) return;
@@ -91,6 +92,31 @@ const ResidentialBuildingViewPage = ({
         const data = await getApartment(buildingId);
         console.log("🚀 ~ fetchApartments:", data);
         setApartments(data);
+
+        // ✅ تحديث نطاقات الفلاتر بناءً على البيانات الفعلية
+        if (data && data.length > 0) {
+          const prices = data.map((apt: Apartment) => apt.price);
+          const spaces = data.map((apt: Apartment) => apt.buildSpace);
+
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
+          const minSpace = Math.min(...spaces);
+          const maxSpace = Math.max(...spaces);
+
+          setUnitsFilters((prev) => ({
+            ...prev,
+            unitsPriceRange: {
+              minPrice,
+              maxPrice,
+              sliderValue: [minPrice, maxPrice],
+            },
+            unitsSpaceRange: {
+              minSpace,
+              maxSpace,
+              sliderValue: [minSpace, maxSpace],
+            },
+          }));
+        }
       } catch (error) {
         console.error(t("LoadingData"), error);
       }
