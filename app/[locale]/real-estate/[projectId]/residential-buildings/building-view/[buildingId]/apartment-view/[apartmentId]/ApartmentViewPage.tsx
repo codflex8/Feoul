@@ -38,8 +38,8 @@ const ApartmentViewPage = ({ apartment }: { apartment: Apartment }) => {
   const [current, setCurrent] = useState<number>(0);
   const zoomStep = 0.1;
 const searchParams = useSearchParams();
-const projectName = searchParams.get("projectName") ?? "No Name";
-const projectId = searchParams.get("projectId") ?? "No ID";
+const projectName = searchParams.get("projectName") ?? t("NotSpecified");
+const projectId = searchParams.get("projectId") ?? t("NotSpecified");
   const images = apartment.images || [];
 
   const zoomIn = () => {
@@ -182,7 +182,7 @@ const projectId = searchParams.get("projectId") ?? "No ID";
             ) : (
               <CarouselItem>
                 <div className="h-full w-full rounded-md bg-gray-200 flex items-center justify-center">
-                  <p className="text-gray-500">لا توجد صور متاحة</p>
+                  <p className="text-gray-500">{t("NoImagesAvailable")}</p>
                 </div>
               </CarouselItem>
             )}
@@ -215,12 +215,12 @@ const projectId = searchParams.get("projectId") ?? "No ID";
         <div className="flex items-center justify-center gap-4 mt-4 md:mt-8">
           <Link href={`/ar/real-estate/${projectId}/residential-buildings`}>
             <Button className="font-semibold">
-              العودة إلى المشروع
+              {t("BackToProject")}
             </Button>
           </Link>
           <Link href={`/ar/real-estate/${projectId}/residential-buildings/building-view/${apartment.building.id}`}>
             <Button variant="outline" className="font-semibold">
-              العودة إلى العمارة
+              {t("BackToBuilding")}
             </Button>
           </Link>
         </div>

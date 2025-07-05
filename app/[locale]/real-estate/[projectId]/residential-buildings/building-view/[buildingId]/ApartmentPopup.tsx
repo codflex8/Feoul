@@ -67,7 +67,7 @@ const ApartmentPopup = ({ apartment }: Props) => {
             )
           }
         >
-          عرض الشقة السكنية
+          {t("ViewApartment")}
         </Button>
         <Button
           className="w-full mt-1 bg-green-600 hover:bg-green-700"

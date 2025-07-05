@@ -34,6 +34,7 @@ import { fetchResidentialBuildings } from "@/lib/actions/map.actions";
 import { ResidentialBuilding } from "@/types/map.types";
 import { useParams } from "next/navigation";
 import ResidentialBuildingMarker from "./ResidentialBuildingMarker";
+import { useTranslations } from "next-intl";
 
 const imageBounds: L.LatLngBoundsExpression = [
   [0, 0],
@@ -41,12 +42,13 @@ const imageBounds: L.LatLngBoundsExpression = [
 ];
 
 const ResidentialBuildingsPage = () => {
+  const t = useTranslations("BuildingViewPage");
   const [residentialBuildings, setResidentialBuildings] = useState<ResidentialBuilding[]>([]);
   const [selectedBuildingType, setSelectedBuildingType] = useState("All");
   const [buildingTypes, setBuildingTypes] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState<string>("");
-  let [projectId, setProjectId] = useState<string>("معرف غير معروف");
-   const [projectName, setProjectName] = useState<string>("اسم غير معروف");
+  let [projectId, setProjectId] = useState<string>(t("NotSpecified"));
+   const [projectName, setProjectName] = useState<string>(t("NotSpecified"));
   const [openHelpForm, setOpenHelpForm] = useState(false);
 const params = useParams();
  projectId = params?.projectId as string;
@@ -72,7 +74,7 @@ const params = useParams();
         );
         setBuildingTypes(types);
       } catch (err) {
-        console.error("خطأ في تحميل العمارات:", err);
+        console.error(t("LoadingData"), err);
       }
     };
 
@@ -109,16 +111,16 @@ const params = useParams();
         />
 
         <div className="w-fit mt-2">
-          <p className="text-white mb-1">نوع العمارة</p>
+          <p className="text-white mb-1">{t("BuildingType")}</p>
           <Select
             onValueChange={(val) => setSelectedBuildingType(val)}
             value={selectedBuildingType}
           >
             <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="اختر النوع" />
+              <SelectValue placeholder={t("SelectType")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">الكل</SelectItem>
+              <SelectItem value="All">{t("All")}</SelectItem>
               {buildingTypes.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
@@ -156,7 +158,7 @@ const params = useParams();
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl font-extrabold">
-              هل تحتاج مساعدة؟
+              {t("NeedHelp")}
             </DialogTitle>
           </DialogHeader>
           <NeedHelpForm setOpen={setOpenHelpForm} />

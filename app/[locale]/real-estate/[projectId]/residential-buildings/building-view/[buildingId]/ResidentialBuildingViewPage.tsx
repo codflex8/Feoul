@@ -116,7 +116,7 @@ const ResidentialBuildingViewPage = ({
         const data = await getApartment(buildingId);
         setApartments(data);
       } catch (error) {
-        console.error("فشل في جلب الشقق:", error);
+        console.error(t("LoadingData"), error);
       }
     };
     fetchApartments();
@@ -146,7 +146,7 @@ const ResidentialBuildingViewPage = ({
             className="w-full !bg-slate-600 text-white !justify-between"
             onClick={() => setShowFilters((prev) => !prev)}
           >
-            <span>فلاتر</span>
+            <span>{t("Filters")}</span>
             <Image
               src="/assets/icons/left-arrow.svg"
               alt="arrow"
