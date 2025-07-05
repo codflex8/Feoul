@@ -25,11 +25,11 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ResidentialBuilding } from "@/types/map.types";
 import ApartmentMarker from "./ApartmentMarker";
-import BuildingBlocksFiters from "@/components/BuildingBlocksFiters";
+import ApartmentBlocksFiters from "@/components/ApartmentBlocksFiters";
 import { UnitsFilters, UnitStatusEnum } from "@/types/map.types";
 import React from "react";
 
-const imageUrl = "/assets/images/project.jpg";
+const imageUrl = "";
 
 const ResidentialBuildingViewPage = ({
   building,
@@ -51,17 +51,18 @@ const ResidentialBuildingViewPage = ({
   const imageBuilding = searchParams.get("image");
   const buildingId = params.buildingId as string;
 
+  // ✅ تحديث القيم الافتراضية للفلاتر بناءً على البيانات الفعلية
   const [unitsFilters, setUnitsFilters] = useState<UnitsFilters>({
     unitStatus: UnitStatusEnum.available,
     unitsPriceRange: {
       minPrice: 0,
-      maxPrice: 10000,
-      sliderValue: [0, 10000],
+      maxPrice: 1000000, // قيمة أعلى للسعر
+      sliderValue: [0, 1000000],
     },
     unitsSpaceRange: {
       minSpace: 0,
-      maxSpace: 1000,
-      sliderValue: [0, 1000],
+      maxSpace: 500, // قيمة أعلى للمساحة
+      sliderValue: [0, 500],
     },
     selectedCategory: "All",
   });
@@ -97,30 +98,75 @@ const ResidentialBuildingViewPage = ({
     return null;
   };
 
+  // ✅ إصلاح دالة الفلترة لتستخدم القيم الفعلية من الفلاتر
   const getFilteredApartments = () => {
     let filtered = [...apartments];
+    
+    // فلترة حسب السعر
     const minPrice = unitsFilters.unitsPriceRange.sliderValue[0];
     const maxPrice = unitsFilters.unitsPriceRange.sliderValue[1];
+    
+    // فلترة حسب المساحة
     const minSpace = unitsFilters.unitsSpaceRange.sliderValue[0];
     const maxSpace = unitsFilters.unitsSpaceRange.sliderValue[1];
 
+    // تطبيق فلاتر السعر والمساحة
     filtered = filtered.filter((ap) => ap.price >= minPrice && ap.price <= maxPrice);
     filtered = filtered.filter((ap) => ap.buildSpace >= minSpace && ap.buildSpace <= maxSpace);
+    
+    // فلترة حسب الحالة (إذا لم تكن "available")
+    if (unitsFilters.unitStatus !== UnitStatusEnum.available) {
+      filtered = filtered.filter((ap) => ap.status === unitsFilters.unitStatus);
+    }
+
+    // فلترة حسب الفئة (إذا لم تكن "All")
+    if (unitsFilters.selectedCategory !== "All") {
+      // يمكنك إضافة فلترة حسب نوع الشقة هنا إذا كان متوفراً
+      // filtered = filtered.filter((ap) => ap.apartmentType?.name === unitsFilters.selectedCategory);
+    }
+
     return filtered;
   };
 
+  // ✅ تحديث نطاقات الفلاتر عند تحميل البيانات
   useEffect(() => {
     const fetchApartments = async () => {
       if (!buildingId) return;
       try {
         const data = await getApartment(buildingId);
+        console.log("🚀 ~ fetchApartments ~ fetchApartments:", data);
         setApartments(data);
+
+        // ✅ تحديث نطاقات الفلاتر بناءً على البيانات الفعلية
+        if (data && data.length > 0) {
+          const prices = data.map((apt: Apartment) => apt.price);
+          const spaces = data.map((apt: Apartment) => apt.buildSpace);
+
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
+          const minSpace = Math.min(...spaces);
+          const maxSpace = Math.max(...spaces);
+
+          setUnitsFilters((prev) => ({
+            ...prev,
+            unitsPriceRange: {
+              minPrice,
+              maxPrice,
+              sliderValue: [minPrice, maxPrice],
+            },
+            unitsSpaceRange: {
+              minSpace,
+              maxSpace,
+              sliderValue: [minSpace, maxSpace],
+            },
+          }));
+        }
       } catch (error) {
         console.error(t("LoadingData"), error);
       }
     };
     fetchApartments();
-  }, [buildingId]);
+  }, [buildingId, t]);
 
   return (
     <div className="bg-[#4b5d6e75] relative text-center min-h-[100vh] w-screen flex items-center justify-center py-2 overflow-x-hidden">
@@ -159,7 +205,7 @@ const ResidentialBuildingViewPage = ({
             />
           </Button>
 
-          <BuildingBlocksFiters
+          <ApartmentBlocksFiters
             className={showFilters ? "max-h-[800] py-2" : "max-h-0"}
             selectedCategories={[]}
             setSelectedCategories={() => {}}
