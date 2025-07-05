@@ -32,7 +32,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
   getResidentialBuildings,
-  getApartmentTypes,
+  getAllApartmentTypes,
   updateApartment,
 } from "@/lib/actions/dashboard.actions";
 
@@ -63,13 +63,11 @@ const EditApartmentForm = ({ apartment, setOpen, onEdit }: EditApartmentFormProp
   const [polygon, setPolygon] = useState<number[][]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  // تحويل البيانات الحالية إلى polygon
-  const getInitialPolygon = () => {
+   const getInitialPolygon = () => {
     if (apartment.polygon && Array.isArray(apartment.polygon)) {
       return apartment.polygon;
     }
     
-    // fallback للبيانات القديمة
     if (apartment.lat && apartment.lng) {
       const centerLat = Number(apartment.lat);
       const centerLng = Number(apartment.lng);
@@ -111,10 +109,10 @@ const EditApartmentForm = ({ apartment, setOpen, onEdit }: EditApartmentFormProp
       try {
         const [buildingsData, apartmentTypesData] = await Promise.all([
           getResidentialBuildings(),
-          getApartmentTypes(),
+          getAllApartmentTypes(),
         ]);
         setBuildings(buildingsData);
-        setApartmentTypes(apartmentTypesData.items || []);
+        setApartmentTypes(apartmentTypesData || []);
       } catch (error) {
         console.error("فشل في جلب البيانات:", error);
       }

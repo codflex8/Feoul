@@ -173,6 +173,7 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("🚀 ~ onSubmit ~ values:", values)
     try {
       const buildingPayload = {
         number: values.number,
@@ -180,7 +181,7 @@ const EditResidentialBuildingForm = ({ building, setOpen, onEdit }: EditResident
         projectId: values.projectId,
         buildingTypeId: values.buildingTypeId,
         polygon: values.polygon,
-        status: values.status,
+        // status: values.status,
       };
 
       const updatedBuilding = await updateResidentialBuilding(building.id, buildingPayload);

@@ -614,11 +614,11 @@ export const deleteApartmentType = async (id: string) => {
 };
 
 // Apartments
-export const getApartments = async () => {
+export const getApartments = async (page: number = 1) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
   try {
-    const response = await fetch(`${API_URL}/dashboard/apartments`, {
+    const response = await fetch(`${API_URL}/dashboard/apartments?page=${page}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -830,8 +830,7 @@ export const importApartmentsFromExcel = async (file: File) => {
   }
 };
 
-// Category
-export const getCategories = async () => {
+ export const getCategories = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
   try {
