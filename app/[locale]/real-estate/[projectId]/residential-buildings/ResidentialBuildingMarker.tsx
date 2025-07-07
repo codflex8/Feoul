@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Polygon, useMap, useMapEvent } from "react-leaflet";
+import { Tooltip,Polygon, useMap, useMapEvent } from "react-leaflet";
 import { ResidentialBuilding } from "@/types/map.types";
 import ResidentialBuildingPopup from "./ResidentialBuildingPopup";
 import { useTranslations } from "next-intl";
@@ -80,6 +80,11 @@ const ResidentialBuildingMarker = ({ building }: { building: ResidentialBuilding
         },
       }}
     >
+       <Tooltip direction="top" sticky>
+      <div>
+        <div>عمارة رقم: {building.number}- نموذج :{building.buildingType?.name ?? "-"}</div>
+      </div>
+    </Tooltip>
       <ResidentialBuildingPopup building={building} />
     </Polygon>
   );

@@ -161,7 +161,7 @@ const ResidentialBuildingViewPage = ({
             maxBoundsViscosity={1.0}
           >
             {imageBuilding && <ImageOverlay url={imageBuilding} bounds={imageBounds} />}
-            <FitBoundsToImage bounds={imageBounds} />
+            <FitBoundsToImage bounds={imageBounds}  />
             {getFilteredApartments().map((apartment) => (
               <ApartmentMarker key={apartment.id} apartment={apartment} />
             ))}

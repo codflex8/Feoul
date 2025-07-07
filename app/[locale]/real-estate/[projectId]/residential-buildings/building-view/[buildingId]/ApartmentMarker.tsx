@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Polygon, useMap, useMapEvent } from "react-leaflet";
+import { Tooltip,Polygon, useMap, useMapEvent } from "react-leaflet";
 import { useTranslations } from "next-intl";
 import ApartmentPopup from "./ApartmentPopup";
 
@@ -78,24 +78,30 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
         color: statusColor,
         fillColor: statusColor,
         fillOpacity: 0.1,
-        weight: 2,
+        // weight: 2,
         opacity: 0.2,
       }}
       eventHandlers={{
         mouseover: (e) => {
           e.target.setStyle({
             fillOpacity: 0.05,
-            weight: 3,
+            // weight: 3,
           });
         },
         mouseout: (e) => {
           e.target.setStyle({
             fillOpacity: 0.1,
-            weight: 2,
+            // weight: 2,
           });
         },
       }}
     >
+
+       <Tooltip direction="top" sticky >
+            <div>
+              <div>شقة رقم: {apartment.number}- نموذج :{apartment.type?.name ?? "-"}</div>
+            </div>
+          </Tooltip>
       <ApartmentPopup apartment={apartment} />
     </Polygon>
   );
