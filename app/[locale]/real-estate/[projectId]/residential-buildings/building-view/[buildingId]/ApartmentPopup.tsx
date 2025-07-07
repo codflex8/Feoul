@@ -30,14 +30,14 @@ const ApartmentPopup = ({ apartment }: Props) => {
       <Popup className="min-w-64">
         <div className="text-sm">
           <h6 className="text-base font-bold flex items-center justify-between">
-            <span>{apartment.name}</span>
+            <span>{apartment.number}</span>
             <span className="text-xs text-gray-500">
               {t(`${apartment.status}`)}
             </span>
           </h6>
           <p className="flex items-center justify-between !my-0 mb-2">
-            {apartment.type.bedroomNumber} {t("Bedrooms")},{" "}
-            {apartment.type.bathroomNumber} {t("Bathrooms")}
+            {apartment.type.bedroomsNumber} {t("Bedrooms")},{" "}
+            {apartment.type.bathroomsNumber} {t("Bathrooms")}
           </p>
           <p className="flex items-center justify-between !my-0">
             <span>{t("BuidingArea")}:</span>

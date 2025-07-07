@@ -44,7 +44,7 @@ const imageBounds: L.LatLngBoundsExpression = [
 const formSchema = z.object({
   number: z.string().min(1, "رقم الشقة مطلوب"),
   apartmentTypeId: z.string().min(1, "نوع الشقة مطلوب"),
-  floorNumber: z.number().min(1, "رقم الدور مطلوب"),
+  // floorNumber: z.number().min(1, "رقم الدور مطلوب"),
   buildingId: z.string().min(1, "العمارة السكنية مطلوبة"),
   polygon: z.array(z.array(z.number())).min(4, "يجب تحديد 4 نقاط على الأقل لتكوين المستطيل"),
   status: z.enum(["avaliable", "reserved", "saled"]),
@@ -91,7 +91,7 @@ const EditApartmentForm = ({ apartment, setOpen, onEdit }: EditApartmentFormProp
     defaultValues: {
       number: apartment.number?.toString() || "",
       apartmentTypeId: apartment.type?.id ?? "",
-      floorNumber: apartment.index || 1,
+      floorNumber: apartment.index || 0,
       buildingId: apartment.building?.id ?? "",
       polygon: getInitialPolygon(),
       status: apartment.status === "avaliable" ? "avaliable" : apartment.status === "reserved" ? "reserved" : "saled",

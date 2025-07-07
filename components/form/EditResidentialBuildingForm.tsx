@@ -51,7 +51,7 @@ const formSchema = z.object({
   projectId: z.string().min(1, "المشروع مطلوب"),
   buildingTypeId: z.string().min(1, "نوع العمارة مطلوب"),
   polygon: z.array(z.array(z.number())).min(4, "يجب تحديد 4 نقاط على الأقل لتكوين المستطيل"),
-    status: z.enum(["avaliable", "reserved", "saled"]),
+    // status: z.enum(["avaliable", "reserved", "saled"]),
 
 });
 

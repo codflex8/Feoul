@@ -58,13 +58,13 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
   switch (normalized) {
     case "available":
     case "avaliable":  
-      return "#10B981"; // أخضر
+      return "#10B981"; 
     case "reserved":
-      return "#F59E0B"; // برتقالي
+      return "#F59E0B"; 
     case "saled":
-      return "#EF4444"; // أحمر
+      return "#EF4444"; 
     default:
-      return "#6B7280"; // رمادي
+      return "#6B7280"; 
   }
 };
 
@@ -77,20 +77,20 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
       pathOptions={{
         color: statusColor,
         fillColor: statusColor,
-        fillOpacity: 0.5,
+        fillOpacity: 0.1,
         weight: 2,
-        opacity: 0.9,
+        opacity: 0.2,
       }}
       eventHandlers={{
         mouseover: (e) => {
           e.target.setStyle({
-            fillOpacity: 0.7,
+            fillOpacity: 0.05,
             weight: 3,
           });
         },
         mouseout: (e) => {
           e.target.setStyle({
-            fillOpacity: 0.5,
+            fillOpacity: 0.1,
             weight: 2,
           });
         },

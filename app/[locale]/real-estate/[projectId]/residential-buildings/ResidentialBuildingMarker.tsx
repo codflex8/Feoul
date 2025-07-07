@@ -61,20 +61,20 @@ const ResidentialBuildingMarker = ({ building }: { building: ResidentialBuilding
       pathOptions={{
         color: getStatusColor(),
         fillColor: getStatusColor(),
-        fillOpacity: 0.4,
+        fillOpacity: 0.2,
         weight: 2,
-        opacity: 0.8,
+        opacity: 0.006,
       }}
       eventHandlers={{
         mouseover: (e) => {
           e.target.setStyle({
-            fillOpacity: 0.6,
+            fillOpacity: 0.4,
             weight: 3,
           });
         },
         mouseout: (e) => {
           e.target.setStyle({
-            fillOpacity: 0.4,
+            fillOpacity: 0.2,
             weight: 2,
           });
         },

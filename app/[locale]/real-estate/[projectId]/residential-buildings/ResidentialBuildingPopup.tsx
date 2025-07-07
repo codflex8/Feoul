@@ -25,7 +25,7 @@ const ResidentialBuildingPopup = ({ building }: Props) => {
   return (
     <Popup className="min-w-64">
       <div className="text-sm">
-        <h6 className="text-base mb-4 font-bold flex items-center justify-between">
+        <h6 className="text-base mb-2 font-bold flex items-center justify-between">
           <span className="w-full h-20 relative">
             {imageUrl && (
               <Image
@@ -38,13 +38,9 @@ const ResidentialBuildingPopup = ({ building }: Props) => {
           </span>
         </h6>
 
-        <p className="flex items-center justify-between  mb-2">
-         <span> {t("BuildingType")}: {building.buildingType?.name || t("NotSpecified")}</span>
-         <span> {t("Area")}: {building.size} {t("Meter")}</span>
-        </p>
-        <p className="flex items-center justify-between mb-2">
-          <span>{t("Project")}:</span>
-          <span>{building.project.name}</span>
+        <p className="flex items-center justify-between">
+<span>رقم العمارة : {building.number}</span>   
+      <span> {t("BuildingType")}: {building.buildingType?.name || t("NotSpecified")}</span>
         </p>
       </div>
 <Button
