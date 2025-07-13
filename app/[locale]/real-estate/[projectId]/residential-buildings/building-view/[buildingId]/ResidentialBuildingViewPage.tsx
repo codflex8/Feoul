@@ -25,8 +25,9 @@ import "leaflet/dist/leaflet.css";
 import { ResidentialBuilding } from "@/types/map.types";
 import ApartmentMarker from "./ApartmentMarker";
 import React from "react";
-
-const imageUrl = "";
+import '@/leaflet-compass/compass.css';
+import '@/leaflet-compass/compass.js';
+ const imageUrl = "";
 
 const ResidentialBuildingViewPage = ({
   building,
@@ -123,6 +124,28 @@ const ResidentialBuildingViewPage = ({
     };
     fetchApartments();
   }, [buildingId, t]);
+const CompassControl = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    const loadCompass = async () => {
+      if (typeof window !== "undefined" && map) {
+        await import('/leaflet-compass/compass.js');
+
+        const compass = new window.L.Control.Compass({
+          autoActive: true,
+          showDigit: true,
+        });
+
+        map.addControl(compass);
+      }
+    };
+
+    loadCompass();
+  }, [map]);
+
+  return null;
+};
 
   return (
     <div className="bg-[#4b5d6e75] relative text-center min-h-[100vh] w-screen flex items-center justify-center py-2 overflow-x-hidden">
@@ -134,6 +157,7 @@ const ResidentialBuildingViewPage = ({
           t("language").toLowerCase() === "en" ? "right-[10px]" : "left-[10px]"
         )}
       >
+        
         <WebsiteTitleSec
           projectName={projectName}
           projectId={projectId}
@@ -162,6 +186,7 @@ const ResidentialBuildingViewPage = ({
           >
             {imageBuilding && <ImageOverlay url={imageBuilding} bounds={imageBounds} />}
             <FitBoundsToImage bounds={imageBounds}  />
+            <CompassControl />
             {getFilteredApartments().map((apartment) => (
               <ApartmentMarker key={apartment.id} apartment={apartment} />
             ))}
