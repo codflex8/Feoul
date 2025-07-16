@@ -147,6 +147,28 @@ const ResidentialBuildingViewPage = ({
     };
     fetchApartments();
   }, [buildingId, t]);
+const CompassControl = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    const loadCompass = async () => {
+      if (typeof window !== "undefined" && map) {
+        await import('/leaflet-compass/compass.js');
+
+        const compass = new window.L.Control.Compass({
+          autoActive: true,
+          showDigit: true,
+        });
+
+        map.addControl(compass);
+      }
+    };
+
+    loadCompass();
+  }, [map]);
+
+  return null;
+};
 
  
   return (
@@ -163,6 +185,7 @@ const ResidentialBuildingViewPage = ({
           t("language").toLowerCase() === "en" ? "right-[10px]" : "left-[10px]"
         )}
       >
+        
         <WebsiteTitleSec
           projectName={projectName}
           projectId={projectId}
