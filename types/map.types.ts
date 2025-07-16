@@ -56,7 +56,7 @@ export type UnitStatus = "reserved" | "saled" | "available";
 export enum UnitStatusEnum {
   reserved = "reserved",
   saled = "saled",
-  available = "available",
+  avaliable = "avaliable",
 }
 
 export type Floor = {

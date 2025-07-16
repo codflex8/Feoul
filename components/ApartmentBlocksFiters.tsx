@@ -9,19 +9,15 @@ import CategorySelect from "./CategorySelect";
 
 interface ApartmentBlocksFitersProps {
   className: string;
-  selectedCategories: string[];
-  setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  allCategories: string[]; 
   unitsFilters: UnitsFilters;
   setUnitsFilters: React.Dispatch<React.SetStateAction<UnitsFilters>>;
   unitsCount: number;
 }
 
-const allCategories = ["J", "K", "L", "M"]; // هذه تأتي من type.name
-
 const ApartmentBlocksFiters = ({
   className,
-  selectedCategories,
-  setSelectedCategories,
+  allCategories,
   unitsFilters,
   setUnitsFilters,
   unitsCount,
@@ -31,11 +27,10 @@ const ApartmentBlocksFiters = ({
   const spaceRange = unitsFilters.unitsSpaceRange;
 
   const handleShowAllBtn = () => {
-    const allSelected =
-      allCategories.length === selectedCategories.length &&
-      allCategories.every((cat) => selectedCategories.includes(cat));
-
-    setSelectedCategories(allSelected ? [] : allCategories);
+    setUnitsFilters((prevFilters) => ({
+      ...prevFilters,
+      selectedCategory: "",
+    }));
   };
 
   return (
@@ -187,9 +182,7 @@ const ApartmentBlocksFiters = ({
         variant="showALl"
         className={clsx(
           "w-full mt-4 bg-gradient-to-r from-blue-400 to-purple-500 transition-all",
-          selectedCategories.length === allCategories.length &&
-            allCategories.every((cat) => selectedCategories.includes(cat)) &&
-            "!bg-white bg-none text-slate-600 !important"
+          unitsFilters.selectedCategory === "" && "!bg-white text-slate-600"
         )}
         onClick={handleShowAllBtn}
       >

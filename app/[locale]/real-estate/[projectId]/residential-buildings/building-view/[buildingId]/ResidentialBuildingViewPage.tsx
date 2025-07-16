@@ -8,9 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 import clsx from "clsx";
-
 import WebsiteTitleSec from "@/components/WebsiteTitleSec";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -18,15 +16,13 @@ import { useEffect, useState } from "react";
 import NeedHelpForm from "@/components/form/NeedHelpForm";
 import { useParams, useSearchParams } from "next/navigation";
 import { getApartment } from "@/lib/actions/map.actions";
-import { Apartment } from "@/types/map.types";
+import { Apartment, ResidentialBuilding, UnitsFilters, UnitStatusEnum } from "@/types/map.types";
 import { MapContainer, ImageOverlay, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { ResidentialBuilding } from "@/types/map.types";
 import ApartmentMarker from "./ApartmentMarker";
 import React from "react";
-
-const imageUrl = "";
+import ApartmentBlocksFiters from "@/components/ApartmentBlocksFiters";
 
 const ResidentialBuildingViewPage = ({
   building,
@@ -38,7 +34,22 @@ const ResidentialBuildingViewPage = ({
   const [apartments, setApartments] = useState<Apartment[]>([]);
   const [scale, setScale] = useState<number>(1);
   const [openHelpForm, setOpenHelpForm] = useState<boolean>(false);
+  const [unitsFilters, setUnitsFilters] = useState<UnitsFilters>({
+    unitsPriceRange: {
+      minPrice: 0,
+      maxPrice: 1000000,
+      sliderValue: [0, 1000000],
+    },
+    unitsSpaceRange: {
+      minSpace: 0,
+      maxSpace: 500,
+      sliderValue: [0, 500],
+    },
+    unitStatus: UnitStatusEnum.avaliable,
+    selectedCategory: "",
+  });
   const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [allCategories, setAllCategories] = useState<string[]>([]);
 
   const params = useParams();
   const zoomStep = 0.1;
@@ -60,43 +71,54 @@ const ResidentialBuildingViewPage = ({
     }
   };
 
-  let imageBounds: L.LatLngBoundsExpression = [
+  const imageBounds: L.LatLngBoundsExpression = [
     [0, 0],
     [450, 800],
   ];
 
-  const FitBoundsToImage = ({
-    bounds,
-  }: {
-    bounds: L.LatLngBoundsExpression;
-  }) => {
+  const FitBoundsToImage = ({ bounds }: { bounds: L.LatLngBoundsExpression }) => {
     const map = useMap();
-
-    React.useEffect(() => {
+    useEffect(() => {
       map.fitBounds(bounds, { padding: [20, 20] });
     }, [map, bounds]);
-
     return null;
   };
 
-  // بدل دالة الفلترة، هنعرض كل الشقق بدون تصفية
   const getFilteredApartments = () => {
-    return apartments;
+    return apartments.filter((apt) => {
+       const isPriceValid =
+        apt.type.price >= unitsFilters.unitsPriceRange.sliderValue[0] &&
+        apt.type.price <= unitsFilters.unitsPriceRange.sliderValue[1];
+
+      const isSpaceValid =
+        apt.type.area >= unitsFilters.unitsSpaceRange.sliderValue[0] &&
+        apt.type.area <= unitsFilters.unitsSpaceRange.sliderValue[1];
+
+      const isCategoryValid =
+        !unitsFilters.selectedCategory || apt.type.name === unitsFilters.selectedCategory;
+
+      const isStatusValid = apt.status === unitsFilters.unitStatus;
+
+      return isPriceValid && isSpaceValid && isCategoryValid && isStatusValid;
+    });
   };
 
-  // ✅ تحديث نطاقات الفلاتر عند تحميل البيانات
+  const handleShowBuildigsFilters = () => {
+    setShowFilters((prev) => !prev);
+  };
+
   useEffect(() => {
     const fetchApartments = async () => {
       if (!buildingId) return;
       try {
         const data = await getApartment(buildingId);
-        console.log("🚀 ~ fetchApartments:", data);
         setApartments(data);
+        console.log("Apartments Data:", data);
 
-        // ✅ تحديث نطاقات الفلاتر بناءً على البيانات الفعلية
         if (data && data.length > 0) {
-          const prices = data.map((apt: Apartment) => apt.price);
-          const spaces = data.map((apt: Apartment) => apt.buildSpace);
+          const prices = data.map((apt) => apt.type.price);
+          const spaces = data.map((apt) => apt.type.area);
+          const categories = [...new Set(data.map((apt) => apt.type.name))];
 
           const minPrice = Math.min(...prices);
           const maxPrice = Math.max(...prices);
@@ -116,6 +138,8 @@ const ResidentialBuildingViewPage = ({
               sliderValue: [minSpace, maxSpace],
             },
           }));
+
+          setAllCategories(categories);
         }
       } catch (error) {
         console.error(t("LoadingData"), error);
@@ -124,9 +148,14 @@ const ResidentialBuildingViewPage = ({
     fetchApartments();
   }, [buildingId, t]);
 
+ 
   return (
     <div className="bg-[#4b5d6e75] relative text-center min-h-[100vh] w-screen flex items-center justify-center py-2 overflow-x-hidden">
-      <ControlFunctions zoomIn={zoomIn} zoomOut={zoomOut} setOpenHelpForm={setOpenHelpForm} />
+      <ControlFunctions
+        zoomIn={zoomIn}
+        zoomOut={zoomOut}
+        setOpenHelpForm={setOpenHelpForm}
+      />
 
       <div
         className={clsx(
@@ -137,8 +166,38 @@ const ResidentialBuildingViewPage = ({
         <WebsiteTitleSec
           projectName={projectName}
           projectId={projectId}
-          blockNumber={apartments.length > 0 ? Number(apartments[0].building.number) : 'no'}
+          blockNumber={
+            apartments.length > 0 ? Number(apartments[0].building.number) : "no"
+          }
         />
+        <div className="w-fit">
+          <Button
+            className="w-full !bg-slate-600 text-white !justify-between"
+            onClick={handleShowBuildigsFilters}
+          >
+            <span>{t("Filters")}</span>
+            <Image
+              src="/assets/icons/left-arrow.svg"
+              alt="arrow"
+              width={32}
+              height={32}
+              className={clsx(
+                "transition-all",
+                showFilters ? "rotate-90" : "-rotate-90"
+              )}
+            />
+          </Button>
+
+          {apartments.length > 0 && (
+            <ApartmentBlocksFiters
+              className={showFilters ? "max-h-[800] py-2" : "max-h-0"}
+              allCategories={allCategories}
+              unitsFilters={unitsFilters}
+              setUnitsFilters={setUnitsFilters}
+              unitsCount={apartments.length}
+            />
+          )}
+        </div>
       </div>
 
       <div className="mx-auto mt-auto md:m-auto relative">
@@ -160,8 +219,10 @@ const ResidentialBuildingViewPage = ({
             maxBounds={imageBounds}
             maxBoundsViscosity={1.0}
           >
-            {imageBuilding && <ImageOverlay url={imageBuilding} bounds={imageBounds} />}
-            <FitBoundsToImage bounds={imageBounds}  />
+            {imageBuilding && (
+              <ImageOverlay url={imageBuilding} bounds={imageBounds} />
+            )}
+            <FitBoundsToImage bounds={imageBounds} />
             {getFilteredApartments().map((apartment) => (
               <ApartmentMarker key={apartment.id} apartment={apartment} />
             ))}

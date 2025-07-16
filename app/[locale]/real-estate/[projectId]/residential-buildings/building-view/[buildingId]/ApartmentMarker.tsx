@@ -14,12 +14,10 @@ const ApartmentMarker = ({ apartment }: { apartment: any }) => {
   });
 
  const getPolygonPositions = () => {
-  console.log("🔷 apartment.polygon:", apartment.polygon);
 
   if (apartment.polygon && Array.isArray(apartment.polygon)) {
     const converted = apartment.polygon.map(point => [Number(point[0]), Number(point[1])]);
-    console.log("✅ Polygon to draw:", converted);
-    return converted;
+     return converted;
   }
 
   if (apartment.lat && apartment.lng) {
